@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+import { HttpError } from "../lib/http-error";
 
 export function errorHandler(
   err: unknown,
@@ -12,6 +13,10 @@ export function errorHandler(
       message: "Validation failed",
       errors: err.flatten(),
     });
+  }
+
+  if (err instanceof HttpError) {
+    return res.status(err.statusCode).json({ message: err.message });
   }
 
   console.error(err);
