@@ -1,1 +1,4 @@
 @import "tailwindcss";
+/* After `npx shadcn@latest init`, the CLI adds theme variables here. Then optionally add:
+   @import "./styles/storefront-theme.css";
+*/

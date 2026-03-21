@@ -1,0 +1,6 @@
+/* Import this from index.css after shadcn init theme block, or merge variables into the generated :root */
+@layer base {
+  body {
+    @apply bg-stone-50 text-stone-900 antialiased;
+  }
+}
