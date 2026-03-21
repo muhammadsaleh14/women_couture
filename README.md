@@ -1,0 +1,80 @@
+# Women Couture
+
+Monorepo for the Women Couture SaaS (backend API now; frontend to follow).
+
+## Prerequisites
+
+- Node.js 20+ (LTS recommended)
+- Docker Desktop (or Docker Engine) for local PostgreSQL
+
+## Database (development)
+
+From the repository root, start PostgreSQL:
+
+```bash
+docker compose up -d
+```
+
+This exposes Postgres on `localhost:5432` with user `postgres`, password `postgres`, and database `women_couture` (see [docker-compose.yml](docker-compose.yml)).
+
+## Backend API
+
+Location: [backend/](backend/)
+
+1. Copy environment file:
+
+   ```bash
+   cd backend
+   cp .env.example .env
+   ```
+
+   On Windows PowerShell:
+
+   ```powershell
+   cd backend
+   Copy-Item .env.example .env
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Generate Prisma Client and apply migrations:
+
+   ```bash
+   npm run db:generate
+   npm run db:migrate
+   ```
+
+4. Start the API in development mode:
+
+   ```bash
+   npm run dev
+   ```
+
+The server listens on `http://localhost:3000` by default (override with `PORT` in `.env`).
+
+### Useful endpoints
+
+- `GET /health` — health check
+- `POST /api/v1/echo` — example JSON body validation (`{ "message": "..." }`)
+- `GET /openapi.json` — OpenAPI 3 document (for codegen)
+- `GET /api-docs` — Swagger UI
+
+### Export OpenAPI for the frontend
+
+Writes `backend/openapi/openapi.json` (no running server required):
+
+```bash
+cd backend
+npm run openapi:export
+```
+
+Point **openapi-typescript-codegen**, **Orval**, or similar at that file to generate a typed client for the React app.
+
+## Project layout
+
+- [backend/](backend/) — Express + TypeScript, Prisma, Zod, zod-to-openapi, Swagger UI
+- [docker-compose.yml](docker-compose.yml) — development PostgreSQL
