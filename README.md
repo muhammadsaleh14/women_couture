@@ -17,6 +17,13 @@ docker compose up -d
 
 This exposes Postgres on `localhost:5432` with user `postgres`, password `postgres`, and database `women_couture` (see [docker-compose.yml](docker-compose.yml)).
 
+Set `JWT_SECRET` in [backend/.env.example](backend/.env.example) (at least 32 characters). After migrations, seed a default admin user (override with `ADMIN_USERNAME` / `ADMIN_PASSWORD`):
+
+```bash
+cd backend
+npm run db:seed
+```
+
 ## Backend API
 
 Location: [backend/](backend/)
@@ -59,6 +66,9 @@ The server listens on `http://localhost:3000` by default (override with `PORT` i
 ### Useful endpoints
 
 - `GET /health` — health check
+- `POST /api/v1/auth/register` — register (role `CUSTOMER` only)
+- `POST /api/v1/auth/login` — JWT (`{ "username", "password" }`)
+- `GET /api/v1/auth/me` — current user (Bearer token)
 - `POST /api/v1/echo` — example JSON body validation (`{ "message": "..." }`)
 - `GET /openapi.json` — OpenAPI 3 document (for codegen)
 - `GET /api-docs` — Swagger UI
@@ -80,6 +90,8 @@ Location: [frontend/](frontend/)
 
 UI primitives come from **shadcn/ui** (installed via CLI, not hand-written). After `npm install` in `frontend/`, run the commands in [frontend/SHADCN_COMMANDS.md](frontend/SHADCN_COMMANDS.md) (`shadcn init`, then `shadcn add …`). That generates `src/components/ui`, `src/lib/utils.ts`, and theme CSS.
 
+Copy [frontend/.env.example](frontend/.env.example) to `frontend/.env` and set `VITE_API_URL` to your API (e.g. `http://localhost:3000`).
+
 Then start the app:
 
 ```bash
@@ -88,7 +100,8 @@ npm run dev
 ```
 
 - Customer storefront: `/` (home, shop, product, cart)
-- Admin: `/admin` (products, orders; **Inventory** links to the same catalog for now)
+- Sign in: `/login` (JWT stored in `localStorage`; admins go to the dashboard after login)
+- Admin: `/admin` (requires `ADMIN` role; **Inventory** links to the same catalog for now)
 
 ## Project layout
 

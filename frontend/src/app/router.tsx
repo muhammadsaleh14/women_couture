@@ -1,5 +1,8 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ROUTES } from "@/core/routes";
+import { RootLayout } from "@/app/root-layout";
+import { RequireRole } from "@/features/auth/RequireRole";
+import { LoginPage } from "@/features/auth/pages/LoginPage";
 import { AdminLayout } from "@/shared/components/layout/AdminLayout";
 import { StorefrontLayout } from "@/shared/components/layout/StorefrontLayout";
 import { AdminOrdersPage } from "@/features/admin/pages/AdminOrdersPage";
@@ -12,28 +15,44 @@ import { ProductDetailPage } from "@/features/storefront/pages/ProductDetailPage
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    element: <StorefrontLayout />,
+    element: <RootLayout />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: "shop/:categoryId", element: <CategoryPage /> },
-      { path: "product/:productId", element: <ProductDetailPage /> },
-      { path: "cart", element: <CartPage /> },
-    ],
-  },
-  {
-    path: ROUTES.admin.root,
-    element: <AdminLayout />,
-    children: [
-      { index: true, element: <Navigate to={ROUTES.admin.products} replace /> },
+      { path: "login", element: <LoginPage /> },
       {
-        path: "inventory",
-        element: <Navigate to={ROUTES.admin.products} replace />,
+        path: "/",
+        element: <StorefrontLayout />,
+        children: [
+          { index: true, element: <HomePage /> },
+          { path: "shop/:categoryId", element: <CategoryPage /> },
+          { path: "product/:productId", element: <ProductDetailPage /> },
+          { path: "cart", element: <CartPage /> },
+        ],
       },
-      { path: "products", element: <AdminProductsPage /> },
-      { path: "products/new", element: <AdminProductFormPage /> },
-      { path: "products/:productId/edit", element: <AdminProductFormPage /> },
-      { path: "orders", element: <AdminOrdersPage /> },
+      {
+        path: "admin",
+        element: (
+          <RequireRole role="ADMIN">
+            <AdminLayout />
+          </RequireRole>
+        ),
+        children: [
+          {
+            index: true,
+            element: <Navigate to={ROUTES.admin.products} replace />,
+          },
+          {
+            path: "inventory",
+            element: <Navigate to={ROUTES.admin.products} replace />,
+          },
+          { path: "products", element: <AdminProductsPage /> },
+          { path: "products/new", element: <AdminProductFormPage /> },
+          {
+            path: "products/:productId/edit",
+            element: <AdminProductFormPage />,
+          },
+          { path: "orders", element: <AdminOrdersPage /> },
+        ],
+      },
     ],
   },
 ]);

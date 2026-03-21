@@ -1,4 +1,5 @@
 export const ROUTES = {
+  login: "/login",
   home: "/",
   shop: (categoryId: string) => `/shop/${categoryId}` as const,
   product: (productId: string) => `/product/${productId}` as const,

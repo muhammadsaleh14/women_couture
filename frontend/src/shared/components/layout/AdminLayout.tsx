@@ -1,8 +1,10 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { Package, ShoppingCart, Warehouse } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { ROUTES } from "@/core/routes";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { ROUTES } from "@/core/routes";
+import { useAuth } from "@/features/auth/use-auth";
+import { cn } from "@/lib/utils";
 
 const nav = [
   { to: ROUTES.admin.products, label: "Products / Suits", icon: Package },
@@ -11,9 +13,11 @@ const nav = [
 ];
 
 export function AdminLayout() {
+  const { user, logout } = useAuth();
+
   return (
     <div className="flex min-h-screen bg-stone-100">
-      <aside className="hidden w-56 shrink-0 border-r border-stone-200 bg-white md:block">
+      <aside className="hidden w-56 shrink-0 flex-col border-r border-stone-200 bg-white md:flex">
         <div className="p-4">
           <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
             Admin
@@ -21,7 +25,7 @@ export function AdminLayout() {
           <p className="text-lg font-semibold text-stone-900">Dashboard</p>
         </div>
         <Separator />
-        <nav className="flex flex-col gap-0.5 p-2">
+        <nav className="flex flex-1 flex-col gap-0.5 p-2">
           {nav.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
@@ -40,6 +44,23 @@ export function AdminLayout() {
             </NavLink>
           ))}
         </nav>
+        <div className="mt-auto space-y-2 border-t border-stone-200 p-3">
+          {user && (
+            <p className="truncate px-1 text-xs text-stone-600">{user.username}</p>
+          )}
+          <Button variant="outline" size="sm" className="w-full" asChild>
+            <Link to={ROUTES.home}>View storefront</Link>
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="w-full"
+            onClick={() => logout()}
+          >
+            Log out
+          </Button>
+        </div>
       </aside>
       <div className="min-w-0 flex-1">
         <div className="border-b border-stone-200 bg-white px-4 py-3 md:hidden">
