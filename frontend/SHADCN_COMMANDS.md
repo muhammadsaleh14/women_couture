@@ -32,3 +32,5 @@ npm run dev
 ```
 
 If `npm` reports lock/security errors, fix the lockfile or use `pnpm` / `bun` per your policy, then rerun the same `npx shadcn` commands.
+
+**“No import alias found in tsconfig.json”:** The CLI reads the **root** [`tsconfig.json`](tsconfig.json). This repo sets `@/*` there (and in `tsconfig.app.json` for the app build). If you still see the error, ensure `compilerOptions.baseUrl` and `compilerOptions.paths` are present in the root `tsconfig.json`.

@@ -74,7 +74,24 @@ npm run openapi:export
 
 Point **openapi-typescript-codegen**, **Orval**, or similar at that file to generate a typed client for the React app.
 
+## Frontend (Vite + React)
+
+Location: [frontend/](frontend/)
+
+UI primitives come from **shadcn/ui** (installed via CLI, not hand-written). After `npm install` in `frontend/`, run the commands in [frontend/SHADCN_COMMANDS.md](frontend/SHADCN_COMMANDS.md) (`shadcn init`, then `shadcn add …`). That generates `src/components/ui`, `src/lib/utils.ts`, and theme CSS.
+
+Then start the app:
+
+```bash
+cd frontend
+npm run dev
+```
+
+- Customer storefront: `/` (home, shop, product, cart)
+- Admin: `/admin` (products, orders; **Inventory** links to the same catalog for now)
+
 ## Project layout
 
 - [backend/](backend/) — Express + TypeScript, Prisma, Zod, zod-to-openapi, Swagger UI
+- [frontend/](frontend/) — React storefront + admin prototype (mock data; OpenAPI client later)
 - [docker-compose.yml](docker-compose.yml) — development PostgreSQL
