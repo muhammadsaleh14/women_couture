@@ -1,3 +1,4 @@
+import { z } from "../../zod-openapi";
 import { openAPIRegistry } from "../registry";
 import {
   CreateProductBodySchema,
@@ -12,11 +13,11 @@ openAPIRegistry.registerPath({
   summary: "List all products",
   tags: ["Products"],
   request: {
-    query: {
-      skip: { type: "number", description: "Number of records to skip" },
-      take: { type: "number", description: "Number of records to return" },
-      isActive: { type: "boolean", description: "Filter by active state" },
-    } as any,
+    query: z.object({
+      skip: z.coerce.number().optional().openapi({ description: "Number of records to skip" }),
+      take: z.coerce.number().optional().openapi({ description: "Number of records to return" }),
+      isActive: z.enum(['true', 'false']).optional().openapi({ description: "Filter by active state" }),
+    }),
   },
   responses: {
     200: {
@@ -62,9 +63,9 @@ openAPIRegistry.registerPath({
   summary: "Add a variant to a product",
   tags: ["Products"],
   request: {
-    params: {
-      productId: { type: "string" },
-    } as any,
+    params: z.object({
+      productId: z.string(),
+    }),
     body: {
       content: {
         "application/json": {
@@ -86,9 +87,9 @@ openAPIRegistry.registerPath({
   summary: "Adjust variant stock",
   tags: ["Variants"],
   request: {
-    params: {
-      variantId: { type: "string" },
-    } as any, 
+    params: z.object({
+      variantId: z.string(),
+    }),
     body: {
       content: {
         "application/json": {

@@ -12,24 +12,209 @@
   ],
   "components": {
     "schemas": {
-      "HealthResponse": {
+      "ClothingType": {
+        "type": "string",
+        "enum": [
+          "UNSTITCHED",
+          "THREE_PC",
+          "TWO_PC",
+          "SEPARATE"
+        ]
+      },
+      "ProductBase": {
         "type": "object",
         "properties": {
-          "status": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
             "type": "string",
             "enum": [
-              "ok"
+              "UNSTITCHED",
+              "THREE_PC",
+              "TWO_PC",
+              "SEPARATE"
             ]
           },
-          "timestamp": {
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
             "type": "string",
             "format": "date-time"
           }
         },
         "required": [
-          "status",
-          "timestamp"
+          "id",
+          "name",
+          "description",
+          "type",
+          "isActive",
+          "createdAt",
+          "updatedAt"
         ]
+      },
+      "CreateProductBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "UNSTITCHED",
+              "THREE_PC",
+              "TWO_PC",
+              "SEPARATE"
+            ]
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "color": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sku": {
+                  "type": "string"
+                },
+                "salePrice": {
+                  "type": "number",
+                  "minimum": 0,
+                  "exclusiveMinimum": true
+                },
+                "purchasePrice": {
+                  "type": "number",
+                  "minimum": 0,
+                  "exclusiveMinimum": true
+                }
+              },
+              "required": [
+                "color",
+                "salePrice"
+              ]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "type"
+        ]
+      },
+      "CreateVariantBody": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sku": {
+            "type": "string"
+          },
+          "salePrice": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "purchasePrice": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "required": [
+          "color",
+          "salePrice"
+        ]
+      },
+      "AdjustStockBody": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "IN",
+              "OUT",
+              "ADJUSTMENT"
+            ]
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "quantity"
+        ]
+      },
+      "ProductVariantParams": {
+        "type": "object",
+        "properties": {
+          "variantId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "variantId"
+        ]
+      },
+      "ProductParams": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "productId"
+        ]
+      },
+      "ProductQuery": {
+        "type": "object",
+        "properties": {
+          "skip": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "default": 0
+          },
+          "take": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20
+          },
+          "isActive": {
+            "type": "string",
+            "enum": [
+              "true",
+              "false"
+            ]
+          }
+        }
       },
       "AuthTokenResponse": {
         "type": "object",
@@ -107,6 +292,25 @@
           "password"
         ]
       },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "status",
+          "timestamp"
+        ]
+      },
       "EchoResponse": {
         "type": "object",
         "properties": {
@@ -134,26 +338,6 @@
     "parameters": {}
   },
   "paths": {
-    "/health": {
-      "get": {
-        "summary": "Health check",
-        "tags": [
-          "Health"
-        ],
-        "responses": {
-          "200": {
-            "description": "Service is healthy",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v1/auth/register": {
       "post": {
         "summary": "Register (customer only)",
@@ -232,6 +416,26 @@
         }
       }
     },
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "tags": [
+          "Health"
+        ],
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/echo": {
       "post": {
         "summary": "Echo message",
@@ -257,6 +461,158 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/products": {
+      "get": {
+        "summary": "List all products",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "number",
+              "nullable": true,
+              "description": "Number of records to skip"
+            },
+            "required": false,
+            "description": "Number of records to skip",
+            "name": "skip",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "nullable": true,
+              "description": "Number of records to return"
+            },
+            "required": false,
+            "description": "Number of records to return",
+            "name": "take",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "description": "Filter by active state"
+            },
+            "required": false,
+            "description": "Filter by active state",
+            "name": "isActive",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductBase"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new base product",
+        "tags": [
+          "Products"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductBase"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/products/{productId}/variants": {
+      "post": {
+        "summary": "Add a variant to a product",
+        "tags": [
+          "Products"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "productId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVariantBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/api/v1/admin/variants/{variantId}/stock": {
+      "post": {
+        "summary": "Adjust variant stock",
+        "tags": [
+          "Variants"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "variantId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustStockBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stock adjusted successfully"
           }
         }
       }
