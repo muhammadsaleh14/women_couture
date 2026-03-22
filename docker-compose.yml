@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:18.3-bookworm
     ports:
-      - "5432:5432"
+      - "5438:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

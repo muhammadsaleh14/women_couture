@@ -1,5 +1,5 @@
-import { createApp } from "./app";
 import { env } from "./env";
+import { createApp } from "./app";
 import { prisma } from "./lib/prisma";
 
 async function main() {
