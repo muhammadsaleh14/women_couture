@@ -11,10 +11,24 @@ import {
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { ROUTES } from "@/core/routes";
-import { useGetAdminProducts } from "@/api/generated/api";
+import { useQueryClient } from "@tanstack/react-query";
+import { 
+  useGetAdminProducts, 
+  usePatchAdminProductsProductId,
+  getGetAdminProductsQueryKey
+} from "@/api/generated/api";
 
 export function AdminProductsPage() {
+  const queryClient = useQueryClient();
   const { data: products, isLoading, error } = useGetAdminProducts();
+  
+  const toggleActiveMutation = usePatchAdminProductsProductId({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetAdminProductsQueryKey() });
+      }
+    }
+  });
 
   if (isLoading) {
     return <div className="p-8 text-stone-500">Loading products...</div>;
@@ -85,9 +99,13 @@ export function AdminProductsPage() {
                   <TableCell className="text-center">
                     <Switch
                       checked={p.isActive}
-                      onCheckedChange={() =>
-                        console.log("Toggle API call not implemented for checking:", p.name)
-                      }
+                      onCheckedChange={(v: boolean) => {
+                        toggleActiveMutation.mutate({
+                          productId: p.id,
+                          data: { isActive: v }
+                        });
+                      }}
+                      disabled={toggleActiveMutation.isPending}
                       aria-label={`Selling ${p.name}`}
                     />
                   </TableCell>

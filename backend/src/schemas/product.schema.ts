@@ -90,6 +90,16 @@ export const AdjustStockBodySchema = openAPIRegistry.register(
   })
 );
 
+export const UpdateProductBodySchema = openAPIRegistry.register(
+  "UpdateProductBody",
+  z.object({
+    name: z.string().min(1, "Name cannot be empty").optional(),
+    description: z.string().optional(),
+    type: z.enum(["UNSTITCHED", "THREE_PC", "TWO_PC", "SEPARATE"]).optional(),
+    isActive: z.boolean().optional(),
+  })
+);
+
 export const ProductVariantParamsSchema = openAPIRegistry.register(
   "ProductVariantParams",
   z.object({

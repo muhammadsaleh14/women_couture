@@ -7,6 +7,7 @@ import {
   ProductParamsSchema,
   ProductVariantParamsSchema,
   ProductQuerySchema,
+  UpdateProductBodySchema,
 } from "../schemas/product.schema";
 
 export async function createProduct(req: Request, res: Response, next: NextFunction) {
@@ -33,6 +34,22 @@ export async function getProducts(req: Request, res: Response, next: NextFunctio
     });
     
     res.json(products);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getProduct(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = ProductParamsSchema.parse(req.params);
+    const product = await productService.getProductById(params.productId);
+    
+    if (!product) {
+      res.status(404).json({ message: "Product not found" });
+      return;
+    }
+    
+    res.json(product);
   } catch (err) {
     next(err);
   }
@@ -87,6 +104,22 @@ export async function uploadImage(req: Request, res: Response, next: NextFunctio
     const result = await productService.addImage(params.variantId, url);
     res.status(201).json(result);
   } catch (err) {
+    next(err);
+  }
+}
+
+export async function updateProduct(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = ProductParamsSchema.parse(req.params);
+    const body = UpdateProductBodySchema.parse(req.body);
+
+    const result = await productService.updateProduct(params.productId, body);
+    res.status(200).json(result);
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Record to update not found")) {
+      res.status(404).json({ message: "Product not found" });
+      return;
+    }
     next(err);
   }
 }

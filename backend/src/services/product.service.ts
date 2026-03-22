@@ -54,6 +54,21 @@ export async function getAllProducts(query: { skip: number; take: number; isActi
   });
 }
 
+export async function getProductById(productId: string) {
+  return prisma.product.findUnique({
+    where: { id: productId },
+    include: {
+      variants: {
+        include: {
+          images: {
+            orderBy: { order: "asc" }
+          }
+        }
+      }
+    }
+  });
+}
+
 export async function createVariant(productId: string, data: { color: string; sku?: string; salePrice: number; purchasePrice?: number }) {
   // Ensure product exists
   const product = await prisma.product.findUnique({ where: { id: productId } });
@@ -140,5 +155,20 @@ export async function addImage(variantId: string, url: string, order = 0) {
       url,
       order,
     },
+  });
+}
+
+export async function updateProduct(
+  productId: string,
+  data: {
+    name?: string;
+    description?: string;
+    type?: ClothingType;
+    isActive?: boolean;
+  }
+) {
+  return prisma.product.update({
+    where: { id: productId },
+    data,
   });
 }

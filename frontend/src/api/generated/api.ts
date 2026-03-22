@@ -136,6 +136,24 @@ export interface AdjustStockBody {
   notes?: string;
 }
 
+export type UpdateProductBodyType = typeof UpdateProductBodyType[keyof typeof UpdateProductBodyType];
+
+
+export const UpdateProductBodyType = {
+  UNSTITCHED: 'UNSTITCHED',
+  THREE_PC: 'THREE_PC',
+  TWO_PC: 'TWO_PC',
+  SEPARATE: 'SEPARATE',
+} as const;
+
+export interface UpdateProductBody {
+  /** @minLength 1 */
+  name?: string;
+  description?: string;
+  type?: UpdateProductBodyType;
+  isActive?: boolean;
+}
+
 export interface ProductVariantParams {
   variantId: string;
 }
@@ -682,6 +700,162 @@ export const usePostAdminProducts = <TError = unknown,
         TContext
       > => {
       return useMutation(getPostAdminProductsMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary Get a product by ID
+ */
+export const getAdminProductsProductId = (
+    productId: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ProductWithVariants>(
+      {url: `/admin/products/${productId}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetAdminProductsProductIdQueryKey = (productId: string,) => {
+    return [
+    `/admin/products/${productId}`
+    ] as const;
+    }
+
+    
+export const getGetAdminProductsProductIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminProductsProductIdQueryKey(productId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminProductsProductId>>> = ({ signal }) => getAdminProductsProductId(productId, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(productId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAdminProductsProductIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminProductsProductId>>>
+export type GetAdminProductsProductIdQueryError = void
+
+
+export function useGetAdminProductsProductId<TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(
+ productId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAdminProductsProductId>>,
+          TError,
+          Awaited<ReturnType<typeof getAdminProductsProductId>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAdminProductsProductId<TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(
+ productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAdminProductsProductId>>,
+          TError,
+          Awaited<ReturnType<typeof getAdminProductsProductId>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAdminProductsProductId<TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(
+ productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a product by ID
+ */
+
+export function useGetAdminProductsProductId<TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(
+ productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAdminProductsProductIdQueryOptions(productId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * @summary Update product details or status
+ */
+export const patchAdminProductsProductId = (
+    productId: string,
+    updateProductBody: UpdateProductBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ProductBase>(
+      {url: `/admin/products/${productId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateProductBody, signal
+    },
+      );
+    }
+  
+
+
+export const getPatchAdminProductsProductIdMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminProductsProductId>>, TError,{productId: string;data: UpdateProductBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminProductsProductId>>, TError,{productId: string;data: UpdateProductBody}, TContext> => {
+
+const mutationKey = ['patchAdminProductsProductId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminProductsProductId>>, {productId: string;data: UpdateProductBody}> = (props) => {
+          const {productId,data} = props ?? {};
+
+          return  patchAdminProductsProductId(productId,data,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchAdminProductsProductIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminProductsProductId>>>
+    export type PatchAdminProductsProductIdMutationBody = UpdateProductBody
+    export type PatchAdminProductsProductIdMutationError = unknown
+
+    /**
+ * @summary Update product details or status
+ */
+export const usePatchAdminProductsProductId = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminProductsProductId>>, TError,{productId: string;data: UpdateProductBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchAdminProductsProductId>>,
+        TError,
+        {productId: string;data: UpdateProductBody},
+        TContext
+      > => {
+      return useMutation(getPatchAdminProductsProductIdMutationOptions(options), queryClient);
     }
     
 /**

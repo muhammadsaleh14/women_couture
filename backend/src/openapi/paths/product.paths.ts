@@ -6,6 +6,8 @@ import {
   AdjustStockBodySchema,
   ProductBaseSchema,
   ProductWithVariantsSchema,
+  UpdateProductBodySchema,
+  ProductParamsSchema,
 } from "../../schemas/product.schema";
 
 openAPIRegistry.registerPath({
@@ -28,6 +30,30 @@ openAPIRegistry.registerPath({
           schema: ProductWithVariantsSchema.array(),
         },
       },
+    },
+  },
+});
+
+openAPIRegistry.registerPath({
+  method: "get",
+  path: "/admin/products/{productId}",
+  summary: "Get a product by ID",
+  tags: ["Products"],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: ProductParamsSchema,
+  },
+  responses: {
+    200: {
+      description: "OK",
+      content: {
+        "application/json": {
+          schema: ProductWithVariantsSchema,
+        },
+      },
+    },
+    404: {
+      description: "Product not found",
     },
   },
 });
@@ -102,6 +128,34 @@ openAPIRegistry.registerPath({
   responses: {
     200: {
       description: "Stock adjusted successfully",
+    },
+  },
+});
+
+openAPIRegistry.registerPath({
+  method: "patch",
+  path: "/admin/products/{productId}",
+  tags: ["Products"],
+  summary: "Update product details or status",
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: ProductParamsSchema,
+    body: {
+      content: {
+        "application/json": {
+          schema: UpdateProductBodySchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      description: "OK",
+      content: {
+        "application/json": {
+          schema: ProductBaseSchema,
+        },
+      },
     },
   },
 });

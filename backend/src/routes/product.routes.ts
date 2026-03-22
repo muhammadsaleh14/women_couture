@@ -14,11 +14,17 @@ productRouter.use(authorizeRole("ADMIN"));
 // List products
 productRouter.get("/", productController.getProducts);
 
+// Get single product
+productRouter.get("/:productId", productController.getProduct);
+
 // Create a new base product
 productRouter.post("/", productController.createProduct);
 
 // Add a variant to a product
 productRouter.post("/:productId/variants", productController.createVariant);
+
+// Update product
+productRouter.patch("/:productId", productController.updateProduct);
 
 // ---------------------------------------------------------
 // Below we have endpoints specific to a VARIANT
