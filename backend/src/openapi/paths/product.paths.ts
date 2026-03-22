@@ -5,6 +5,7 @@ import {
   CreateVariantBodySchema,
   AdjustStockBodySchema,
   ProductBaseSchema,
+  ProductWithVariantsSchema,
 } from "../../schemas/product.schema";
 
 openAPIRegistry.registerPath({
@@ -24,7 +25,7 @@ openAPIRegistry.registerPath({
       description: "OK",
       content: {
         "application/json": {
-          schema: ProductBaseSchema.array(),
+          schema: ProductWithVariantsSchema.array(),
         },
       },
     },

@@ -65,6 +65,100 @@
           "updatedAt"
         ]
       },
+      "ProductImage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "order": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "order"
+        ]
+      },
+      "ProductVariant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string",
+            "nullable": true
+          },
+          "salePrice": {
+            "type": "number",
+            "nullable": true
+          },
+          "purchasePrice": {
+            "type": "number",
+            "nullable": true
+          },
+          "stockQty": {
+            "type": "integer"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductImage"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "productId",
+          "color",
+          "sku",
+          "salePrice",
+          "purchasePrice",
+          "stockQty",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ProductWithVariants": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ProductBase"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "variants": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ProductVariant"
+                }
+              }
+            },
+            "required": [
+              "variants"
+            ]
+          }
+        ]
+      },
       "CreateProductBody": {
         "type": "object",
         "properties": {
@@ -478,7 +572,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ProductBase"
+                    "$ref": "#/components/schemas/ProductWithVariants"
                   }
                 }
               }

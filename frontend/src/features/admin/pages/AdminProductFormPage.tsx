@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { ROUTES } from "@/core/routes";
 import { getProductById } from "@/features/storefront/model/mock-products";
 import type { CategoryId } from "@/shared/model/types";
+import { usePostAdminProducts, ClothingType } from "@/api/generated/api";
 
 type ColorRow = { id: string; name: string; qty: string; hex: string };
 
@@ -78,8 +79,41 @@ export function AdminProductFormPage() {
     setImages((prev) => [...prev, ...next]);
   }
 
-  const save = () => {
-    navigate(ROUTES.admin.products);
+  const createProductReq = usePostAdminProducts();
+
+  const save = async () => {
+    if (!isNew) {
+      alert("Editing existing products via API is not yet available. Creating new ones works.");
+      return;
+    }
+
+    try {
+      const typeMapping: Record<string, string> = {
+        "three-piece": "THREE_PC",
+        "two-piece": "TWO_PC",
+        "separates": "SEPARATE",
+      };
+
+      const productType = (typeMapping[categoryId] || "UNSTITCHED") as ClothingType;
+
+      await createProductReq.mutateAsync({
+        data: {
+          name,
+          description,
+          type: productType,
+          variants: colorRows.map((r) => ({
+            color: r.name || "Default",
+            salePrice: Number(sale || regular || 0),
+            purchasePrice: Number(regular || 0),
+          })),
+        },
+      });
+
+      navigate(ROUTES.admin.products);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create product");
+    }
   };
 
   return (
@@ -320,10 +354,19 @@ export function AdminProductFormPage() {
       </Card>
 
       <div className="flex gap-2">
-        <Button type="button" onClick={save}>
-          Save product
+        <Button 
+          type="button" 
+          onClick={save} 
+          disabled={createProductReq.isPending}
+        >
+          {createProductReq.isPending ? "Saving..." : "Save product"}
         </Button>
-        <Button type="button" variant="outline" asChild>
+        <Button 
+          type="button" 
+          variant="outline" 
+          asChild 
+          disabled={createProductReq.isPending}
+        >
           <Link to={ROUTES.admin.products}>Cancel</Link>
         </Button>
       </div>

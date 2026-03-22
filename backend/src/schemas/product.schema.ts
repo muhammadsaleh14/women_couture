@@ -24,6 +24,38 @@ export const ProductBaseSchema = openAPIRegistry.register(
   })
 );
 
+export const ProductImageSchema = openAPIRegistry.register(
+  "ProductImage",
+  z.object({
+    id: z.string(),
+    url: z.string(),
+    order: z.number().int(),
+  })
+);
+
+export const ProductVariantSchema = openAPIRegistry.register(
+  "ProductVariant",
+  z.object({
+    id: z.string(),
+    productId: z.string(),
+    color: z.string(),
+    sku: z.string().nullable(),
+    salePrice: z.coerce.number(), // DB Decimal maps to string/number in JS
+    purchasePrice: z.coerce.number().nullable(),
+    stockQty: z.number().int(),
+    images: z.array(ProductImageSchema).optional(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+  })
+);
+
+export const ProductWithVariantsSchema = openAPIRegistry.register(
+  "ProductWithVariants",
+  ProductBaseSchema.extend({
+    variants: z.array(ProductVariantSchema),
+  })
+);
+
 export const CreateProductBodySchema = openAPIRegistry.register(
   "CreateProductBody",
   z.object({

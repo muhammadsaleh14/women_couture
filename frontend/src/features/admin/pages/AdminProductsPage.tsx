@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,15 +11,20 @@ import {
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { ROUTES } from "@/core/routes";
-import { mockProducts } from "@/features/storefront/model/mock-products";
-import type { Product } from "@/shared/model/types";
-
-type Row = Product & { isSelling: boolean };
+import { useGetAdminProducts } from "@/api/generated/api";
 
 export function AdminProductsPage() {
-  const [rows, setRows] = useState<Row[]>(() =>
-    mockProducts.map((p) => ({ ...p, isSelling: true })),
-  );
+  const { data: products, isLoading, error } = useGetAdminProducts();
+
+  if (isLoading) {
+    return <div className="p-8 text-stone-500">Loading products...</div>;
+  }
+
+  if (error) {
+    return <div className="p-8 text-red-500">Failed to load products.</div>;
+  }
+
+  const rows = products || [];
 
   return (
     <div className="space-y-6">
@@ -54,9 +58,11 @@ export function AdminProductsPage() {
           </TableHeader>
           <TableBody>
             {rows.map((p) => {
-              const totalStock = p.variants.reduce((s, v) => s + v.stock, 0);
-              const thumb = p.variants[0]?.imageUrl ?? p.images[0];
-              const price = p.salePrice ?? p.regularPrice;
+              const totalStock = p.variants?.reduce((s, v) => s + (v.stockQty ?? 0), 0) ?? 0;
+              const firstVariant = p.variants?.[0];
+              const thumb = firstVariant?.images?.[0]?.url || "https://placehold.co/100x100?text=No+Image";
+              const price = firstVariant?.salePrice ?? 0;
+              const subCategoryType = p.type;
               return (
                 <TableRow key={p.id}>
                   <TableCell>
@@ -68,23 +74,19 @@ export function AdminProductsPage() {
                   </TableCell>
                   <TableCell className="font-medium">{p.name}</TableCell>
                   <TableCell className="text-stone-600">
-                    {p.subCategory}
+                    {subCategoryType}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
-                    Rs. {price.toLocaleString("en-PK")}
+                    Rs. {Number(price).toLocaleString("en-PK")}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
                     {totalStock}
                   </TableCell>
                   <TableCell className="text-center">
                     <Switch
-                      checked={p.isSelling}
-                      onCheckedChange={(v: boolean) =>
-                        setRows((prev) =>
-                          prev.map((r) =>
-                            r.id === p.id ? { ...r, isSelling: v } : r,
-                          ),
-                        )
+                      checked={p.isActive}
+                      onCheckedChange={() =>
+                        console.log("Toggle API call not implemented for checking:", p.name)
                       }
                       aria-label={`Selling ${p.name}`}
                     />

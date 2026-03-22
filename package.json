@@ -1,0 +1,7 @@
+{
+  "name": "women-couture-monorepo",
+  "private": true,
+  "scripts": {
+    "api:sync": "npm run openapi:export --prefix backend && npm run api:generate --prefix frontend"
+  }
+}
