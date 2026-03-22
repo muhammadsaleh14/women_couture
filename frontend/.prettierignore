@@ -17,7 +17,6 @@ coverage
 *.tsbuildinfo
 
 # Orval-generated API client (regenerate with `npm run api:generate`)
-src/api/generated
 
 # Minified / vendor bundles (if ever under src)
 **/*.min.js
