@@ -1,0 +1,29 @@
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies & installs
+node_modules
+
+# Build & tooling output
+dist
+build
+coverage
+.vite
+.cache
+.turbo
+.parcel-cache
+*.tsbuildinfo
+
+# Orval-generated API client (regenerate with `npm run api:generate`)
+src/api/generated
+
+# Minified / vendor bundles (if ever under src)
+**/*.min.js
+**/*.min.css
+
+# Lockfiles (not meaningful to format)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
