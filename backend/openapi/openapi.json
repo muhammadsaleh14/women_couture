@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
+      "url": "http://localhost:3000/api/v1"
     }
   ],
   "components": {
@@ -292,25 +292,6 @@
           "password"
         ]
       },
-      "HealthResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "ok"
-            ]
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "status",
-          "timestamp"
-        ]
-      },
       "EchoResponse": {
         "type": "object",
         "properties": {
@@ -338,7 +319,7 @@
     "parameters": {}
   },
   "paths": {
-    "/api/v1/auth/register": {
+    "/auth/register": {
       "post": {
         "summary": "Register (customer only)",
         "tags": [
@@ -367,7 +348,7 @@
         }
       }
     },
-    "/api/v1/auth/login": {
+    "/auth/login": {
       "post": {
         "summary": "Login",
         "tags": [
@@ -396,7 +377,7 @@
         }
       }
     },
-    "/api/v1/auth/me": {
+    "/auth/me": {
       "get": {
         "summary": "Current user (send Authorization: Bearer token)",
         "tags": [
@@ -416,27 +397,7 @@
         }
       }
     },
-    "/health": {
-      "get": {
-        "summary": "Health check",
-        "tags": [
-          "Health"
-        ],
-        "responses": {
-          "200": {
-            "description": "Service is healthy",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/echo": {
+    "/echo": {
       "post": {
         "summary": "Echo message",
         "tags": [
@@ -465,7 +426,7 @@
         }
       }
     },
-    "/api/v1/admin/products": {
+    "/admin/products": {
       "get": {
         "summary": "List all products",
         "tags": [
@@ -553,7 +514,7 @@
         }
       }
     },
-    "/api/v1/admin/products/{productId}/variants": {
+    "/admin/products/{productId}/variants": {
       "post": {
         "summary": "Add a variant to a product",
         "tags": [
@@ -585,7 +546,7 @@
         }
       }
     },
-    "/api/v1/admin/variants/{variantId}/stock": {
+    "/admin/variants/{variantId}/stock": {
       "post": {
         "summary": "Adjust variant stock",
         "tags": [

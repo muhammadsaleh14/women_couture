@@ -9,7 +9,7 @@ import {
 
 openAPIRegistry.registerPath({
   method: "get",
-  path: "/api/v1/admin/products",
+  path: "/admin/products",
   summary: "List all products",
   tags: ["Products"],
   request: {
@@ -33,7 +33,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/api/v1/admin/products",
+  path: "/admin/products",
   summary: "Create a new base product",
   tags: ["Products"],
   request: {
@@ -59,7 +59,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/api/v1/admin/products/{productId}/variants",
+  path: "/admin/products/{productId}/variants",
   summary: "Add a variant to a product",
   tags: ["Products"],
   request: {
@@ -83,7 +83,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/api/v1/admin/variants/{variantId}/stock",
+  path: "/admin/variants/{variantId}/stock",
   summary: "Adjust variant stock",
   tags: ["Variants"],
   request: {

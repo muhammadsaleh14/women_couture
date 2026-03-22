@@ -2,29 +2,13 @@ import { openAPIRegistry } from "../registry";
 import {
   EchoBodySchema,
   EchoResponseSchema,
-  HealthResponseSchema,
 } from "../../schemas/common.schema";
 
-openAPIRegistry.registerPath({
-  method: "get",
-  path: "/health",
-  summary: "Health check",
-  tags: ["Health"],
-  responses: {
-    200: {
-      description: "Service is healthy",
-      content: {
-        "application/json": {
-          schema: HealthResponseSchema,
-        },
-      },
-    },
-  },
-});
+
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/api/v1/echo",
+  path: "/echo",
   summary: "Echo message",
   tags: ["Example"],
   request: {

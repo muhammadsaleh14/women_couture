@@ -8,7 +8,7 @@ import {
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/api/v1/auth/register",
+  path: "/auth/register",
   summary: "Register (customer only)",
   tags: ["Auth"],
   request: {
@@ -34,7 +34,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/api/v1/auth/login",
+  path: "/auth/login",
   summary: "Login",
   tags: ["Auth"],
   request: {
@@ -60,7 +60,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "get",
-  path: "/api/v1/auth/me",
+  path: "/auth/me",
   summary: "Current user (send Authorization: Bearer token)",
   tags: ["Auth"],
   responses: {

@@ -7,8 +7,11 @@ import { healthRouter } from "./health";
 export const routes = Router();
 
 routes.use("/health", healthRouter);
-routes.use("/api/v1/auth", authRouter);
-routes.use("/api/v1/admin/products", productRouter);
-routes.use("/api/v1/admin/variants", variantRouter);
-routes.use("/api/v1/echo", echoRouter);
 
+const v1Router = Router();
+v1Router.use("/auth", authRouter);
+v1Router.use("/admin/products", productRouter);
+v1Router.use("/admin/variants", variantRouter);
+v1Router.use("/echo", echoRouter);
+
+routes.use("/api/v1", v1Router);
