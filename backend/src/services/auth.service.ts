@@ -44,7 +44,7 @@ export async function login(
 
 function issueTokens(user: User): AuthResult {
   const signOptions: SignOptions = {
-    expiresIn: env.JWT_EXPIRES_IN,
+    expiresIn: env.JWT_EXPIRES_IN as SignOptions["expiresIn"],
   };
   const accessToken = jwt.sign(
     {

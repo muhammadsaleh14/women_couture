@@ -30,6 +30,12 @@ export const CreateProductBodySchema = openAPIRegistry.register(
     name: z.string().min(1, "Name is required"),
     description: z.string().optional(),
     type: z.enum(["UNSTITCHED", "THREE_PC", "TWO_PC", "SEPARATE"]),
+    variants: z.array(z.object({
+      color: z.string().min(1, "Color is required"),
+      sku: z.string().optional(),
+      salePrice: z.number().positive("Sale price must be positive"),
+      purchasePrice: z.number().positive().optional(),
+    })).optional(),
   })
 );
 

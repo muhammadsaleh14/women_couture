@@ -1,13 +1,35 @@
 import { ClothingType, StockMoveType } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 
-export async function createProduct(data: { name: string; description?: string; type: ClothingType }) {
+export async function createProduct(data: { 
+  name: string; 
+  description?: string; 
+  type: ClothingType;
+  variants?: Array<{
+    color: string;
+    sku?: string;
+    salePrice: number;
+    purchasePrice?: number;
+  }>;
+}) {
   return prisma.product.create({
     data: {
       name: data.name,
       description: data.description,
       type: data.type,
       isActive: true,
+      variants: data.variants ? {
+        create: data.variants.map((v) => ({
+          color: v.color,
+          sku: v.sku,
+          salePrice: v.salePrice,
+          purchasePrice: v.purchasePrice,
+          stockQty: 0,
+        })),
+      } : undefined,
+    },
+    include: {
+      variants: true,
     },
   });
 }
