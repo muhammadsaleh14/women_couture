@@ -19,3 +19,85 @@ model User {
   email        String?  @unique
   createdAt    DateTime @default(now())
 }
+
+// ---------------------------------------------------------
+// NEW MODELS: CLOTHING ITEMS & INVENTORY
+// ---------------------------------------------------------
+
+// 1. Clothing Types
+enum ClothingType {
+  UNSTITCHED
+  THREE_PC   // 3pc
+  TWO_PC     // 2pc
+  SEPARATE
+}
+
+// 2. The Main Product
+model Product {
+  id          String       @id @default(cuid())
+  name        String
+  description String?      @db.Text
+  type        ClothingType
+  isActive    Boolean      @default(true) 
+  
+  variants    ProductVariant[]
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+// 3. Product Variants (Different Colors)
+model ProductVariant {
+  id            String         @id @default(cuid())
+  productId     String
+  product       Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  color         String         // e.g., "Red", "Navy Blue"
+  sku           String?        @unique // Optional: Stock Keeping Unit
+  
+  salePrice     Decimal
+  purchasePrice Decimal?
+  
+  // Cached stock value for fast queries. 
+  // It gets updated whenever a StockMove is created.
+  stockQty      Int            @default(0) 
+  
+  images        ProductImage[]
+  stockMoves    StockMove[]
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  @@unique([productId, color]) // Prevent duplicate colors for the same product
+}
+
+// 4. Variant Images
+model ProductImage {
+  id               String         @id @default(cuid())
+  productVariantId String
+  variant          ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  
+  url              String         // Local server path, e.g., /uploads/images/abc.jpg
+  order            Int            @default(0) // To control which image is main (order = 0)
+  
+  createdAt        DateTime       @default(now())
+}
+
+// 5. Stock Moves for History & Accountability
+enum StockMoveType {
+  IN         // e.g., New stock received
+  OUT        // e.g., Sold to customer
+  ADJUSTMENT // e.g., Defective, manual count correction
+}
+
+model StockMove {
+  id               String         @id @default(cuid())
+  productVariantId String
+  variant          ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  
+  type             StockMoveType
+  quantity         Int            // Positive number representing the amount moved
+  notes            String?        // Reason for move (e.g., "Restock", "Damage")
+
+  createdAt        DateTime       @default(now())
+}
