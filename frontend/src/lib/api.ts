@@ -24,9 +24,6 @@ export function setStoredToken(token: string | null): void {
  */
 export const api = axios.create({
   baseURL: apiBase(),
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {

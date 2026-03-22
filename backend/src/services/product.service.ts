@@ -1,17 +1,21 @@
 import { ClothingType, StockMoveType } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 
-export async function createProduct(data: { 
-  name: string; 
-  description?: string; 
-  type: ClothingType;
-  variants?: Array<{
-    color: string;
-    sku?: string;
-    salePrice: number;
-    purchasePrice?: number;
-  }>;
-}) {
+export async function createProduct(
+  data: { 
+    name: string; 
+    description?: string; 
+    type: ClothingType;
+    variants?: Array<{
+      color: string;
+      sku?: string;
+      salePrice: number;
+      purchasePrice?: number;
+    }>;
+  },
+  /** Map of variant index → array of image URLs */
+  variantImages?: Map<number, string[]>,
+) {
   return prisma.product.create({
     data: {
       name: data.name,
@@ -19,17 +23,31 @@ export async function createProduct(data: {
       type: data.type,
       isActive: true,
       variants: data.variants ? {
-        create: data.variants.map((v) => ({
+        create: data.variants.map((v, i) => ({
           color: v.color,
           sku: v.sku,
           salePrice: v.salePrice,
           purchasePrice: v.purchasePrice,
           stockQty: 0,
+          images: variantImages?.has(i)
+            ? {
+                create: variantImages.get(i)!.map((url, order) => ({
+                  url,
+                  order,
+                })),
+              }
+            : undefined,
         })),
       } : undefined,
     },
     include: {
-      variants: true,
+      variants: {
+        include: {
+          images: {
+            orderBy: { order: "asc" },
+          },
+        },
+      },
     },
   });
 }

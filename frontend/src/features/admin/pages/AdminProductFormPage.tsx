@@ -16,25 +16,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { ROUTES } from "@/core/routes";
 import {
-  usePostAdminProducts,
   useGetAdminProductsProductId,
-  usePatchAdminProductsProductId,
-  usePostAdminVariantsVariantIdImages,
   type ClothingType,
 } from "@/api/generated/api";
+import { api } from "@/lib/api";
 
 /* ---------- types ---------- */
 
 type ImageItem = {
-  /** A local id for react keys */
   uid: string;
-  /** Object URL (local pick) OR remote URL (existing) */
   preview: string;
-  /** Only present for newly picked files */
   file?: File;
 };
 
 type VariantRow = {
+  /** Real DB id when editing, local uuid when creating */
   id: string;
   color: string;
   sku: string;
@@ -94,11 +90,6 @@ export function AdminProductFormPage() {
     }
   }, [existing]);
 
-  /* ---- mutations ---- */
-  const createProductReq = usePostAdminProducts();
-  const updateProductReq = usePatchAdminProductsProductId();
-  const uploadImageReq = usePostAdminVariantsVariantIdImages();
-
   /* ---- variant helpers ---- */
   function updateVariant(id: string, patch: Partial<VariantRow>) {
     setVariants((rows) =>
@@ -131,10 +122,12 @@ export function AdminProductFormPage() {
     );
   }
 
-  /* ---- save ---- */
+  /* ---- save (single multipart request) ---- */
   const save = async () => {
     setSaving(true);
     try {
+      const fd = new FormData();
+
       if (isNew) {
         /* --- CREATE --- */
         const payload = {
@@ -148,46 +141,37 @@ export function AdminProductFormPage() {
             purchasePrice: v.purchasePrice ? Number(v.purchasePrice) : undefined,
           })),
         };
-        const created = await createProductReq.mutateAsync({ data: payload });
+        fd.append("data", JSON.stringify(payload));
 
-        // Upload images per variant
-        if (created.variants) {
-          for (let i = 0; i < variants.length; i++) {
-            const dbVariant = created.variants[i];
-            const localVariant = variants[i];
-            if (!dbVariant || !localVariant) continue;
-
-            const newFiles = localVariant.images.filter((img) => img.file);
-            for (const img of newFiles) {
-              await uploadImageReq.mutateAsync({
-                variantId: dbVariant.id,
-                data: { image: img.file! },
-              });
-            }
+        // Attach image files keyed by variant index
+        variants.forEach((v, i) => {
+          for (const img of v.images) {
+            if (img.file) fd.append(`variants[${i}]`, img.file);
           }
-        }
-      } else if (productId) {
-        /* --- EDIT --- */
-        await updateProductReq.mutateAsync({
-          productId,
-          data: {
-            name,
-            description: description || undefined,
-            type,
-          },
         });
 
-        // Upload any NEW images (ones with a file property)
-        for (const v of variants) {
-          const newFiles = v.images.filter((img) => img.file);
-          for (const img of newFiles) {
-            await uploadImageReq.mutateAsync({
-              variantId: v.id,
-              data: { image: img.file! },
-            });
+        await api.post("/admin/products", fd);
+      } else if (productId) {
+        /* --- EDIT --- */
+        const payload = {
+          name,
+          description: description || undefined,
+          type,
+          // Pass variant IDs so the backend knows which variant to attach new files to
+          variantIds: variants.map((v) => v.id),
+        };
+        fd.append("data", JSON.stringify(payload));
+
+        // Attach only NEW image files
+        variants.forEach((v, i) => {
+          for (const img of v.images) {
+            if (img.file) fd.append(`variants[${i}]`, img.file);
           }
-        }
+        });
+
+        await api.patch(`/admin/products/${productId}`, fd);
       }
+
       navigate(ROUTES.admin.products);
     } catch (err) {
       console.error("Failed to save product:", err);
@@ -345,9 +329,7 @@ export function AdminProductFormPage() {
                   <Label className="text-xs text-stone-500">
                     Photos for "{row.color || "this variant"}"
                   </Label>
-                  <label
-                    className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-stone-300 bg-white px-2 py-1 text-xs text-stone-600 hover:bg-stone-50"
-                  >
+                  <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-stone-300 bg-white px-2 py-1 text-xs text-stone-600 hover:bg-stone-50">
                     <ImagePlus className="size-3" />
                     Add
                     <input
