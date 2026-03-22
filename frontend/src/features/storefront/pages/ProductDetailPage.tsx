@@ -82,11 +82,7 @@ export function ProductDetailPage() {
           {carouselImages.map((src) => (
             <CarouselItem key={src}>
               <div className="aspect-[3/4] overflow-hidden rounded-xl bg-stone-100">
-                <img
-                  src={src}
-                  alt=""
-                  className="size-full object-cover"
-                />
+                <img src={src} alt="" className="size-full object-cover" />
               </div>
             </CarouselItem>
           ))}

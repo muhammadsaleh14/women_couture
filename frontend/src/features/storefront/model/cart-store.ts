@@ -29,7 +29,8 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       lines: [],
       addLine: (payload) => {
-        const lineId = payload.lineId ?? makeLineId(payload.productId, payload.variantId);
+        const lineId =
+          payload.lineId ?? makeLineId(payload.productId, payload.variantId);
         const existing = get().lines.find((l) => l.lineId === lineId);
         if (existing) {
           set({

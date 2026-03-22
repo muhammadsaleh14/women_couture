@@ -71,7 +71,10 @@ export function CartPage() {
                         className="text-sm"
                       />
                       <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <Label htmlFor={`qty-${line.lineId}`} className="text-xs">
+                        <Label
+                          htmlFor={`qty-${line.lineId}`}
+                          className="text-xs"
+                        >
                           Qty
                         </Label>
                         <Input
@@ -181,7 +184,11 @@ export function CartPage() {
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-lg border border-stone-200 p-3">
-              <RadioGroupItem value="online" id="pay-online" className="mt-0.5" />
+              <RadioGroupItem
+                value="online"
+                id="pay-online"
+                className="mt-0.5"
+              />
               <div className="space-y-1">
                 <Label htmlFor="pay-online" className="font-medium">
                   Online payment

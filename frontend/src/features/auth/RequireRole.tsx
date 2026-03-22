@@ -22,9 +22,7 @@ export function RequireRole({ role, children }: Props) {
   }
 
   if (!user) {
-    return (
-      <Navigate to={ROUTES.login} replace state={{ from: location }} />
-    );
+    return <Navigate to={ROUTES.login} replace state={{ from: location }} />;
   }
 
   if (user.role !== role) {

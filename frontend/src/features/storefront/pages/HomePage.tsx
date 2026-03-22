@@ -95,7 +95,9 @@ export function HomePage() {
               <span className="mb-2 flex size-12 items-center justify-center rounded-full bg-stone-100 text-stone-700 transition group-hover:bg-stone-900 group-hover:text-white">
                 <Shirt className="size-6" aria-hidden />
               </span>
-              <span className="text-sm font-semibold text-stone-900">{c.label}</span>
+              <span className="text-sm font-semibold text-stone-900">
+                {c.label}
+              </span>
               <span className="text-xs text-stone-500">{c.sub}</span>
             </Link>
           ))}
@@ -112,10 +114,7 @@ export function HomePage() {
             View all
           </Link>
         </div>
-        <Carousel
-          opts={{ align: "start", dragFree: true }}
-          className="w-full"
-        >
+        <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
           <CarouselContent className="-ml-2">
             {trending.map((p) => (
               <CarouselItem

@@ -67,7 +67,9 @@ export function AdminProductsPage() {
                     />
                   </TableCell>
                   <TableCell className="font-medium">{p.name}</TableCell>
-                  <TableCell className="text-stone-600">{p.subCategory}</TableCell>
+                  <TableCell className="text-stone-600">
+                    {p.subCategory}
+                  </TableCell>
                   <TableCell className="text-right tabular-nums">
                     Rs. {price.toLocaleString("en-PK")}
                   </TableCell>

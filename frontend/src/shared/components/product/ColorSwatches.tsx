@@ -1,6 +1,11 @@
 import { cn } from "@/lib/utils";
 
-type Swatch = { id: string; colorName: string; hex: string; disabled?: boolean };
+type Swatch = {
+  id: string;
+  colorName: string;
+  hex: string;
+  disabled?: boolean;
+};
 
 type Props = {
   variants: Swatch[];
@@ -28,7 +33,9 @@ export function ColorSwatches({
             onClick={() => onSelect(v.id)}
             className={cn(
               "size-8 rounded-full border-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400",
-              selected ? "border-stone-900 ring-2 ring-stone-300" : "border-stone-200",
+              selected
+                ? "border-stone-900 ring-2 ring-stone-300"
+                : "border-stone-200",
               v.disabled && "cursor-not-allowed opacity-40",
             )}
             style={{ backgroundColor: v.hex }}

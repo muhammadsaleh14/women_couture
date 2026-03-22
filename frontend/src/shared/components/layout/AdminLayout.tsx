@@ -46,7 +46,9 @@ export function AdminLayout() {
         </nav>
         <div className="mt-auto space-y-2 border-t border-stone-200 p-3">
           {user && (
-            <p className="truncate px-1 text-xs text-stone-600">{user.username}</p>
+            <p className="truncate px-1 text-xs text-stone-600">
+              {user.username}
+            </p>
           )}
           <Button variant="outline" size="sm" className="w-full" asChild>
             <Link to={ROUTES.home}>View storefront</Link>

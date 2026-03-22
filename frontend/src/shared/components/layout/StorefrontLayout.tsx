@@ -9,9 +9,7 @@ import { WhatsAppFab } from "./WhatsAppFab";
 
 export function StorefrontLayout() {
   const { user, logout } = useAuth();
-  const count = useCartStore((s) =>
-    s.lines.reduce((n, l) => n + l.qty, 0),
-  );
+  const count = useCartStore((s) => s.lines.reduce((n, l) => n + l.qty, 0));
 
   return (
     <div className="flex min-h-screen flex-col bg-stone-50">

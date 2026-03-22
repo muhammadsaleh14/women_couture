@@ -70,7 +70,10 @@ export function AdminProductFormPage() {
     }
     const next: { id: string; preview: string }[] = [];
     Array.from(files).forEach((file) => {
-      next.push({ id: crypto.randomUUID(), preview: URL.createObjectURL(file) });
+      next.push({
+        id: crypto.randomUUID(),
+        preview: URL.createObjectURL(file),
+      });
     });
     setImages((prev) => [...prev, ...next]);
   }

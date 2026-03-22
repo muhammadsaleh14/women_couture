@@ -52,9 +52,7 @@ export function CategoryPage() {
 
   const colors = useMemo(() => {
     const set = new Set<string>();
-    raw.forEach((p) =>
-      p.variants.forEach((v) => set.add(v.colorName)),
-    );
+    raw.forEach((p) => p.variants.forEach((v) => set.add(v.colorName)));
     return Array.from(set).sort();
   }, [raw]);
 

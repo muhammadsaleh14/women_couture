@@ -36,9 +36,7 @@ export function ProductCard({ product, className }: Props) {
             {product.isNew && (
               <Badge className="bg-stone-900 text-white">New Arrival</Badge>
             )}
-            {!anyStock && (
-              <Badge variant="destructive">Out of Stock</Badge>
-            )}
+            {!anyStock && <Badge variant="destructive">Out of Stock</Badge>}
           </div>
         </CardHeader>
         <CardContent className="space-y-1 p-3">

@@ -45,9 +45,7 @@ export function AdminOrdersPage() {
   );
 
   const setStatus = (id: string, status: OrderStatus) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === id ? { ...o, status } : o)),
-    );
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
   };
 
   return (
