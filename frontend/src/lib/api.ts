@@ -4,7 +4,7 @@ const TOKEN_KEY = "wc_access_token";
 
 function apiBase(): string {
   const raw = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
-  return raw.replace(/\/$/, "");
+  return raw.replace(/\/$/, "") + "/api/v1";
 }
 
 export function getStoredToken(): string | null {

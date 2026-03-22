@@ -9,9 +9,9 @@ import {
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  getGetApiV1AuthMeQueryKey,
-  useGetApiV1AuthMe,
-  usePostApiV1AuthLogin,
+  getGetAuthMeQueryKey,
+  useGetAuthMe,
+  usePostAuthLogin,
 } from "@/api/generated/api";
 import { getStoredToken, setStoredToken } from "@/lib/api";
 import { AuthContext, type AuthContextValue } from "./auth-context";
@@ -21,21 +21,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [token, setToken] = useState<string | null>(() => getStoredToken());
 
-  const meQuery = useGetApiV1AuthMe({
+  const meQuery = useGetAuthMe({
     query: {
       enabled: !!token,
       retry: false,
     },
   });
 
-  const loginMutation = usePostApiV1AuthLogin();
+  const loginMutation = usePostAuthLogin();
 
   useEffect(() => {
     if (!token || !meQuery.isError) return;
     startTransition(() => {
       setStoredToken(null);
       setToken(null);
-      queryClient.removeQueries({ queryKey: getGetApiV1AuthMeQueryKey() });
+      queryClient.removeQueries({ queryKey: getGetAuthMeQueryKey() });
     });
   }, [token, meQuery.isError, queryClient]);
 
@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         setStoredToken(data.accessToken);
         setToken(data.accessToken);
-        queryClient.setQueryData(getGetApiV1AuthMeQueryKey(), data.user);
+        queryClient.setQueryData(getGetAuthMeQueryKey(), data.user);
         return data.user;
       } catch (err: unknown) {
         if (isAxiosError(err)) {
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     setStoredToken(null);
     setToken(null);
-    queryClient.removeQueries({ queryKey: getGetApiV1AuthMeQueryKey() });
+    queryClient.removeQueries({ queryKey: getGetAuthMeQueryKey() });
   }, [queryClient]);
 
   const value = useMemo(
