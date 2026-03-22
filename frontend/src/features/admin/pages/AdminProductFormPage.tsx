@@ -1,6 +1,6 @@
 import { useState, useEffect, type ChangeEvent } from "react";
 import { Link, useMatch, useNavigate, useParams } from "react-router-dom";
-import { Plus, Trash2 } from "lucide-react";
+import { ImagePlus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,11 +15,24 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { ROUTES } from "@/core/routes";
-import { 
-  usePostAdminProducts, 
-  useGetAdminProductsProductId, 
-  type ClothingType 
+import {
+  usePostAdminProducts,
+  useGetAdminProductsProductId,
+  usePatchAdminProductsProductId,
+  usePostAdminVariantsVariantIdImages,
+  type ClothingType,
 } from "@/api/generated/api";
+
+/* ---------- types ---------- */
+
+type ImageItem = {
+  /** A local id for react keys */
+  uid: string;
+  /** Object URL (local pick) OR remote URL (existing) */
+  preview: string;
+  /** Only present for newly picked files */
+  file?: File;
+};
 
 type VariantRow = {
   id: string;
@@ -27,11 +40,19 @@ type VariantRow = {
   sku: string;
   salePrice: string;
   purchasePrice: string;
+  images: ImageItem[];
 };
 
-const defaultVariant = (): VariantRow[] => [
-  { id: crypto.randomUUID(), color: "Navy Blue", sku: "", salePrice: "0", purchasePrice: "" },
-];
+const emptyVariant = (): VariantRow => ({
+  id: crypto.randomUUID(),
+  color: "",
+  sku: "",
+  salePrice: "0",
+  purchasePrice: "",
+  images: [],
+});
+
+/* ---------- component ---------- */
 
 export function AdminProductFormPage() {
   const isNew = Boolean(useMatch("/admin/products/new"));
@@ -41,15 +62,13 @@ export function AdminProductFormPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<ClothingType>("UNSTITCHED");
-  const [variants, setVariants] = useState<VariantRow[]>(defaultVariant);
+  const [variants, setVariants] = useState<VariantRow[]>([emptyVariant()]);
+  const [saving, setSaving] = useState(false);
 
+  /* ---- fetch existing product for edit ---- */
   const { data: existing, isLoading } = useGetAdminProductsProductId(
     productId || "",
-    {
-      query: {
-        enabled: !isNew && !!productId,
-      },
-    }
+    { query: { enabled: !isNew && !!productId } },
   );
 
   useEffect(() => {
@@ -65,23 +84,60 @@ export function AdminProductFormPage() {
             sku: v.sku || "",
             salePrice: String(v.salePrice),
             purchasePrice: v.purchasePrice ? String(v.purchasePrice) : "",
-          }))
+            images: (v.images || []).map((img) => ({
+              uid: img.id,
+              preview: img.url,
+            })),
+          })),
         );
       }
     }
   }, [existing]);
 
+  /* ---- mutations ---- */
   const createProductReq = usePostAdminProducts();
+  const updateProductReq = usePatchAdminProductsProductId();
+  const uploadImageReq = usePostAdminVariantsVariantIdImages();
 
+  /* ---- variant helpers ---- */
+  function updateVariant(id: string, patch: Partial<VariantRow>) {
+    setVariants((rows) =>
+      rows.map((r) => (r.id === id ? { ...r, ...patch } : r)),
+    );
+  }
+
+  function addImagesToVariant(variantId: string, e: ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files) return;
+    const items: ImageItem[] = Array.from(files).map((f) => ({
+      uid: crypto.randomUUID(),
+      preview: URL.createObjectURL(f),
+      file: f,
+    }));
+    setVariants((rows) =>
+      rows.map((r) =>
+        r.id === variantId ? { ...r, images: [...r.images, ...items] } : r,
+      ),
+    );
+  }
+
+  function removeVariantImage(variantId: string, imgUid: string) {
+    setVariants((rows) =>
+      rows.map((r) =>
+        r.id === variantId
+          ? { ...r, images: r.images.filter((i) => i.uid !== imgUid) }
+          : r,
+      ),
+    );
+  }
+
+  /* ---- save ---- */
   const save = async () => {
-    if (!isNew) {
-      alert("Editing existing products via API is not yet available. Creating new ones works.");
-      return;
-    }
-
+    setSaving(true);
     try {
-      await createProductReq.mutateAsync({
-        data: {
+      if (isNew) {
+        /* --- CREATE --- */
+        const payload = {
           name,
           description: description || undefined,
           type,
@@ -91,20 +147,62 @@ export function AdminProductFormPage() {
             salePrice: Number(v.salePrice || 0),
             purchasePrice: v.purchasePrice ? Number(v.purchasePrice) : undefined,
           })),
-        },
-      });
+        };
+        const created = await createProductReq.mutateAsync({ data: payload });
 
+        // Upload images per variant
+        if (created.variants) {
+          for (let i = 0; i < variants.length; i++) {
+            const dbVariant = created.variants[i];
+            const localVariant = variants[i];
+            if (!dbVariant || !localVariant) continue;
+
+            const newFiles = localVariant.images.filter((img) => img.file);
+            for (const img of newFiles) {
+              await uploadImageReq.mutateAsync({
+                variantId: dbVariant.id,
+                data: { image: img.file! },
+              });
+            }
+          }
+        }
+      } else if (productId) {
+        /* --- EDIT --- */
+        await updateProductReq.mutateAsync({
+          productId,
+          data: {
+            name,
+            description: description || undefined,
+            type,
+          },
+        });
+
+        // Upload any NEW images (ones with a file property)
+        for (const v of variants) {
+          const newFiles = v.images.filter((img) => img.file);
+          for (const img of newFiles) {
+            await uploadImageReq.mutateAsync({
+              variantId: v.id,
+              data: { image: img.file! },
+            });
+          }
+        }
+      }
       navigate(ROUTES.admin.products);
     } catch (err) {
-      console.error(err);
-      alert("Failed to create product");
+      console.error("Failed to save product:", err);
+      alert("Failed to save product");
+    } finally {
+      setSaving(false);
     }
   };
 
+  /* ---- loading gate ---- */
   if (isLoading) {
     return <div className="p-8 text-stone-500">Loading product details...</div>;
   }
 
+  /* ---- render ---- */
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
@@ -116,6 +214,7 @@ export function AdminProductFormPage() {
         </p>
       </div>
 
+      {/* ---- basics ---- */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Basics</CardTitle>
@@ -135,7 +234,9 @@ export function AdminProductFormPage() {
               id="p-desc"
               rows={4}
               value={description}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                setDescription(e.target.value)
+              }
             />
           </div>
           <div className="space-y-1.5">
@@ -155,35 +256,29 @@ export function AdminProductFormPage() {
         </CardContent>
       </Card>
 
+      {/* ---- variants ---- */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle className="text-base">Variants</CardTitle>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            onClick={() =>
-              setVariants((prev) => [
-                ...prev,
-                {
-                  id: crypto.randomUUID(),
-                  color: "",
-                  sku: "",
-                  salePrice: "0",
-                  purchasePrice: "",
-                },
-              ])
-            }
-          >
-            <Plus className="size-4" />
-            Add Variant
-          </Button>
+          {isNew && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-1"
+              onClick={() => setVariants((prev) => [...prev, emptyVariant()])}
+            >
+              <Plus className="size-4" />
+              Add Variant
+            </Button>
+          )}
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           {variants.map((row, index) => (
             <div key={row.id}>
-              {index > 0 && <Separator className="my-3" />}
+              {index > 0 && <Separator className="my-4" />}
+
+              {/* fields */}
               <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-5 md:items-end">
                 <div className="space-y-1.5 md:col-span-2">
                   <Label>Color / Group Name</Label>
@@ -191,11 +286,7 @@ export function AdminProductFormPage() {
                     placeholder="e.g. Navy Blue"
                     value={row.color}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setVariants((rows) =>
-                        rows.map((x) =>
-                          x.id === row.id ? { ...x, color: e.target.value } : x,
-                        ),
-                      )
+                      updateVariant(row.id, { color: e.target.value })
                     }
                   />
                 </div>
@@ -205,11 +296,7 @@ export function AdminProductFormPage() {
                     placeholder="e.g. NVY-123"
                     value={row.sku}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setVariants((rows) =>
-                        rows.map((x) =>
-                          x.id === row.id ? { ...x, sku: e.target.value } : x,
-                        ),
-                      )
+                      updateVariant(row.id, { sku: e.target.value })
                     }
                   />
                 </div>
@@ -219,11 +306,7 @@ export function AdminProductFormPage() {
                     inputMode="numeric"
                     value={row.salePrice}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setVariants((rows) =>
-                        rows.map((x) =>
-                          x.id === row.id ? { ...x, salePrice: e.target.value } : x,
-                        ),
-                      )
+                      updateVariant(row.id, { salePrice: e.target.value })
                     }
                   />
                 </div>
@@ -234,48 +317,83 @@ export function AdminProductFormPage() {
                     placeholder="e.g. 500"
                     value={row.purchasePrice}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setVariants((rows) =>
-                        rows.map((x) =>
-                          x.id === row.id ? { ...x, purchasePrice: e.target.value } : x,
-                        ),
-                      )
+                      updateVariant(row.id, { purchasePrice: e.target.value })
                     }
                   />
                 </div>
                 <div className="flex justify-end pb-0.5 md:col-span-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="text-stone-500"
-                    onClick={() =>
-                      setVariants((rows) => rows.filter((x) => x.id !== row.id))
-                    }
-                    aria-label="Remove variant"
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
+                  {isNew && variants.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="text-stone-500"
+                      onClick={() =>
+                        setVariants((rows) => rows.filter((x) => x.id !== row.id))
+                      }
+                      aria-label="Remove variant"
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  )}
                 </div>
+              </div>
+
+              {/* per-variant images */}
+              <div className="mt-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Label className="text-xs text-stone-500">
+                    Photos for "{row.color || "this variant"}"
+                  </Label>
+                  <label
+                    className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-stone-300 bg-white px-2 py-1 text-xs text-stone-600 hover:bg-stone-50"
+                  >
+                    <ImagePlus className="size-3" />
+                    Add
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => addImagesToVariant(row.id, e)}
+                    />
+                  </label>
+                </div>
+
+                {row.images.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {row.images.map((img) => (
+                      <div
+                        key={img.uid}
+                        className="relative size-16 overflow-hidden rounded-md border bg-stone-100"
+                      >
+                        <img
+                          src={img.preview}
+                          alt="Variant preview"
+                          className="h-full w-full object-cover"
+                        />
+                        <button
+                          onClick={() => removeVariantImage(row.id, img.uid)}
+                          className="absolute right-0.5 top-0.5 rounded-sm bg-white/80 p-0.5 text-stone-600 shadow backdrop-blur-sm hover:text-red-600"
+                        >
+                          <Trash2 className="size-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </CardContent>
       </Card>
 
+      {/* ---- actions ---- */}
       <div className="flex gap-2">
-        <Button
-          type="button"
-          onClick={save}
-          disabled={createProductReq.isPending}
-        >
-          {createProductReq.isPending ? "Saving..." : "Save product"}
+        <Button type="button" onClick={save} disabled={saving}>
+          {saving ? "Saving..." : "Save product"}
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          asChild
-          disabled={createProductReq.isPending}
-        >
+        <Button type="button" variant="outline" asChild disabled={saving}>
           <Link to={ROUTES.admin.products}>Cancel</Link>
         </Button>
       </div>

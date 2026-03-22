@@ -624,7 +624,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductBase"
+                  "$ref": "#/components/schemas/ProductWithVariants"
                 }
               }
             }
@@ -772,6 +772,72 @@
         "responses": {
           "200": {
             "description": "Stock adjusted successfully"
+          }
+        }
+      }
+    },
+    "/admin/variants/{variantId}/images": {
+      "post": {
+        "summary": "Add an image to a variant",
+        "tags": [
+          "Variants"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "variantId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Image uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "order": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "url",
+                    "order"
+                  ]
+                }
+              }
+            }
           }
         }
       }

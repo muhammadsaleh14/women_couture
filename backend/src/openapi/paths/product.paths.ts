@@ -77,7 +77,7 @@ openAPIRegistry.registerPath({
       description: "Created",
       content: {
         "application/json": {
-          schema: ProductBaseSchema,
+          schema: ProductWithVariantsSchema,
         },
       },
     },
@@ -156,6 +156,43 @@ openAPIRegistry.registerPath({
           schema: ProductBaseSchema,
         },
       },
+    },
+  },
+});
+
+openAPIRegistry.registerPath({
+  method: "post",
+  path: "/admin/variants/{variantId}/images",
+  summary: "Add an image to a variant",
+  tags: ["Variants"],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      variantId: z.string(),
+    }),
+    body: {
+      content: {
+        "multipart/form-data": {
+          schema: z.object({
+            image: z.any().openapi({ type: "string", format: "binary" }),
+          }),
+        },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: "Image uploaded successfully",
+      content: {
+        "application/json": {
+          // It returns ProductImage model
+          schema: z.object({
+            id: z.string(),
+            url: z.string(),
+            order: z.number()
+          })
+        }
+      }
     },
   },
 });

@@ -263,6 +263,16 @@ export const GetAdminProductsIsActive = {
   false: 'false',
 } as const;
 
+export type PostAdminVariantsVariantIdImagesBody = {
+  image?: Blob;
+};
+
+export type PostAdminVariantsVariantIdImages201 = {
+  id: string;
+  url: string;
+  order: number;
+};
+
 /**
  * @summary Register (customer only)
  */
@@ -647,7 +657,7 @@ export const postAdminProducts = (
 ) => {
       
       
-      return customInstance<ProductBase>(
+      return customInstance<ProductWithVariants>(
       {url: `/admin/products`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createProductBody, signal
@@ -986,4 +996,72 @@ export const usePostAdminVariantsVariantIdStock = <TError = unknown,
         TContext
       > => {
       return useMutation(getPostAdminVariantsVariantIdStockMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary Add an image to a variant
+ */
+export const postAdminVariantsVariantIdImages = (
+    variantId: string,
+    postAdminVariantsVariantIdImagesBody: PostAdminVariantsVariantIdImagesBody,
+ signal?: AbortSignal
+) => {
+      
+      const formData = new FormData();
+if(postAdminVariantsVariantIdImagesBody.image !== undefined) {
+ formData.append(`image`, postAdminVariantsVariantIdImagesBody.image);
+ }
+
+      return customInstance<PostAdminVariantsVariantIdImages201>(
+      {url: `/admin/variants/${variantId}/images`, method: 'POST',
+       data: formData, signal
+    },
+      );
+    }
+  
+
+
+export const getPostAdminVariantsVariantIdImagesMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>, TError,{variantId: string;data: PostAdminVariantsVariantIdImagesBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>, TError,{variantId: string;data: PostAdminVariantsVariantIdImagesBody}, TContext> => {
+
+const mutationKey = ['postAdminVariantsVariantIdImages'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>, {variantId: string;data: PostAdminVariantsVariantIdImagesBody}> = (props) => {
+          const {variantId,data} = props ?? {};
+
+          return  postAdminVariantsVariantIdImages(variantId,data,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostAdminVariantsVariantIdImagesMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>>
+    export type PostAdminVariantsVariantIdImagesMutationBody = PostAdminVariantsVariantIdImagesBody
+    export type PostAdminVariantsVariantIdImagesMutationError = unknown
+
+    /**
+ * @summary Add an image to a variant
+ */
+export const usePostAdminVariantsVariantIdImages = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>, TError,{variantId: string;data: PostAdminVariantsVariantIdImagesBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>,
+        TError,
+        {variantId: string;data: PostAdminVariantsVariantIdImagesBody},
+        TContext
+      > => {
+      return useMutation(getPostAdminVariantsVariantIdImagesMutationOptions(options), queryClient);
     }
