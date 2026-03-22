@@ -1,4 +1,5 @@
 import {
+  startTransition,
   useCallback,
   useEffect,
   useMemo,
@@ -6,72 +7,71 @@ import {
   type ReactNode,
 } from "react";
 import { isAxiosError } from "axios";
-import { api, getStoredToken, setStoredToken } from "@/lib/api";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  getGetApiV1AuthMeQueryKey,
+  useGetApiV1AuthMe,
+  usePostApiV1AuthLogin,
+} from "@/api/generated/api";
+import { getStoredToken, setStoredToken } from "@/lib/api";
 import { AuthContext, type AuthContextValue } from "./auth-context";
 import type { AuthUser } from "./types";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [status, setStatus] = useState<AuthContextValue["status"]>(() =>
-    getStoredToken() ? "loading" : "ready",
-  );
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const queryClient = useQueryClient();
+  const [token, setToken] = useState<string | null>(() => getStoredToken());
+
+  const meQuery = useGetApiV1AuthMe({
+    query: {
+      enabled: !!token,
+      retry: false,
+    },
+  });
+
+  const loginMutation = usePostApiV1AuthLogin();
 
   useEffect(() => {
-    const token = getStoredToken();
-    if (!token) {
-      setUser(null);
-      setStatus("ready");
-      return;
-    }
+    if (!token || !meQuery.isError) return;
+    startTransition(() => {
+      setStoredToken(null);
+      setToken(null);
+      queryClient.removeQueries({ queryKey: getGetApiV1AuthMeQueryKey() });
+    });
+  }, [token, meQuery.isError, queryClient]);
 
-    let cancelled = false;
-    (async () => {
+  const user: AuthUser | null = token ? (meQuery.data ?? null) : null;
+
+  const status: AuthContextValue["status"] =
+    !!token && meQuery.isPending ? "loading" : "ready";
+
+  const login = useCallback(
+    async (username: string, password: string) => {
       try {
-        const { data } = await api.get<AuthUser>("/api/v1/auth/me");
-        if (!cancelled) {
-          setUser(data);
+        const data = await loginMutation.mutateAsync({
+          data: { username, password },
+        });
+        setStoredToken(data.accessToken);
+        setToken(data.accessToken);
+        queryClient.setQueryData(getGetApiV1AuthMeQueryKey(), data.user);
+        return data.user;
+      } catch (err: unknown) {
+        if (isAxiosError(err)) {
+          const msg =
+            (err.response?.data as { message?: string } | undefined)?.message ??
+            err.message;
+          throw new Error(msg || "Login failed");
         }
-      } catch {
-        if (!cancelled) {
-          setStoredToken(null);
-          setUser(null);
-        }
-      } finally {
-        if (!cancelled) {
-          setStatus("ready");
-        }
+        throw err;
       }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const login = useCallback(async (username: string, password: string) => {
-    try {
-      const { data } = await api.post<{
-        accessToken: string;
-        user: AuthUser;
-      }>("/api/v1/auth/login", { username, password });
-      setStoredToken(data.accessToken);
-      setUser(data.user);
-      return data.user;
-    } catch (err: unknown) {
-      if (isAxiosError(err)) {
-        const msg =
-          (err.response?.data as { message?: string } | undefined)?.message ??
-          err.message;
-        throw new Error(msg || "Login failed");
-      }
-      throw err;
-    }
-  }, []);
+    },
+    [loginMutation, queryClient],
+  );
 
   const logout = useCallback(() => {
     setStoredToken(null);
-    setUser(null);
-  }, []);
+    setToken(null);
+    queryClient.removeQueries({ queryKey: getGetApiV1AuthMeQueryKey() });
+  }, [queryClient]);
 
   const value = useMemo(
     () =>

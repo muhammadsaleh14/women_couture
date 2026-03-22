@@ -1,7 +1,4 @@
-export type UserRole = "CUSTOMER" | "ADMIN";
+import type { UserPublic } from "@/api/generated/api";
 
-export type AuthUser = {
-  id: string;
-  username: string;
-  role: UserRole;
-};
+export type AuthUser = UserPublic;
+export type UserRole = AuthUser["role"];

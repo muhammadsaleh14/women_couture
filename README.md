@@ -82,7 +82,21 @@ cd backend
 npm run openapi:export
 ```
 
-Point **openapi-typescript-codegen**, **Orval**, or similar at that file to generate a typed client for the React app.
+### Generate the typed frontend API client (Orval)
+
+After routes or OpenAPI registration change, export the spec from the backend, then regenerate the client in the frontend:
+
+```bash
+cd backend
+npm run openapi:export
+
+cd ../frontend
+npm run api:generate
+```
+
+This reads `../backend/openapi/openapi.json` and writes `frontend/src/api/generated/api.ts` with **TanStack Query** hooks (`useQuery` / `useMutation`) and Axios via the **mutator** in `frontend/src/lib/orval-mutator.ts` (shared base URL + Bearer from `frontend/src/lib/api.ts`). The app wraps the tree in `QueryClientProvider` ([frontend/src/app/providers.tsx](frontend/src/app/providers.tsx)). Orval expects **`@ibm-cloud/openapi-ruleset`** (devDependency); run `npm install` in `frontend` if `npm run api:generate` fails with a missing module error.
+
+**Generated files:** `src/api/generated/` is **committed** in this repo so CI can build without running Orval; regenerate and commit when the API changes.
 
 ## Frontend (Vite + React)
 
@@ -106,5 +120,5 @@ npm run dev
 ## Project layout
 
 - [backend/](backend/) — Express + TypeScript, Prisma, Zod, zod-to-openapi, Swagger UI
-- [frontend/](frontend/) — React storefront + admin prototype (mock data; OpenAPI client later)
+- [frontend/](frontend/) — React storefront + admin prototype; typed API client generated from OpenAPI (Orval)
 - [docker-compose.yml](docker-compose.yml) — development PostgreSQL
