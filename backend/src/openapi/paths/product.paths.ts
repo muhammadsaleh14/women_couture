@@ -1,16 +1,23 @@
-import { openAPIRegistry } from "./registry";
+import { openAPIRegistry } from "../registry";
 import {
   CreateProductBodySchema,
   CreateVariantBodySchema,
   AdjustStockBodySchema,
   ProductBaseSchema,
-} from "../schemas/product.schema";
+} from "../../schemas/product.schema";
 
 openAPIRegistry.registerPath({
   method: "get",
   path: "/api/v1/admin/products",
   summary: "List all products",
   tags: ["Products"],
+  request: {
+    query: {
+      skip: { type: "number", description: "Number of records to skip" },
+      take: { type: "number", description: "Number of records to return" },
+      isActive: { type: "boolean", description: "Filter by active state" },
+    } as any,
+  },
   responses: {
     200: {
       description: "OK",

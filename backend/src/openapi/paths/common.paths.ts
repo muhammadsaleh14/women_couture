@@ -1,9 +1,9 @@
-import { openAPIRegistry } from "./registry";
+import { openAPIRegistry } from "../registry";
 import {
   EchoBodySchema,
   EchoResponseSchema,
   HealthResponseSchema,
-} from "../schemas/common.schema";
+} from "../../schemas/common.schema";
 
 openAPIRegistry.registerPath({
   method: "get",

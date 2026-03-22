@@ -65,3 +65,12 @@ export const ProductParamsSchema = openAPIRegistry.register(
     productId: z.string(),
   })
 );
+
+export const ProductQuerySchema = openAPIRegistry.register(
+  "ProductQuery",
+  z.object({
+    skip: z.coerce.number().int().min(0).optional().default(0),
+    take: z.coerce.number().int().min(1).max(100).optional().default(20),
+    isActive: z.enum(["true", "false"]).optional(),
+  })
+);

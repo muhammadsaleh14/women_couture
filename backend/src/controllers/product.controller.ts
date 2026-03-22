@@ -6,6 +6,7 @@ import {
   AdjustStockBodySchema,
   ProductParamsSchema,
   ProductVariantParamsSchema,
+  ProductQuerySchema,
 } from "../schemas/product.schema";
 
 export async function createProduct(req: Request, res: Response, next: NextFunction) {
@@ -20,7 +21,17 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
 
 export async function getProducts(req: Request, res: Response, next: NextFunction) {
   try {
-    const products = await productService.getAllProducts();
+    const query = ProductQuerySchema.parse(req.query);
+    
+    // Transform 'true'/'false' strings to boolean for the service
+    const isActive = query.isActive === "true" ? true : query.isActive === "false" ? false : undefined;
+
+    const products = await productService.getAllProducts({
+      skip: query.skip,
+      take: query.take,
+      isActive,
+    });
+    
     res.json(products);
   } catch (err) {
     next(err);

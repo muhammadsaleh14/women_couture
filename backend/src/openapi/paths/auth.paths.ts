@@ -1,10 +1,10 @@
-import { openAPIRegistry } from "./registry";
+import { openAPIRegistry } from "../registry";
 import {
   AuthTokenResponseSchema,
   LoginBodySchema,
   RegisterBodySchema,
   UserPublicSchema,
-} from "../schemas/auth.schema";
+} from "../../schemas/auth.schema";
 
 openAPIRegistry.registerPath({
   method: "post",

@@ -1,6 +1,5 @@
-import { PrismaClient, ClothingType, StockMoveType } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { ClothingType, StockMoveType } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 
 export async function createProduct(data: { name: string; description?: string; type: ClothingType }) {
   return prisma.product.create({
@@ -13,8 +12,13 @@ export async function createProduct(data: { name: string; description?: string; 
   });
 }
 
-export async function getAllProducts() {
+export async function getAllProducts(query: { skip: number; take: number; isActive?: boolean }) {
+  const where = query.isActive !== undefined ? { isActive: query.isActive } : {};
+
   return prisma.product.findMany({
+    where,
+    skip: query.skip,
+    take: query.take,
     include: {
       variants: {
         include: {

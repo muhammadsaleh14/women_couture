@@ -1,13 +1,15 @@
 import { Router } from "express";
 import * as productController from "../controllers/product.controller";
 import { authenticate } from "../middleware/authenticate";
+import { authorizeRole } from "../middleware/authorize";
 import { upload } from "../middleware/upload";
 
 export const productRouter = Router();
 
 // Base Product endpoints
-// All product routes will require authentication. Assuming admin specific routes.
+// All product routes will require authentication AND Admin role
 productRouter.use(authenticate);
+productRouter.use(authorizeRole("ADMIN"));
 
 // List products
 productRouter.get("/", productController.getProducts);
@@ -25,6 +27,7 @@ productRouter.post("/:productId/variants", productController.createVariant);
 
 export const variantRouter = Router();
 variantRouter.use(authenticate);
+variantRouter.use(authorizeRole("ADMIN"));
 
 // Adjust stock
 variantRouter.post("/:variantId/stock", productController.adjustStock);
