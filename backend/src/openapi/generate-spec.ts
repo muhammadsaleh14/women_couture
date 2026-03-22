@@ -1,7 +1,8 @@
 import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 import { openAPIRegistry } from "./registry";
-import "./register-paths";
-
+import "./auth.paths";
+import "./common.paths";
+import "./product.paths";
 function serverPort(): number {
   const raw = process.env.PORT;
   if (raw === undefined || raw === "") {

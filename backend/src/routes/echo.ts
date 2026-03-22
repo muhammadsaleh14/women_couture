@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { validateBody } from "../middleware/validate";
-import { EchoBodySchema } from "./schemas";
+import { EchoBodySchema } from "../schemas/common.schema";
 
 export const echoRouter = Router();
 

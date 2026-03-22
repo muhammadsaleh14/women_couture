@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import * as authService from "../services/auth.service";
-import { LoginBodySchema, RegisterBodySchema } from "../routes/auth-schemas";
+import { LoginBodySchema, RegisterBodySchema } from "../schemas/auth.schema";
 
 export async function register(
   req: Request,
