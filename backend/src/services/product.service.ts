@@ -1,0 +1,118 @@
+import { PrismaClient, ClothingType, StockMoveType } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export async function createProduct(data: { name: string; description?: string; type: ClothingType }) {
+  return prisma.product.create({
+    data: {
+      name: data.name,
+      description: data.description,
+      type: data.type,
+      isActive: true,
+    },
+  });
+}
+
+export async function getAllProducts() {
+  return prisma.product.findMany({
+    include: {
+      variants: {
+        include: {
+          images: {
+            orderBy: { order: "asc" }
+          }
+        }
+      }
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function createVariant(productId: string, data: { color: string; sku?: string; salePrice: number; purchasePrice?: number }) {
+  // Ensure product exists
+  const product = await prisma.product.findUnique({ where: { id: productId } });
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  // Prevent duplicate colors for the same product
+  const existing = await prisma.productVariant.findUnique({
+    where: { productId_color: { productId, color: data.color } },
+  });
+  if (existing) {
+    throw new Error(`Variant with color '${data.color}' already exists for this product.`);
+  }
+
+  return prisma.productVariant.create({
+    data: {
+      productId,
+      color: data.color,
+      sku: data.sku,
+      salePrice: data.salePrice,
+      purchasePrice: data.purchasePrice,
+      stockQty: 0,
+    },
+  });
+}
+
+export async function adjustStock(variantId: string, type: StockMoveType, quantity: number, notes?: string) {
+  // Use a Prisma transaction to ensure StockMove insertion and stockQty update happen atomically
+  return prisma.$transaction(async (tx) => {
+    const variant = await tx.productVariant.findUnique({ where: { id: variantId } });
+    if (!variant) {
+      throw new Error("Variant not found");
+    }
+
+    // Determine the actual delta amount
+    let stockDelta = 0;
+    if (type === "IN") {
+      stockDelta = quantity;
+    } else if (type === "OUT") {
+      stockDelta = -quantity;
+    } else if (type === "ADJUSTMENT") {
+      // Assuming 'ADJUSTMENT' with a positive value means replacing/setting exact, 
+      // or just adjusting wildly. Let's assume ADJUSTMENT means replacing current stock.
+      // E.g., if quantity = 5, we set stock to 5. 
+      // Delta = new quantity - current quantity.
+      stockDelta = quantity - variant.stockQty;
+    }
+
+    // In a strict financial system, OUT shouldn't go below 0 unless backordered. 
+    // We'll allow it for now or check.
+    if (variant.stockQty + stockDelta < 0) {
+      throw new Error("Insufficient stock for this OUT operation.");
+    }
+
+    // 1. Create StockMove
+    await tx.stockMove.create({
+      data: {
+        productVariantId: variantId,
+        type,
+        quantity: Math.abs(quantity), // Keep quantity positive in history
+        notes,
+      },
+    });
+
+    // 2. Update stockQty cache
+    const updatedVariant = await tx.productVariant.update({
+      where: { id: variantId },
+      data: {
+        stockQty: {
+          increment: stockDelta,
+        },
+      },
+    });
+
+    return updatedVariant;
+  });
+}
+
+export async function addImage(variantId: string, url: string, order = 0) {
+  return prisma.productImage.create({
+    data: {
+      productVariantId: variantId,
+      url,
+      order,
+    },
+  });
+}
