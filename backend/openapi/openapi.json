@@ -841,6 +841,37 @@
           }
         }
       }
+    },
+    "/admin/variants/images/{imageId}": {
+      "delete": {
+        "summary": "Delete a variant image",
+        "tags": [
+          "Variants"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "imageId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Image deleted successfully"
+          },
+          "404": {
+            "description": "Image not found"
+          }
+        }
+      }
     }
   }
 }

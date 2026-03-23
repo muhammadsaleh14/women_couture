@@ -1065,3 +1065,65 @@ export const usePostAdminVariantsVariantIdImages = <TError = unknown,
       > => {
       return useMutation(getPostAdminVariantsVariantIdImagesMutationOptions(options), queryClient);
     }
+    
+/**
+ * @summary Delete a variant image
+ */
+export const deleteAdminVariantsImagesImageId = (
+    imageId: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/admin/variants/images/${imageId}`, method: 'DELETE', signal
+    },
+      );
+    }
+  
+
+
+export const getDeleteAdminVariantsImagesImageIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>, TError,{imageId: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>, TError,{imageId: string}, TContext> => {
+
+const mutationKey = ['deleteAdminVariantsImagesImageId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>, {imageId: string}> = (props) => {
+          const {imageId} = props ?? {};
+
+          return  deleteAdminVariantsImagesImageId(imageId,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAdminVariantsImagesImageIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>>
+    
+    export type DeleteAdminVariantsImagesImageIdMutationError = void
+
+    /**
+ * @summary Delete a variant image
+ */
+export const useDeleteAdminVariantsImagesImageId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>, TError,{imageId: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>,
+        TError,
+        {imageId: string},
+        TContext
+      > => {
+      return useMutation(getDeleteAdminVariantsImagesImageIdMutationOptions(options), queryClient);
+    }

@@ -196,3 +196,24 @@ openAPIRegistry.registerPath({
     },
   },
 });
+
+openAPIRegistry.registerPath({
+  method: "delete",
+  path: "/admin/variants/images/{imageId}",
+  summary: "Delete a variant image",
+  tags: ["Variants"],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      imageId: z.string(),
+    }),
+  },
+  responses: {
+    204: {
+      description: "Image deleted successfully",
+    },
+    404: {
+      description: "Image not found",
+    },
+  },
+});

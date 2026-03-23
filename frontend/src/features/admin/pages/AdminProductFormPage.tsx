@@ -17,9 +17,12 @@ import { Separator } from "@/components/ui/separator";
 import { ROUTES } from "@/core/routes";
 import {
   useGetAdminProductsProductId,
+  postAdminProducts,
+  patchAdminProductsProductId,
+  postAdminVariantsVariantIdImages,
+  deleteAdminVariantsImagesImageId,
   type ClothingType,
 } from "@/api/generated/api";
-import { api } from "@/lib/api";
 
 /* ---------- types ---------- */
 
@@ -120,7 +123,7 @@ export function AdminProductFormPage() {
     // If it's an existing DB image, delete it from the server
     if (img && !img.file) {
       try {
-        await api.delete(`/admin/variants/images/${imgUid}`);
+        await deleteAdminVariantsImagesImageId(imgUid);
       } catch (err) {
         console.error("Failed to delete image:", err);
         alert("Failed to delete image");
@@ -137,15 +140,13 @@ export function AdminProductFormPage() {
     );
   }
 
-  /* ---- save (single multipart request) ---- */
+  /* ---- save (JSON create/update + individual image uploads) ---- */
   const save = async () => {
     setSaving(true);
     try {
-      const fd = new FormData();
-
       if (isNew) {
         /* --- CREATE --- */
-        const payload = {
+        const result = await postAdminProducts({
           name,
           description: description || undefined,
           type,
@@ -155,36 +156,38 @@ export function AdminProductFormPage() {
             salePrice: Number(v.salePrice || 0),
             purchasePrice: v.purchasePrice ? Number(v.purchasePrice) : undefined,
           })),
-        };
-        fd.append("data", JSON.stringify(payload));
-
-        // Attach image files keyed by variant index
-        variants.forEach((v, i) => {
-          for (const img of v.images) {
-            if (img.file) fd.append(`variants[${i}]`, img.file);
-          }
         });
 
-        await api.post("/admin/products", fd);
+        // Upload images to the newly created variants
+        for (let i = 0; i < variants.length; i++) {
+          const createdVariant = result.variants[i];
+          if (!createdVariant) continue;
+          for (const img of variants[i].images) {
+            if (img.file) {
+              await postAdminVariantsVariantIdImages(createdVariant.id, {
+                image: img.file,
+              });
+            }
+          }
+        }
       } else if (productId) {
         /* --- EDIT --- */
-        const payload = {
+        await patchAdminProductsProductId(productId, {
           name,
           description: description || undefined,
           type,
-          // Pass variant IDs so the backend knows which variant to attach new files to
-          variantIds: variants.map((v) => v.id),
-        };
-        fd.append("data", JSON.stringify(payload));
-
-        // Attach only NEW image files
-        variants.forEach((v, i) => {
-          for (const img of v.images) {
-            if (img.file) fd.append(`variants[${i}]`, img.file);
-          }
         });
 
-        await api.patch(`/admin/products/${productId}`, fd);
+        // Upload only NEW image files to their respective variants
+        for (const v of variants) {
+          for (const img of v.images) {
+            if (img.file) {
+              await postAdminVariantsVariantIdImages(v.id, {
+                image: img.file,
+              });
+            }
+          }
+        }
       }
 
       navigate(ROUTES.admin.products);
