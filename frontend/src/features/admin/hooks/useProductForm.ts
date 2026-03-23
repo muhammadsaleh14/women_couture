@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +30,12 @@ export function useProductForm(productId?: string, isNewProduct = false) {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
 
+  // 3. Hydrate form if editing
+  const { data: existing, isLoading } = useGetAdminProductsProductId(
+    productId || "",
+    { query: { enabled: !isNewProduct && !!productId } },
+  );
+
   // 1. Initialize React Hook Form
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -39,45 +45,35 @@ export function useProductForm(productId?: string, isNewProduct = false) {
       type: "UNSTITCHED" as ClothingType,
       variants: [emptyVariant()],
     },
+    // Use the `values` prop to automatically re-initialize when data arrives
+    values: existing ? {
+      name: existing.name,
+      description: existing.description || "",
+      type: existing.type,
+      variants: existing.variants && existing.variants.length > 0
+        ? existing.variants.map((v) => ({
+            id: v.id,
+            isNew: false,
+            color: v.color,
+            sku: v.sku || "",
+            salePrice: String(v.salePrice || 0),
+            purchasePrice: v.purchasePrice ? String(v.purchasePrice) : "",
+            images: (v.images || []).map((img) => ({
+              uid: img.id,
+              preview: img.url,
+            })),
+          }))
+        : [emptyVariant()],
+    } : undefined,
   });
 
-  const { control, handleSubmit, reset } = form;
+  const { control, handleSubmit } = form;
 
   // 2. Manage variant array
   const { fields: variants, append, remove, update } = useFieldArray({
     control,
     name: "variants",
   });
-
-  // 3. Hydrate form if editing
-  const { data: existing, isLoading } = useGetAdminProductsProductId(
-    productId || "",
-    { query: { enabled: !isNewProduct && !!productId } },
-  );
-
-  useEffect(() => {
-    if (existing) {
-      reset({
-        name: existing.name,
-        description: existing.description || "",
-        type: existing.type,
-        variants: existing.variants && existing.variants.length > 0
-          ? existing.variants.map((v) => ({
-              id: v.id,
-              isNew: false,
-              color: v.color,
-              sku: v.sku || "",
-              salePrice: String(v.salePrice || 0),
-              purchasePrice: v.purchasePrice ? String(v.purchasePrice) : "",
-              images: (v.images || []).map((img) => ({
-                uid: img.id,
-                preview: img.url,
-              })),
-            }))
-          : [emptyVariant()],
-      });
-    }
-  }, [existing, reset]);
 
   // 4. Image helpers (need to manually update the form array value)
   const addImagesToVariant = (index: number, e: ChangeEvent<HTMLInputElement>) => {
