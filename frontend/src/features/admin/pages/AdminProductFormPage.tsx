@@ -343,7 +343,6 @@ export function AdminProductFormPage() {
                 </div>
 
                 {row.images.length > 0 && (
-                  console.log(row.images),
                   <div className="flex flex-wrap gap-2">
                     {row.images.map((img) => (
                       <div

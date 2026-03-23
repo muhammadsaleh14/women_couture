@@ -1,5 +1,20 @@
 import { ClothingType, StockMoveType } from "@prisma/client";
 import { prisma } from "../lib/prisma";
+import { toImageUrl } from "../lib/image-url";
+
+/**
+ * Resolve image paths to full URLs on any product-with-variants result.
+ */
+function withImageUrls<T extends { variants?: Array<{ images?: Array<{ url: string; [k: string]: unknown }> ; [k: string]: unknown }> ; [k: string]: unknown }>(product: T): T {
+  if (!product.variants) return product;
+  return {
+    ...product,
+    variants: product.variants.map((v) => ({
+      ...v,
+      images: v.images?.map((img) => ({ ...img, url: toImageUrl(img.url) })),
+    })),
+  };
+}
 
 export async function createProduct(
   data: { 
@@ -16,7 +31,7 @@ export async function createProduct(
   /** Map of variant index → array of image URLs */
   variantImages?: Map<number, string[]>,
 ) {
-  return prisma.product.create({
+  const product = await prisma.product.create({
     data: {
       name: data.name,
       description: data.description,
@@ -50,12 +65,13 @@ export async function createProduct(
       },
     },
   });
+  return withImageUrls(product);
 }
 
 export async function getAllProducts(query: { skip: number; take: number; isActive?: boolean }) {
   const where = query.isActive !== undefined ? { isActive: query.isActive } : {};
 
-  return prisma.product.findMany({
+  const products = await prisma.product.findMany({
     where,
     skip: query.skip,
     take: query.take,
@@ -70,10 +86,11 @@ export async function getAllProducts(query: { skip: number; take: number; isActi
     },
     orderBy: { createdAt: "desc" },
   });
+  return products.map(withImageUrls);
 }
 
 export async function getProductById(productId: string) {
-  return prisma.product.findUnique({
+  const product = await prisma.product.findUnique({
     where: { id: productId },
     include: {
       variants: {
@@ -85,6 +102,7 @@ export async function getProductById(productId: string) {
       }
     }
   });
+  return product ? withImageUrls(product) : null;
 }
 
 export async function createVariant(productId: string, data: { color: string; sku?: string; salePrice: number; purchasePrice?: number }) {
