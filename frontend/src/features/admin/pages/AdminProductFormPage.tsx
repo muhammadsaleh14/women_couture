@@ -112,7 +112,22 @@ export function AdminProductFormPage() {
     );
   }
 
-  function removeVariantImage(variantId: string, imgUid: string) {
+  async function removeVariantImage(variantId: string, imgUid: string) {
+    // Find the image to check if it's from the DB (no file property)
+    const variant = variants.find((r) => r.id === variantId);
+    const img = variant?.images.find((i) => i.uid === imgUid);
+
+    // If it's an existing DB image, delete it from the server
+    if (img && !img.file) {
+      try {
+        await api.delete(`/admin/variants/images/${imgUid}`);
+      } catch (err) {
+        console.error("Failed to delete image:", err);
+        alert("Failed to delete image");
+        return;
+      }
+    }
+
     setVariants((rows) =>
       rows.map((r) =>
         r.id === variantId

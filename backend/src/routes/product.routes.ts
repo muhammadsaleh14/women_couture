@@ -40,3 +40,6 @@ variantRouter.post("/:variantId/stock", productController.adjustStock);
 
 // Add an image to a variant (kept for standalone use)
 variantRouter.post("/:variantId/images", upload.single("image"), productController.uploadImage);
+
+// Delete an image
+variantRouter.delete("/images/:imageId", productController.deleteImage);

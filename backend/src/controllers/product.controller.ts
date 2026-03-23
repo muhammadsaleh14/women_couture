@@ -182,3 +182,17 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
     next(err);
   }
 }
+
+export async function deleteImage(req: Request, res: Response, next: NextFunction) {
+  try {
+    const imageId = req.params.imageId as string;
+    await productService.deleteImage(imageId);
+    res.status(204).send();
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("Record to delete does not exist")) {
+      res.status(404).json({ message: "Image not found" });
+      return;
+    }
+    next(err);
+  }
+}

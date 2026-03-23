@@ -1,3 +1,4 @@
+import path from "path";
 import { ClothingType, StockMoveType } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { toImageUrl } from "../lib/image-url";
@@ -207,4 +208,19 @@ export async function updateProduct(
     where: { id: productId },
     data,
   });
+}
+
+export async function deleteImage(imageId: string) {
+  const image = await prisma.productImage.delete({
+    where: { id: imageId },
+  });
+
+  // Remove the file from disk (ignore errors if file doesn't exist)
+  if (image.url && !image.url.startsWith("http")) {
+    const fs = await import("fs/promises");
+    const filePath = path.join(process.cwd(), image.url);
+    await fs.unlink(filePath).catch(() => {});
+  }
+
+  return image;
 }
