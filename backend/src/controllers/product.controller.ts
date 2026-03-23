@@ -1,3 +1,4 @@
+import path from "path";
 import type { Request, Response, NextFunction } from "express";
 import * as productService from "../services/product.service";
 import {
@@ -45,12 +46,12 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
     const { data, filesByVariant } = parseMultipartBody(req);
     const body = CreateProductBodySchema.parse(data);
 
-    // Build image paths per variant index
+    // Build image URLs per variant index (relative to project root)
     const variantImages = new Map<number, string[]>();
     for (const [idx, files] of filesByVariant) {
       variantImages.set(
         idx,
-        files.map((f) => `/${f.path.replace(/\\/g, "/")}`),
+        files.map((f) => "/" + path.relative(process.cwd(), f.path).replace(/\\/g, "/")),
       );
     }
 
@@ -165,7 +166,7 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
       const variantId = variantIds[idx];
       if (!variantId) continue;
       for (const file of files) {
-        const url = `/${file.path.replace(/\\/g, "/")}`;
+        const url = "/" + path.relative(process.cwd(), file.path).replace(/\\/g, "/");
         await productService.addImage(variantId, url);
       }
     }
