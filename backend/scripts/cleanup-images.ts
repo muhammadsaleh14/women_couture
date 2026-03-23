@@ -6,11 +6,10 @@
  *
  * Usage:  npx tsx scripts/cleanup-images.ts
  */
+import "dotenv/config";
 import path from "path";
 import fs from "fs/promises";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../src/lib/prisma";
 const UPLOAD_DIR = path.join(process.cwd(), "uploads", "products");
 
 async function main() {
