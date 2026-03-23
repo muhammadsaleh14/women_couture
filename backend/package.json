@@ -12,7 +12,8 @@
     "db:seed": "prisma db seed",
     "openapi:export": "tsx scripts/export-openapi.ts",
     "format": "prettier --write ./src",
-    "format:check": "prettier --check ./src"
+    "format:check": "prettier --check ./src",
+    "cleanup:images": "tsx scripts/cleanup-images.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
