@@ -184,6 +184,16 @@ export interface ProductQuery {
   isActive?: ProductQueryIsActive;
 }
 
+export interface UpdateVariantBody {
+  /** @minLength 1 */
+  color?: string;
+  sku?: string;
+  /** @exclusiveMinimum 0 */
+  salePrice?: number;
+  /** @exclusiveMinimum 0 */
+  purchasePrice?: number;
+}
+
 export type UserPublicRole = typeof UserPublicRole[keyof typeof UserPublicRole];
 
 
@@ -262,6 +272,22 @@ export const GetAdminProductsIsActive = {
   true: 'true',
   false: 'false',
 } as const;
+
+export type PostAdminVariantsVariantIdStockBodyType = typeof PostAdminVariantsVariantIdStockBodyType[keyof typeof PostAdminVariantsVariantIdStockBodyType];
+
+
+export const PostAdminVariantsVariantIdStockBodyType = {
+  IN: 'IN',
+  OUT: 'OUT',
+  ADJUSTMENT: 'ADJUSTMENT',
+} as const;
+
+export type PostAdminVariantsVariantIdStockBody = {
+  type: PostAdminVariantsVariantIdStockBodyType;
+  /** @exclusiveMinimum 0 */
+  quantity: number;
+  notes?: string;
+};
 
 export type PostAdminVariantsVariantIdImagesBody = {
   image?: Blob;
@@ -934,11 +960,138 @@ export const usePostAdminProductsProductIdVariants = <TError = unknown,
     }
     
 /**
+ * @summary Update variant details
+ */
+export const patchAdminVariantsVariantId = (
+    variantId: string,
+    updateVariantBody: UpdateVariantBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<ProductVariant>(
+      {url: `/admin/variants/${variantId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateVariantBody, signal
+    },
+      );
+    }
+  
+
+
+export const getPatchAdminVariantsVariantIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>, TError,{variantId: string;data: UpdateVariantBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>, TError,{variantId: string;data: UpdateVariantBody}, TContext> => {
+
+const mutationKey = ['patchAdminVariantsVariantId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>, {variantId: string;data: UpdateVariantBody}> = (props) => {
+          const {variantId,data} = props ?? {};
+
+          return  patchAdminVariantsVariantId(variantId,data,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchAdminVariantsVariantIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>>
+    export type PatchAdminVariantsVariantIdMutationBody = UpdateVariantBody
+    export type PatchAdminVariantsVariantIdMutationError = void
+
+    /**
+ * @summary Update variant details
+ */
+export const usePatchAdminVariantsVariantId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>, TError,{variantId: string;data: UpdateVariantBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchAdminVariantsVariantId>>,
+        TError,
+        {variantId: string;data: UpdateVariantBody},
+        TContext
+      > => {
+      return useMutation(getPatchAdminVariantsVariantIdMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary Delete a variant
+ */
+export const deleteAdminVariantsVariantId = (
+    variantId: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/admin/variants/${variantId}`, method: 'DELETE', signal
+    },
+      );
+    }
+  
+
+
+export const getDeleteAdminVariantsVariantIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>, TError,{variantId: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>, TError,{variantId: string}, TContext> => {
+
+const mutationKey = ['deleteAdminVariantsVariantId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>, {variantId: string}> = (props) => {
+          const {variantId} = props ?? {};
+
+          return  deleteAdminVariantsVariantId(variantId,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAdminVariantsVariantIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>>
+    
+    export type DeleteAdminVariantsVariantIdMutationError = void
+
+    /**
+ * @summary Delete a variant
+ */
+export const useDeleteAdminVariantsVariantId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>, TError,{variantId: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>,
+        TError,
+        {variantId: string},
+        TContext
+      > => {
+      return useMutation(getDeleteAdminVariantsVariantIdMutationOptions(options), queryClient);
+    }
+    
+/**
  * @summary Adjust variant stock
  */
 export const postAdminVariantsVariantIdStock = (
     variantId: string,
-    adjustStockBody: AdjustStockBody,
+    postAdminVariantsVariantIdStockBody: PostAdminVariantsVariantIdStockBody,
  signal?: AbortSignal
 ) => {
       
@@ -946,7 +1099,7 @@ export const postAdminVariantsVariantIdStock = (
       return customInstance<void>(
       {url: `/admin/variants/${variantId}/stock`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: adjustStockBody, signal
+      data: postAdminVariantsVariantIdStockBody, signal
     },
       );
     }
@@ -954,8 +1107,8 @@ export const postAdminVariantsVariantIdStock = (
 
 
 export const getPostAdminVariantsVariantIdStockMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, TError,{variantId: string;data: AdjustStockBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, TError,{variantId: string;data: AdjustStockBody}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, TError,{variantId: string;data: PostAdminVariantsVariantIdStockBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, TError,{variantId: string;data: PostAdminVariantsVariantIdStockBody}, TContext> => {
 
 const mutationKey = ['postAdminVariantsVariantIdStock'];
 const {mutation: mutationOptions} = options ?
@@ -967,7 +1120,7 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, {variantId: string;data: AdjustStockBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, {variantId: string;data: PostAdminVariantsVariantIdStockBody}> = (props) => {
           const {variantId,data} = props ?? {};
 
           return  postAdminVariantsVariantIdStock(variantId,data,)
@@ -981,18 +1134,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type PostAdminVariantsVariantIdStockMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>>
-    export type PostAdminVariantsVariantIdStockMutationBody = AdjustStockBody
+    export type PostAdminVariantsVariantIdStockMutationBody = PostAdminVariantsVariantIdStockBody
     export type PostAdminVariantsVariantIdStockMutationError = unknown
 
     /**
  * @summary Adjust variant stock
  */
 export const usePostAdminVariantsVariantIdStock = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, TError,{variantId: string;data: AdjustStockBody}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, TError,{variantId: string;data: PostAdminVariantsVariantIdStockBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>,
         TError,
-        {variantId: string;data: AdjustStockBody},
+        {variantId: string;data: PostAdminVariantsVariantIdStockBody},
         TContext
       > => {
       return useMutation(getPostAdminVariantsVariantIdStockMutationOptions(options), queryClient);

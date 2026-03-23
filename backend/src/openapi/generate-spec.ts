@@ -3,6 +3,7 @@ import { openAPIRegistry } from "./registry";
 import "./paths/auth.paths";
 import "./paths/common.paths";
 import "./paths/product.paths";
+import "./paths/variant.paths";
 
 function serverPort(): number {
   const raw = process.env.PORT;

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authRouter } from "./auth.routes";
-import { productRouter, variantRouter } from "./product.routes";
+import { productRouter } from "./product.routes";
+import { variantRouter } from "./variant.routes";
 import { echoRouter } from "./echo";
 import { healthRouter } from "./health";
 

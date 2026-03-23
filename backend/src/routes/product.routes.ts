@@ -6,8 +6,7 @@ import { upload } from "../middleware/upload";
 
 export const productRouter = Router();
 
-// Base Product endpoints
-// All product routes will require authentication AND Admin role
+// All product routes require authentication AND Admin role
 productRouter.use(authenticate);
 productRouter.use(authorizeRole("ADMIN"));
 
@@ -25,21 +24,3 @@ productRouter.post("/:productId/variants", productController.createVariant);
 
 // Update product (multipart: JSON in "data" field + new image files in "variants[i]" fields)
 productRouter.patch("/:productId", upload.any(), productController.updateProduct);
-
-// ---------------------------------------------------------
-// Below we have endpoints specific to a VARIANT
-// We could put these in a separate variant.routes.ts, or keep them here for cohesion
-// ---------------------------------------------------------
-
-export const variantRouter = Router();
-variantRouter.use(authenticate);
-variantRouter.use(authorizeRole("ADMIN"));
-
-// Adjust stock
-variantRouter.post("/:variantId/stock", productController.adjustStock);
-
-// Add an image to a variant (kept for standalone use)
-variantRouter.post("/:variantId/images", upload.single("image"), productController.uploadImage);
-
-// Delete an image
-variantRouter.delete("/images/:imageId", productController.deleteImage);

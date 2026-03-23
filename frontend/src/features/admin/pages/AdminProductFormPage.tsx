@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { Link, useMatch, useNavigate, useParams } from "react-router-dom";
 import { ImagePlus, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,9 @@ import {
   useGetAdminProductsProductId,
   postAdminProducts,
   patchAdminProductsProductId,
+  postAdminProductsProductIdVariants,
+  patchAdminVariantsVariantId,
+  deleteAdminVariantsVariantId,
   postAdminVariantsVariantIdImages,
   deleteAdminVariantsImagesImageId,
   type ClothingType,
@@ -35,6 +38,8 @@ type ImageItem = {
 type VariantRow = {
   /** Real DB id when editing, local uuid when creating */
   id: string;
+  /** true for variants not yet in the DB */
+  isNew: boolean;
   color: string;
   sku: string;
   salePrice: string;
@@ -44,6 +49,7 @@ type VariantRow = {
 
 const emptyVariant = (): VariantRow => ({
   id: crypto.randomUUID(),
+  isNew: true,
   color: "",
   sku: "",
   salePrice: "0",
@@ -54,7 +60,7 @@ const emptyVariant = (): VariantRow => ({
 /* ---------- component ---------- */
 
 export function AdminProductFormPage() {
-  const isNew = Boolean(useMatch("/admin/products/new"));
+  const isNewProduct = Boolean(useMatch("/admin/products/new"));
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
 
@@ -64,10 +70,13 @@ export function AdminProductFormPage() {
   const [variants, setVariants] = useState<VariantRow[]>([emptyVariant()]);
   const [saving, setSaving] = useState(false);
 
+  /** Track original variant IDs so we can detect removals on save */
+  const originalVariantIds = useRef<Set<string>>(new Set());
+
   /* ---- fetch existing product for edit ---- */
   const { data: existing, isLoading } = useGetAdminProductsProductId(
     productId || "",
-    { query: { enabled: !isNew && !!productId } },
+    { query: { enabled: !isNewProduct && !!productId } },
   );
 
   useEffect(() => {
@@ -76,19 +85,20 @@ export function AdminProductFormPage() {
       setDescription(existing.description || "");
       setType(existing.type);
       if (existing.variants && existing.variants.length > 0) {
-        setVariants(
-          existing.variants.map((v) => ({
-            id: v.id,
-            color: v.color,
-            sku: v.sku || "",
-            salePrice: String(v.salePrice),
-            purchasePrice: v.purchasePrice ? String(v.purchasePrice) : "",
-            images: (v.images || []).map((img) => ({
-              uid: img.id,
-              preview: img.url,
-            })),
+        const rows: VariantRow[] = existing.variants.map((v) => ({
+          id: v.id,
+          isNew: false,
+          color: v.color,
+          sku: v.sku || "",
+          salePrice: String(v.salePrice),
+          purchasePrice: v.purchasePrice ? String(v.purchasePrice) : "",
+          images: (v.images || []).map((img) => ({
+            uid: img.id,
+            preview: img.url,
           })),
-        );
+        }));
+        setVariants(rows);
+        originalVariantIds.current = new Set(existing.variants.map((v) => v.id));
       }
     }
   }, [existing]);
@@ -116,7 +126,6 @@ export function AdminProductFormPage() {
   }
 
   async function removeVariantImage(variantId: string, imgUid: string) {
-    // Find the image to check if it's from the DB (no file property)
     const variant = variants.find((r) => r.id === variantId);
     const img = variant?.images.find((i) => i.uid === imgUid);
 
@@ -140,11 +149,26 @@ export function AdminProductFormPage() {
     );
   }
 
-  /* ---- save (JSON create/update + individual image uploads) ---- */
+  async function removeVariant(row: VariantRow) {
+    // If it's an existing DB variant, delete from server immediately
+    if (!row.isNew) {
+      try {
+        await deleteAdminVariantsVariantId(row.id);
+      } catch (err) {
+        console.error("Failed to delete variant:", err);
+        alert("Failed to delete variant");
+        return;
+      }
+    }
+
+    setVariants((rows) => rows.filter((x) => x.id !== row.id));
+  }
+
+  /* ---- save ---- */
   const save = async () => {
     setSaving(true);
     try {
-      if (isNew) {
+      if (isNewProduct) {
         /* --- CREATE --- */
         const result = await postAdminProducts({
           name,
@@ -172,19 +196,50 @@ export function AdminProductFormPage() {
         }
       } else if (productId) {
         /* --- EDIT --- */
+
+        // 1. Update product-level fields
         await patchAdminProductsProductId(productId, {
           name,
           description: description || undefined,
           type,
         });
 
-        // Upload only NEW image files to their respective variants
+        // 2. Handle each variant
         for (const v of variants) {
-          for (const img of v.images) {
-            if (img.file) {
-              await postAdminVariantsVariantIdImages(v.id, {
-                image: img.file,
-              });
+          if (v.isNew) {
+            // Create new variant
+            const created = await postAdminProductsProductIdVariants(productId, {
+              color: v.color || "Default",
+              sku: v.sku || undefined,
+              salePrice: Number(v.salePrice || 0),
+              purchasePrice: v.purchasePrice ? Number(v.purchasePrice) : undefined,
+            });
+
+            // Upload images for new variant
+            const createdId = (created as { id: string }).id;
+            for (const img of v.images) {
+              if (img.file) {
+                await postAdminVariantsVariantIdImages(createdId, {
+                  image: img.file,
+                });
+              }
+            }
+          } else {
+            // Update existing variant details
+            await patchAdminVariantsVariantId(v.id, {
+              color: v.color || undefined,
+              sku: v.sku || undefined,
+              salePrice: Number(v.salePrice || 0),
+              purchasePrice: v.purchasePrice ? Number(v.purchasePrice) : undefined,
+            });
+
+            // Upload only NEW image files
+            for (const img of v.images) {
+              if (img.file) {
+                await postAdminVariantsVariantIdImages(v.id, {
+                  image: img.file,
+                });
+              }
             }
           }
         }
@@ -209,10 +264,10 @@ export function AdminProductFormPage() {
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-stone-900">
-          {isNew ? "Add Product" : "Edit Product"}
+          {isNewProduct ? "Add Product" : "Edit Product"}
         </h1>
         <p className="text-sm text-stone-600">
-          Fill in the product details and its initial variants.
+          Fill in the product details and its variants.
         </p>
       </div>
 
@@ -262,18 +317,16 @@ export function AdminProductFormPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle className="text-base">Variants</CardTitle>
-          {isNew && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="gap-1"
-              onClick={() => setVariants((prev) => [...prev, emptyVariant()])}
-            >
-              <Plus className="size-4" />
-              Add Variant
-            </Button>
-          )}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            onClick={() => setVariants((prev) => [...prev, emptyVariant()])}
+          >
+            <Plus className="size-4" />
+            Add Variant
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           {variants.map((row, index) => (
@@ -324,15 +377,13 @@ export function AdminProductFormPage() {
                   />
                 </div>
                 <div className="flex justify-end pb-0.5 md:col-span-1">
-                  {isNew && variants.length > 1 && (
+                  {variants.length > 1 && (
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
                       className="text-stone-500"
-                      onClick={() =>
-                        setVariants((rows) => rows.filter((x) => x.id !== row.id))
-                      }
+                      onClick={() => removeVariant(row)}
                       aria-label="Remove variant"
                     >
                       <Trash2 className="size-4" />

@@ -334,6 +334,28 @@
           }
         }
       },
+      "UpdateVariantBody": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sku": {
+            "type": "string"
+          },
+          "salePrice": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "purchasePrice": {
+            "type": "number",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        }
+      },
       "AuthTokenResponse": {
         "type": "object",
         "properties": {
@@ -744,6 +766,82 @@
         }
       }
     },
+    "/admin/variants/{variantId}": {
+      "patch": {
+        "summary": "Update variant details",
+        "tags": [
+          "Variants"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "variantId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVariantBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Variant updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductVariant"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Variant not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a variant",
+        "tags": [
+          "Variants"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "variantId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Variant deleted successfully"
+          },
+          "404": {
+            "description": "Variant not found"
+          }
+        }
+      }
+    },
     "/admin/variants/{variantId}/stock": {
       "post": {
         "summary": "Adjust variant stock",
@@ -764,7 +862,29 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AdjustStockBody"
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "IN",
+                      "OUT",
+                      "ADJUSTMENT"
+                    ]
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": true
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "quantity"
+                ]
               }
             }
           }
