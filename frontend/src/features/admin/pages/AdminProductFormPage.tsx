@@ -215,8 +215,8 @@ export function AdminProductFormPage() {
               purchasePrice: v.purchasePrice ? Number(v.purchasePrice) : undefined,
             });
 
-            // Upload images for new variant
-            const createdId = (created as { id: string }).id;
+            // Upload images for new variant (created returns the variant object)
+            const createdId = (created as unknown as { id: string }).id;
             for (const img of v.images) {
               if (img.file) {
                 await postAdminVariantsVariantIdImages(createdId, {

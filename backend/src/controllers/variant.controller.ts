@@ -82,8 +82,7 @@ export async function uploadImage(req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    const normalizedPath = file.path.replace(/\\/g, "/");
-    const url = `/${normalizedPath}`;
+    const url = "/" + path.relative(process.cwd(), file.path).replace(/\\/g, "/");
 
     const result = await variantService.addImage(params.variantId, url);
     res.status(201).json(result);
