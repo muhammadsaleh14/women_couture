@@ -99,6 +99,29 @@ export const UpdateProductBodySchema = openAPIRegistry.register(
   }),
 );
 
+/** Full product save (create/update) sent as multipart `data` JSON + `variants[i]` files. */
+export const SaveProductVariantInputSchema = z.object({
+  id: z.string().optional(),
+  color: z.string().min(1, "Color is required"),
+  sku: z.string().optional(),
+  salePrice: z.number().nonnegative(),
+  purchasePrice: z.number().nonnegative().optional().nullable(),
+  /** Image row ids to keep for an existing variant; others are removed. */
+  existingImageIds: z.array(z.string()).optional(),
+});
+
+export const SaveProductBodySchema = openAPIRegistry.register(
+  "SaveProductBody",
+  z.object({
+    name: z.string().min(1, "Name is required"),
+    description: z.string().optional(),
+    type: z.enum(["UNSTITCHED", "THREE_PC", "TWO_PC", "SEPARATE"]),
+    variants: z.array(SaveProductVariantInputSchema).min(1, "At least one variant is required"),
+  }),
+);
+
+export type SaveProductBody = z.infer<typeof SaveProductBodySchema>;
+
 export const ProductVariantParamsSchema = openAPIRegistry.register(
   "ProductVariantParams",
   z.object({

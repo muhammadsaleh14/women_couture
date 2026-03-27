@@ -1,10 +1,31 @@
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
+import type { FieldErrors } from "react-hook-form";
 import { Button } from "@/core/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/core/components/ui/card";
 import type { ProductFormValues } from "../domain/productFormSchema";
 import { useProductForm } from "../application/useProductForm";
 import { ProductBasicsCard } from "./ProductBasicsCard";
 import { VariantCard } from "./VariantCard";
+
+function firstFieldErrorMessage(errors: FieldErrors<ProductFormValues>): string | null {
+  for (const node of Object.values(errors)) {
+    if (!node) continue;
+    if (
+      typeof node === "object" &&
+      "message" in node &&
+      typeof node.message === "string" &&
+      node.message
+    ) {
+      return node.message;
+    }
+    if (typeof node === "object" && node !== null) {
+      const inner = firstFieldErrorMessage(node as FieldErrors<ProductFormValues>);
+      if (inner) return inner;
+    }
+  }
+  return null;
+}
 
 export interface ProductFormUIProps {
   values?: ProductFormValues;
@@ -38,7 +59,9 @@ export function ProductFormUI({
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={form.handleSubmit(onSubmit, (errs) => {
+        toast.error(firstFieldErrorMessage(errs) ?? "Please fix the form errors");
+      })}
       className="mx-auto max-w-2xl space-y-6"
     >
       <ProductBasicsCard form={form} />

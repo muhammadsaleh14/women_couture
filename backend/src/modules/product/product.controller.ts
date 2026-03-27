@@ -1,13 +1,24 @@
 import path from "path";
 import type { Request, Response, NextFunction } from "express";
 import * as productService from "./product.service";
-import * as variantService from "../variant/variant.service";
 import {
   CreateProductBodySchema,
   ProductParamsSchema,
   ProductQuerySchema,
+  SaveProductBodySchema,
   UpdateProductBodySchema,
 } from "./product.schema";
+
+function variantFilesToRelativeUrls(filesByVariant: Map<number, Express.Multer.File[]>) {
+  const variantImages = new Map<number, string[]>();
+  for (const [idx, files] of filesByVariant) {
+    variantImages.set(
+      idx,
+      files.map((f) => "/" + path.relative(process.cwd(), f.path).replace(/\\/g, "/")),
+    );
+  }
+  return variantImages;
+}
 
 function parseMultipartBody(req: Request) {
   if (req.is("application/json")) {
@@ -34,17 +45,30 @@ function parseMultipartBody(req: Request) {
 export async function createProduct(req: Request, res: Response, next: NextFunction) {
   try {
     const { data, filesByVariant } = parseMultipartBody(req);
-    const body = CreateProductBodySchema.parse(data);
+    const variantImages = variantFilesToRelativeUrls(filesByVariant);
 
-    const variantImages = new Map<number, string[]>();
-    for (const [idx, files] of filesByVariant) {
-      variantImages.set(
-        idx,
-        files.map((f) => "/" + path.relative(process.cwd(), f.path).replace(/\\/g, "/")),
-      );
+    if (req.is("application/json")) {
+      const body = CreateProductBodySchema.parse(data);
+      const result = await productService.createProduct(body, undefined);
+      res.status(201).json(result);
+      return;
     }
 
-    const result = await productService.createProduct(body, variantImages);
+    const body = SaveProductBodySchema.parse(data);
+    const result = await productService.createProduct(
+      {
+        name: body.name,
+        description: body.description,
+        type: body.type,
+        variants: body.variants.map((v) => ({
+          color: v.color,
+          sku: v.sku ?? undefined,
+          salePrice: v.salePrice,
+          purchasePrice: v.purchasePrice ?? undefined,
+        })),
+      },
+      variantImages,
+    );
     res.status(201).json(result);
   } catch (err) {
     next(err);
@@ -90,22 +114,19 @@ export async function updateProduct(req: Request, res: Response, next: NextFunct
   try {
     const params = ProductParamsSchema.parse(req.params);
     const { data, filesByVariant } = parseMultipartBody(req);
-    const body = UpdateProductBodySchema.parse(data);
+    const variantImages = variantFilesToRelativeUrls(filesByVariant);
 
-    const result = await productService.updateProduct(params.productId, body);
-
-    const variantIds: string[] = data.variantIds || [];
-    for (const [idx, files] of filesByVariant) {
-      const variantId = variantIds[idx];
-      if (!variantId) continue;
-      for (const file of files) {
-        const url = "/" + path.relative(process.cwd(), file.path).replace(/\\/g, "/");
-        await variantService.addImage(variantId, url);
-      }
+    if (req.is("application/json")) {
+      const body = UpdateProductBodySchema.parse(data);
+      const result = await productService.updateProduct(params.productId, body);
+      const full = await productService.getProductById(params.productId);
+      res.status(200).json(full || result);
+      return;
     }
 
-    const full = await productService.getProductById(params.productId);
-    res.status(200).json(full || result);
+    const body = SaveProductBodySchema.parse(data);
+    const full = await productService.replaceProductFull(params.productId, body, variantImages);
+    res.status(200).json(full);
   } catch (err) {
     if (err instanceof Error && err.message.includes("Record to update not found")) {
       res.status(404).json({ message: "Product not found" });

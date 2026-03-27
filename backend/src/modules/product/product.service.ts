@@ -1,6 +1,9 @@
+import * as fs from "fs/promises";
+import path from "path";
 import { ClothingType, StockMoveType } from "@prisma/client";
 import { prisma } from "../../core/database/prisma";
 import { toImageUrl } from "../../core/utils/image-url";
+import type { SaveProductBody } from "./product.schema";
 
 function withImageUrls<
   T extends {
@@ -175,4 +178,114 @@ export async function updateProduct(
     where: { id: productId },
     data,
   });
+}
+
+async function unlinkStoredImage(url: string) {
+  if (!url || url.startsWith("http")) return;
+  const filePath = path.join(process.cwd(), url);
+  await fs.unlink(filePath).catch(() => {});
+}
+
+/**
+ * Replace product + variants + images in one transaction (multipart full save).
+ * `variantFiles` maps variant index in `body.variants` to uploaded file paths (disk URLs).
+ */
+export async function replaceProductFull(
+  productId: string,
+  body: SaveProductBody,
+  variantFiles: Map<number, string[]>,
+) {
+  const existingProduct = await prisma.product.findUnique({ where: { id: productId } });
+  if (!existingProduct) {
+    throw new Error("Record to update not found");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.product.update({
+      where: { id: productId },
+      data: {
+        name: body.name,
+        description: body.description ?? null,
+        type: body.type,
+      },
+    });
+
+    const existingVariants = await tx.productVariant.findMany({
+      where: { productId },
+      include: { images: true },
+    });
+
+    const payloadIds = new Set(
+      body.variants.map((v) => v.id).filter((id): id is string => !!id),
+    );
+
+    for (const ev of existingVariants) {
+      if (!payloadIds.has(ev.id)) {
+        for (const img of ev.images) {
+          await unlinkStoredImage(img.url);
+        }
+        await tx.productVariant.delete({ where: { id: ev.id } });
+      }
+    }
+
+    for (let i = 0; i < body.variants.length; i++) {
+      const v = body.variants[i];
+      const newUrls = variantFiles.get(i) ?? [];
+
+      if (v.id) {
+        await tx.productVariant.update({
+          where: { id: v.id },
+          data: {
+            color: v.color,
+            sku: v.sku ?? null,
+            salePrice: v.salePrice,
+            purchasePrice: v.purchasePrice ?? null,
+          },
+        });
+
+        const keep = new Set(v.existingImageIds ?? []);
+        const imgs = await tx.productImage.findMany({
+          where: { productVariantId: v.id },
+        });
+        for (const img of imgs) {
+          if (!keep.has(img.id)) {
+            await unlinkStoredImage(img.url);
+            await tx.productImage.delete({ where: { id: img.id } });
+          }
+        }
+
+        const agg = await tx.productImage.aggregate({
+          where: { productVariantId: v.id },
+          _max: { order: true },
+        });
+        let nextOrder = (agg._max.order ?? -1) + 1;
+        for (const url of newUrls) {
+          await tx.productImage.create({
+            data: { productVariantId: v.id, url, order: nextOrder++ },
+          });
+        }
+      } else {
+        await tx.productVariant.create({
+          data: {
+            productId,
+            color: v.color,
+            sku: v.sku ?? null,
+            salePrice: v.salePrice,
+            purchasePrice: v.purchasePrice ?? null,
+            stockQty: 0,
+            images:
+              newUrls.length > 0
+                ? {
+                    create: newUrls.map((url, order) => ({ url, order })),
+                  }
+                : undefined,
+          },
+        });
+      }
+    }
+  });
+
+  const full = await getProductById(productId);
+  if (!full) throw new Error("Record to update not found");
+  return full;
 }

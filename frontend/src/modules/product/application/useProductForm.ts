@@ -1,4 +1,4 @@
-import { useMemo, type ChangeEvent } from "react";
+import { useEffect, useMemo, type ChangeEvent } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -26,8 +26,15 @@ export function useProductForm(options: UseProductFormOptions) {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues,
-    ...(controlledValues !== undefined ? { values: controlledValues } : {}),
   });
+
+  useEffect(() => {
+    if (controlledValues !== undefined) {
+      form.reset(controlledValues);
+    } else {
+      form.reset(defaultProductFormValues());
+    }
+  }, [controlledValues, form]);
 
   const { control } = form;
 
