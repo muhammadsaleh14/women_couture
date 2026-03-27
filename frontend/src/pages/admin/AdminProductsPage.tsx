@@ -13,19 +13,19 @@ import { Switch } from "@/core/components/ui/switch";
 import { ROUTES } from "@/core/routes";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  useGetAdminProducts,
-  usePatchAdminProductsProductId,
-  getGetAdminProductsQueryKey,
+  useGetProducts,
+  usePatchProductsProductId,
+  getGetProductsQueryKey,
 } from "@/core/api/generated/api";
 
 export function AdminProductsPage() {
   const queryClient = useQueryClient();
-  const { data: products, isLoading, error } = useGetAdminProducts();
+  const { data: products, isLoading, error } = useGetProducts();
 
-  const toggleActiveMutation = usePatchAdminProductsProductId({
+  const toggleActiveMutation = usePatchProductsProductId({
     mutation: {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetAdminProductsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetProductsQueryKey() });
       },
     },
   });

@@ -11,8 +11,8 @@ routes.use("/health", healthRouter);
 
 const v1Router = Router();
 v1Router.use("/auth", authRouter);
-v1Router.use("/admin/products", productRouter);
-v1Router.use("/admin/variants", variantRouter);
+v1Router.use("/products", productRouter);
+v1Router.use("/variants", variantRouter);
 v1Router.use("/echo", echoRouter);
 
 routes.use("/api/v1", v1Router);

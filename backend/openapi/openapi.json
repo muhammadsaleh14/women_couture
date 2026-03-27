@@ -566,7 +566,7 @@
         }
       }
     },
-    "/admin/products": {
+    "/products": {
       "get": {
         "summary": "List all products",
         "tags": [
@@ -654,7 +654,7 @@
         }
       }
     },
-    "/admin/products/{productId}": {
+    "/products/{productId}": {
       "get": {
         "summary": "Get a product by ID",
         "tags": [
@@ -734,7 +734,7 @@
         }
       }
     },
-    "/admin/products/{productId}/variants": {
+    "/products/{productId}/variants": {
       "post": {
         "summary": "Add a variant to a product",
         "tags": [
@@ -766,7 +766,7 @@
         }
       }
     },
-    "/admin/variants/{variantId}": {
+    "/variants/{variantId}": {
       "patch": {
         "summary": "Update variant details",
         "tags": [
@@ -842,7 +842,7 @@
         }
       }
     },
-    "/admin/variants/{variantId}/stock": {
+    "/variants/{variantId}/stock": {
       "post": {
         "summary": "Adjust variant stock",
         "tags": [
@@ -896,7 +896,7 @@
         }
       }
     },
-    "/admin/variants/{variantId}/images": {
+    "/variants/{variantId}/images": {
       "post": {
         "summary": "Add an image to a variant",
         "tags": [
@@ -962,7 +962,7 @@
         }
       }
     },
-    "/admin/variants/images/{imageId}": {
+    "/variants/images/{imageId}": {
       "delete": {
         "summary": "Delete a variant image",
         "tags": [

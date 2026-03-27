@@ -8,7 +8,7 @@ import { UpdateVariantBodySchema } from "./variant.schema";
 
 openAPIRegistry.registerPath({
   method: "patch",
-  path: "/admin/variants/{variantId}",
+  path: "/variants/{variantId}",
   summary: "Update variant details",
   tags: ["Variants"],
   security: [{ bearerAuth: [] }],
@@ -41,7 +41,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "delete",
-  path: "/admin/variants/{variantId}",
+  path: "/variants/{variantId}",
   summary: "Delete a variant",
   tags: ["Variants"],
   security: [{ bearerAuth: [] }],
@@ -62,7 +62,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/admin/variants/{variantId}/stock",
+  path: "/variants/{variantId}/stock",
   summary: "Adjust variant stock",
   tags: ["Variants"],
   request: {
@@ -90,7 +90,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/admin/variants/{variantId}/images",
+  path: "/variants/{variantId}/images",
   summary: "Add an image to a variant",
   tags: ["Variants"],
   security: [{ bearerAuth: [] }],
@@ -126,7 +126,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "delete",
-  path: "/admin/variants/images/{imageId}",
+  path: "/variants/images/{imageId}",
   summary: "Delete a variant image",
   tags: ["Variants"],
   security: [{ bearerAuth: [] }],

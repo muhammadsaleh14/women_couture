@@ -2,14 +2,14 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
-  useGetAdminProductsProductId,
-  postAdminProducts,
-  patchAdminProductsProductId,
-  postAdminProductsProductIdVariants,
-  patchAdminVariantsVariantId,
-  deleteAdminVariantsVariantId,
-  postAdminVariantsVariantIdImages,
-  deleteAdminVariantsImagesImageId,
+  useGetProductsProductId,
+  postProducts,
+  patchProductsProductId,
+  postProductsProductIdVariants,
+  patchVariantsVariantId,
+  deleteVariantsVariantId,
+  postVariantsVariantIdImages,
+  deleteVariantsImagesImageId,
 } from "@/core/api/generated/api";
 import { ROUTES } from "@/core/routes";
 import { mapAdminProductDetailToFormValues } from "@/modules/product/infrastructure/mapAdminProductDetailToFormValues";
@@ -22,7 +22,7 @@ export function AdminProductFormPage() {
   const isNewProduct = !productId;
   const [saving, setSaving] = useState(false);
 
-  const { data: existing, isLoading } = useGetAdminProductsProductId(
+  const { data: existing, isLoading } = useGetProductsProductId(
     productId || "",
     { query: { enabled: !isNewProduct && !!productId } },
   );
@@ -36,7 +36,7 @@ export function AdminProductFormPage() {
     setSaving(true);
     try {
       if (isNewProduct) {
-        const result = await postAdminProducts({
+        const result = await postProducts({
           name: values.name,
           description: values.description || undefined,
           type: values.type,
@@ -55,14 +55,14 @@ export function AdminProductFormPage() {
           if (!createdVariant) continue;
           for (const img of values.variants[i].images) {
             if (img.file) {
-              await postAdminVariantsVariantIdImages(createdVariant.id, {
+              await postVariantsVariantIdImages(createdVariant.id, {
                 image: img.file,
               });
             }
           }
         }
       } else if (productId) {
-        await patchAdminProductsProductId(productId, {
+        await patchProductsProductId(productId, {
           name: values.name,
           description: values.description || undefined,
           type: values.type,
@@ -70,7 +70,7 @@ export function AdminProductFormPage() {
 
         for (const v of values.variants) {
           if (v.isNew) {
-            const created = await postAdminProductsProductIdVariants(productId, {
+            const created = await postProductsProductIdVariants(productId, {
               color: v.color,
               sku: v.sku || undefined,
               salePrice: Number(v.salePrice || 0),
@@ -82,13 +82,13 @@ export function AdminProductFormPage() {
             const createdId = (created as unknown as { id: string }).id;
             for (const img of v.images) {
               if (img.file) {
-                await postAdminVariantsVariantIdImages(createdId, {
+                await postVariantsVariantIdImages(createdId, {
                   image: img.file,
                 });
               }
             }
           } else {
-            await patchAdminVariantsVariantId(v.id, {
+            await patchVariantsVariantId(v.id, {
               color: v.color,
               sku: v.sku || undefined,
               salePrice: Number(v.salePrice || 0),
@@ -99,7 +99,7 @@ export function AdminProductFormPage() {
 
             for (const img of v.images) {
               if (img.file) {
-                await postAdminVariantsVariantIdImages(v.id, {
+                await postVariantsVariantIdImages(v.id, {
                   image: img.file,
                 });
               }
@@ -120,7 +120,7 @@ export function AdminProductFormPage() {
 
   const handleDeleteExistingImage = async (imageId: string) => {
     try {
-      await deleteAdminVariantsImagesImageId(imageId);
+      await deleteVariantsImagesImageId(imageId);
     } catch (err) {
       console.error("Failed to delete image:", err);
       toast.error("Failed to delete image");
@@ -130,7 +130,7 @@ export function AdminProductFormPage() {
 
   const handleDeleteExistingVariant = async (variantId: string) => {
     try {
-      await deleteAdminVariantsVariantId(variantId);
+      await deleteVariantsVariantId(variantId);
     } catch (err) {
       console.error("Failed to delete variant:", err);
       toast.error("Failed to delete variant");

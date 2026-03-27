@@ -11,7 +11,7 @@ import {
 
 openAPIRegistry.registerPath({
   method: "get",
-  path: "/admin/products",
+  path: "/products",
   summary: "List all products",
   tags: ["Products"],
   request: {
@@ -38,7 +38,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "get",
-  path: "/admin/products/{productId}",
+  path: "/products/{productId}",
   summary: "Get a product by ID",
   tags: ["Products"],
   security: [{ bearerAuth: [] }],
@@ -62,7 +62,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/admin/products",
+  path: "/products",
   summary: "Create a new base product",
   tags: ["Products"],
   request: {
@@ -88,7 +88,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "post",
-  path: "/admin/products/{productId}/variants",
+  path: "/products/{productId}/variants",
   summary: "Add a variant to a product",
   tags: ["Products"],
   request: {
@@ -112,7 +112,7 @@ openAPIRegistry.registerPath({
 
 openAPIRegistry.registerPath({
   method: "patch",
-  path: "/admin/products/{productId}",
+  path: "/products/{productId}",
   tags: ["Products"],
   summary: "Update product details or status",
   security: [{ bearerAuth: [] }],

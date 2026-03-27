@@ -248,7 +248,7 @@ export interface EchoBody {
   message: string;
 }
 
-export type GetAdminProductsParams = {
+export type GetProductsParams = {
 /**
  * Number of records to skip
  * @nullable
@@ -262,38 +262,38 @@ take?: number | null;
 /**
  * Filter by active state
  */
-isActive?: GetAdminProductsIsActive;
+isActive?: GetProductsIsActive;
 };
 
-export type GetAdminProductsIsActive = typeof GetAdminProductsIsActive[keyof typeof GetAdminProductsIsActive];
+export type GetProductsIsActive = typeof GetProductsIsActive[keyof typeof GetProductsIsActive];
 
 
-export const GetAdminProductsIsActive = {
+export const GetProductsIsActive = {
   true: 'true',
   false: 'false',
 } as const;
 
-export type PostAdminVariantsVariantIdStockBodyType = typeof PostAdminVariantsVariantIdStockBodyType[keyof typeof PostAdminVariantsVariantIdStockBodyType];
+export type PostVariantsVariantIdStockBodyType = typeof PostVariantsVariantIdStockBodyType[keyof typeof PostVariantsVariantIdStockBodyType];
 
 
-export const PostAdminVariantsVariantIdStockBodyType = {
+export const PostVariantsVariantIdStockBodyType = {
   IN: 'IN',
   OUT: 'OUT',
   ADJUSTMENT: 'ADJUSTMENT',
 } as const;
 
-export type PostAdminVariantsVariantIdStockBody = {
-  type: PostAdminVariantsVariantIdStockBodyType;
+export type PostVariantsVariantIdStockBody = {
+  type: PostVariantsVariantIdStockBodyType;
   /** @exclusiveMinimum 0 */
   quantity: number;
   notes?: string;
 };
 
-export type PostAdminVariantsVariantIdImagesBody = {
+export type PostVariantsVariantIdImagesBody = {
   image?: Blob;
 };
 
-export type PostAdminVariantsVariantIdImages201 = {
+export type PostVariantsVariantIdImages201 = {
   id: string;
   url: string;
   order: number;
@@ -585,14 +585,14 @@ export const usePostEcho = <TError = unknown,
 /**
  * @summary List all products
  */
-export const getAdminProducts = (
-    params?: GetAdminProductsParams,
+export const getProducts = (
+    params?: GetProductsParams,
  signal?: AbortSignal
 ) => {
       
       
       return customInstance<ProductWithVariants[]>(
-      {url: `/admin/products`, method: 'GET',
+      {url: `/products`, method: 'GET',
         params, signal
     },
       );
@@ -601,69 +601,69 @@ export const getAdminProducts = (
 
 
 
-export const getGetAdminProductsQueryKey = (params?: GetAdminProductsParams,) => {
+export const getGetProductsQueryKey = (params?: GetProductsParams,) => {
     return [
-    `/admin/products`, ...(params ? [params] : [])
+    `/products`, ...(params ? [params] : [])
     ] as const;
     }
 
     
-export const getGetAdminProductsQueryOptions = <TData = Awaited<ReturnType<typeof getAdminProducts>>, TError = unknown>(params?: GetAdminProductsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProducts>>, TError, TData>>, }
+export const getGetProductsQueryOptions = <TData = Awaited<ReturnType<typeof getProducts>>, TError = unknown>(params?: GetProductsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetAdminProductsQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetProductsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminProducts>>> = ({ signal }) => getAdminProducts(params, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProducts>>> = ({ signal }) => getProducts(params, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminProducts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetAdminProductsQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminProducts>>>
-export type GetAdminProductsQueryError = unknown
+export type GetProductsQueryResult = NonNullable<Awaited<ReturnType<typeof getProducts>>>
+export type GetProductsQueryError = unknown
 
 
-export function useGetAdminProducts<TData = Awaited<ReturnType<typeof getAdminProducts>>, TError = unknown>(
- params: undefined |  GetAdminProductsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProducts>>, TError, TData>> & Pick<
+export function useGetProducts<TData = Awaited<ReturnType<typeof getProducts>>, TError = unknown>(
+ params: undefined |  GetProductsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAdminProducts>>,
+          Awaited<ReturnType<typeof getProducts>>,
           TError,
-          Awaited<ReturnType<typeof getAdminProducts>>
+          Awaited<ReturnType<typeof getProducts>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAdminProducts<TData = Awaited<ReturnType<typeof getAdminProducts>>, TError = unknown>(
- params?: GetAdminProductsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProducts>>, TError, TData>> & Pick<
+export function useGetProducts<TData = Awaited<ReturnType<typeof getProducts>>, TError = unknown>(
+ params?: GetProductsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAdminProducts>>,
+          Awaited<ReturnType<typeof getProducts>>,
           TError,
-          Awaited<ReturnType<typeof getAdminProducts>>
+          Awaited<ReturnType<typeof getProducts>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAdminProducts<TData = Awaited<ReturnType<typeof getAdminProducts>>, TError = unknown>(
- params?: GetAdminProductsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProducts>>, TError, TData>>, }
+export function useGetProducts<TData = Awaited<ReturnType<typeof getProducts>>, TError = unknown>(
+ params?: GetProductsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary List all products
  */
 
-export function useGetAdminProducts<TData = Awaited<ReturnType<typeof getAdminProducts>>, TError = unknown>(
- params?: GetAdminProductsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProducts>>, TError, TData>>, }
+export function useGetProducts<TData = Awaited<ReturnType<typeof getProducts>>, TError = unknown>(
+ params?: GetProductsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProducts>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetAdminProductsQueryOptions(params,options)
+  const queryOptions = getGetProductsQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -677,14 +677,14 @@ export function useGetAdminProducts<TData = Awaited<ReturnType<typeof getAdminPr
 /**
  * @summary Create a new base product
  */
-export const postAdminProducts = (
+export const postProducts = (
     createProductBody: CreateProductBody,
  signal?: AbortSignal
 ) => {
       
       
       return customInstance<ProductWithVariants>(
-      {url: `/admin/products`, method: 'POST',
+      {url: `/products`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createProductBody, signal
     },
@@ -693,11 +693,11 @@ export const postAdminProducts = (
   
 
 
-export const getPostAdminProductsMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminProducts>>, TError,{data: CreateProductBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postAdminProducts>>, TError,{data: CreateProductBody}, TContext> => {
+export const getPostProductsMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postProducts>>, TError,{data: CreateProductBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postProducts>>, TError,{data: CreateProductBody}, TContext> => {
 
-const mutationKey = ['postAdminProducts'];
+const mutationKey = ['postProducts'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -707,10 +707,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminProducts>>, {data: CreateProductBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postProducts>>, {data: CreateProductBody}> = (props) => {
           const {data} = props ?? {};
 
-          return  postAdminProducts(data,)
+          return  postProducts(data,)
         }
 
 
@@ -720,35 +720,35 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostAdminProductsMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminProducts>>>
-    export type PostAdminProductsMutationBody = CreateProductBody
-    export type PostAdminProductsMutationError = unknown
+    export type PostProductsMutationResult = NonNullable<Awaited<ReturnType<typeof postProducts>>>
+    export type PostProductsMutationBody = CreateProductBody
+    export type PostProductsMutationError = unknown
 
     /**
  * @summary Create a new base product
  */
-export const usePostAdminProducts = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminProducts>>, TError,{data: CreateProductBody}, TContext>, }
+export const usePostProducts = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postProducts>>, TError,{data: CreateProductBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAdminProducts>>,
+        Awaited<ReturnType<typeof postProducts>>,
         TError,
         {data: CreateProductBody},
         TContext
       > => {
-      return useMutation(getPostAdminProductsMutationOptions(options), queryClient);
+      return useMutation(getPostProductsMutationOptions(options), queryClient);
     }
     
 /**
  * @summary Get a product by ID
  */
-export const getAdminProductsProductId = (
+export const getProductsProductId = (
     productId: string,
  signal?: AbortSignal
 ) => {
       
       
       return customInstance<ProductWithVariants>(
-      {url: `/admin/products/${productId}`, method: 'GET', signal
+      {url: `/products/${productId}`, method: 'GET', signal
     },
       );
     }
@@ -756,69 +756,69 @@ export const getAdminProductsProductId = (
 
 
 
-export const getGetAdminProductsProductIdQueryKey = (productId: string,) => {
+export const getGetProductsProductIdQueryKey = (productId: string,) => {
     return [
-    `/admin/products/${productId}`
+    `/products/${productId}`
     ] as const;
     }
 
     
-export const getGetAdminProductsProductIdQueryOptions = <TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>>, }
+export const getGetProductsProductIdQueryOptions = <TData = Awaited<ReturnType<typeof getProductsProductId>>, TError = void>(productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProductsProductId>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetAdminProductsProductIdQueryKey(productId);
+  const queryKey =  queryOptions?.queryKey ?? getGetProductsProductIdQueryKey(productId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminProductsProductId>>> = ({ signal }) => getAdminProductsProductId(productId, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProductsProductId>>> = ({ signal }) => getProductsProductId(productId, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(productId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(productId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProductsProductId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetAdminProductsProductIdQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminProductsProductId>>>
-export type GetAdminProductsProductIdQueryError = void
+export type GetProductsProductIdQueryResult = NonNullable<Awaited<ReturnType<typeof getProductsProductId>>>
+export type GetProductsProductIdQueryError = void
 
 
-export function useGetAdminProductsProductId<TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(
- productId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>> & Pick<
+export function useGetProductsProductId<TData = Awaited<ReturnType<typeof getProductsProductId>>, TError = void>(
+ productId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProductsProductId>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAdminProductsProductId>>,
+          Awaited<ReturnType<typeof getProductsProductId>>,
           TError,
-          Awaited<ReturnType<typeof getAdminProductsProductId>>
+          Awaited<ReturnType<typeof getProductsProductId>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAdminProductsProductId<TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(
- productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>> & Pick<
+export function useGetProductsProductId<TData = Awaited<ReturnType<typeof getProductsProductId>>, TError = void>(
+ productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProductsProductId>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getAdminProductsProductId>>,
+          Awaited<ReturnType<typeof getProductsProductId>>,
           TError,
-          Awaited<ReturnType<typeof getAdminProductsProductId>>
+          Awaited<ReturnType<typeof getProductsProductId>>
         > , 'initialData'
       >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetAdminProductsProductId<TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(
- productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>>, }
+export function useGetProductsProductId<TData = Awaited<ReturnType<typeof getProductsProductId>>, TError = void>(
+ productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProductsProductId>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get a product by ID
  */
 
-export function useGetAdminProductsProductId<TData = Awaited<ReturnType<typeof getAdminProductsProductId>>, TError = void>(
- productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminProductsProductId>>, TError, TData>>, }
+export function useGetProductsProductId<TData = Awaited<ReturnType<typeof getProductsProductId>>, TError = void>(
+ productId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getProductsProductId>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetAdminProductsProductIdQueryOptions(productId,options)
+  const queryOptions = getGetProductsProductIdQueryOptions(productId,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -832,7 +832,7 @@ export function useGetAdminProductsProductId<TData = Awaited<ReturnType<typeof g
 /**
  * @summary Update product details or status
  */
-export const patchAdminProductsProductId = (
+export const patchProductsProductId = (
     productId: string,
     updateProductBody: UpdateProductBody,
  signal?: AbortSignal
@@ -840,7 +840,7 @@ export const patchAdminProductsProductId = (
       
       
       return customInstance<ProductBase>(
-      {url: `/admin/products/${productId}`, method: 'PATCH',
+      {url: `/products/${productId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateProductBody, signal
     },
@@ -849,11 +849,11 @@ export const patchAdminProductsProductId = (
   
 
 
-export const getPatchAdminProductsProductIdMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminProductsProductId>>, TError,{productId: string;data: UpdateProductBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof patchAdminProductsProductId>>, TError,{productId: string;data: UpdateProductBody}, TContext> => {
+export const getPatchProductsProductIdMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchProductsProductId>>, TError,{productId: string;data: UpdateProductBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchProductsProductId>>, TError,{productId: string;data: UpdateProductBody}, TContext> => {
 
-const mutationKey = ['patchAdminProductsProductId'];
+const mutationKey = ['patchProductsProductId'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -863,10 +863,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminProductsProductId>>, {productId: string;data: UpdateProductBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchProductsProductId>>, {productId: string;data: UpdateProductBody}> = (props) => {
           const {productId,data} = props ?? {};
 
-          return  patchAdminProductsProductId(productId,data,)
+          return  patchProductsProductId(productId,data,)
         }
 
 
@@ -876,28 +876,28 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchAdminProductsProductIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminProductsProductId>>>
-    export type PatchAdminProductsProductIdMutationBody = UpdateProductBody
-    export type PatchAdminProductsProductIdMutationError = unknown
+    export type PatchProductsProductIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchProductsProductId>>>
+    export type PatchProductsProductIdMutationBody = UpdateProductBody
+    export type PatchProductsProductIdMutationError = unknown
 
     /**
  * @summary Update product details or status
  */
-export const usePatchAdminProductsProductId = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminProductsProductId>>, TError,{productId: string;data: UpdateProductBody}, TContext>, }
+export const usePatchProductsProductId = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchProductsProductId>>, TError,{productId: string;data: UpdateProductBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchAdminProductsProductId>>,
+        Awaited<ReturnType<typeof patchProductsProductId>>,
         TError,
         {productId: string;data: UpdateProductBody},
         TContext
       > => {
-      return useMutation(getPatchAdminProductsProductIdMutationOptions(options), queryClient);
+      return useMutation(getPatchProductsProductIdMutationOptions(options), queryClient);
     }
     
 /**
  * @summary Add a variant to a product
  */
-export const postAdminProductsProductIdVariants = (
+export const postProductsProductIdVariants = (
     productId: string,
     createVariantBody: CreateVariantBody,
  signal?: AbortSignal
@@ -905,7 +905,7 @@ export const postAdminProductsProductIdVariants = (
       
       
       return customInstance<void>(
-      {url: `/admin/products/${productId}/variants`, method: 'POST',
+      {url: `/products/${productId}/variants`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: createVariantBody, signal
     },
@@ -914,11 +914,11 @@ export const postAdminProductsProductIdVariants = (
   
 
 
-export const getPostAdminProductsProductIdVariantsMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminProductsProductIdVariants>>, TError,{productId: string;data: CreateVariantBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postAdminProductsProductIdVariants>>, TError,{productId: string;data: CreateVariantBody}, TContext> => {
+export const getPostProductsProductIdVariantsMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postProductsProductIdVariants>>, TError,{productId: string;data: CreateVariantBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postProductsProductIdVariants>>, TError,{productId: string;data: CreateVariantBody}, TContext> => {
 
-const mutationKey = ['postAdminProductsProductIdVariants'];
+const mutationKey = ['postProductsProductIdVariants'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -928,10 +928,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminProductsProductIdVariants>>, {productId: string;data: CreateVariantBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postProductsProductIdVariants>>, {productId: string;data: CreateVariantBody}> = (props) => {
           const {productId,data} = props ?? {};
 
-          return  postAdminProductsProductIdVariants(productId,data,)
+          return  postProductsProductIdVariants(productId,data,)
         }
 
 
@@ -941,28 +941,28 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostAdminProductsProductIdVariantsMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminProductsProductIdVariants>>>
-    export type PostAdminProductsProductIdVariantsMutationBody = CreateVariantBody
-    export type PostAdminProductsProductIdVariantsMutationError = unknown
+    export type PostProductsProductIdVariantsMutationResult = NonNullable<Awaited<ReturnType<typeof postProductsProductIdVariants>>>
+    export type PostProductsProductIdVariantsMutationBody = CreateVariantBody
+    export type PostProductsProductIdVariantsMutationError = unknown
 
     /**
  * @summary Add a variant to a product
  */
-export const usePostAdminProductsProductIdVariants = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminProductsProductIdVariants>>, TError,{productId: string;data: CreateVariantBody}, TContext>, }
+export const usePostProductsProductIdVariants = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postProductsProductIdVariants>>, TError,{productId: string;data: CreateVariantBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAdminProductsProductIdVariants>>,
+        Awaited<ReturnType<typeof postProductsProductIdVariants>>,
         TError,
         {productId: string;data: CreateVariantBody},
         TContext
       > => {
-      return useMutation(getPostAdminProductsProductIdVariantsMutationOptions(options), queryClient);
+      return useMutation(getPostProductsProductIdVariantsMutationOptions(options), queryClient);
     }
     
 /**
  * @summary Update variant details
  */
-export const patchAdminVariantsVariantId = (
+export const patchVariantsVariantId = (
     variantId: string,
     updateVariantBody: UpdateVariantBody,
  signal?: AbortSignal
@@ -970,7 +970,7 @@ export const patchAdminVariantsVariantId = (
       
       
       return customInstance<ProductVariant>(
-      {url: `/admin/variants/${variantId}`, method: 'PATCH',
+      {url: `/variants/${variantId}`, method: 'PATCH',
       headers: {'Content-Type': 'application/json', },
       data: updateVariantBody, signal
     },
@@ -979,11 +979,11 @@ export const patchAdminVariantsVariantId = (
   
 
 
-export const getPatchAdminVariantsVariantIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>, TError,{variantId: string;data: UpdateVariantBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>, TError,{variantId: string;data: UpdateVariantBody}, TContext> => {
+export const getPatchVariantsVariantIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchVariantsVariantId>>, TError,{variantId: string;data: UpdateVariantBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchVariantsVariantId>>, TError,{variantId: string;data: UpdateVariantBody}, TContext> => {
 
-const mutationKey = ['patchAdminVariantsVariantId'];
+const mutationKey = ['patchVariantsVariantId'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -993,10 +993,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>, {variantId: string;data: UpdateVariantBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchVariantsVariantId>>, {variantId: string;data: UpdateVariantBody}> = (props) => {
           const {variantId,data} = props ?? {};
 
-          return  patchAdminVariantsVariantId(variantId,data,)
+          return  patchVariantsVariantId(variantId,data,)
         }
 
 
@@ -1006,46 +1006,46 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PatchAdminVariantsVariantIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>>
-    export type PatchAdminVariantsVariantIdMutationBody = UpdateVariantBody
-    export type PatchAdminVariantsVariantIdMutationError = void
+    export type PatchVariantsVariantIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchVariantsVariantId>>>
+    export type PatchVariantsVariantIdMutationBody = UpdateVariantBody
+    export type PatchVariantsVariantIdMutationError = void
 
     /**
  * @summary Update variant details
  */
-export const usePatchAdminVariantsVariantId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchAdminVariantsVariantId>>, TError,{variantId: string;data: UpdateVariantBody}, TContext>, }
+export const usePatchVariantsVariantId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchVariantsVariantId>>, TError,{variantId: string;data: UpdateVariantBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof patchAdminVariantsVariantId>>,
+        Awaited<ReturnType<typeof patchVariantsVariantId>>,
         TError,
         {variantId: string;data: UpdateVariantBody},
         TContext
       > => {
-      return useMutation(getPatchAdminVariantsVariantIdMutationOptions(options), queryClient);
+      return useMutation(getPatchVariantsVariantIdMutationOptions(options), queryClient);
     }
     
 /**
  * @summary Delete a variant
  */
-export const deleteAdminVariantsVariantId = (
+export const deleteVariantsVariantId = (
     variantId: string,
  signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/admin/variants/${variantId}`, method: 'DELETE', signal
+      {url: `/variants/${variantId}`, method: 'DELETE', signal
     },
       );
     }
   
 
 
-export const getDeleteAdminVariantsVariantIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>, TError,{variantId: string}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>, TError,{variantId: string}, TContext> => {
+export const getDeleteVariantsVariantIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVariantsVariantId>>, TError,{variantId: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteVariantsVariantId>>, TError,{variantId: string}, TContext> => {
 
-const mutationKey = ['deleteAdminVariantsVariantId'];
+const mutationKey = ['deleteVariantsVariantId'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1055,10 +1055,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>, {variantId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteVariantsVariantId>>, {variantId: string}> = (props) => {
           const {variantId} = props ?? {};
 
-          return  deleteAdminVariantsVariantId(variantId,)
+          return  deleteVariantsVariantId(variantId,)
         }
 
 
@@ -1068,49 +1068,49 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteAdminVariantsVariantIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>>
+    export type DeleteVariantsVariantIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteVariantsVariantId>>>
     
-    export type DeleteAdminVariantsVariantIdMutationError = void
+    export type DeleteVariantsVariantIdMutationError = void
 
     /**
  * @summary Delete a variant
  */
-export const useDeleteAdminVariantsVariantId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>, TError,{variantId: string}, TContext>, }
+export const useDeleteVariantsVariantId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVariantsVariantId>>, TError,{variantId: string}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteAdminVariantsVariantId>>,
+        Awaited<ReturnType<typeof deleteVariantsVariantId>>,
         TError,
         {variantId: string},
         TContext
       > => {
-      return useMutation(getDeleteAdminVariantsVariantIdMutationOptions(options), queryClient);
+      return useMutation(getDeleteVariantsVariantIdMutationOptions(options), queryClient);
     }
     
 /**
  * @summary Adjust variant stock
  */
-export const postAdminVariantsVariantIdStock = (
+export const postVariantsVariantIdStock = (
     variantId: string,
-    postAdminVariantsVariantIdStockBody: PostAdminVariantsVariantIdStockBody,
+    postVariantsVariantIdStockBody: PostVariantsVariantIdStockBody,
  signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/admin/variants/${variantId}/stock`, method: 'POST',
+      {url: `/variants/${variantId}/stock`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
-      data: postAdminVariantsVariantIdStockBody, signal
+      data: postVariantsVariantIdStockBody, signal
     },
       );
     }
   
 
 
-export const getPostAdminVariantsVariantIdStockMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, TError,{variantId: string;data: PostAdminVariantsVariantIdStockBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, TError,{variantId: string;data: PostAdminVariantsVariantIdStockBody}, TContext> => {
+export const getPostVariantsVariantIdStockMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postVariantsVariantIdStock>>, TError,{variantId: string;data: PostVariantsVariantIdStockBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postVariantsVariantIdStock>>, TError,{variantId: string;data: PostVariantsVariantIdStockBody}, TContext> => {
 
-const mutationKey = ['postAdminVariantsVariantIdStock'];
+const mutationKey = ['postVariantsVariantIdStock'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1120,10 +1120,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, {variantId: string;data: PostAdminVariantsVariantIdStockBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postVariantsVariantIdStock>>, {variantId: string;data: PostVariantsVariantIdStockBody}> = (props) => {
           const {variantId,data} = props ?? {};
 
-          return  postAdminVariantsVariantIdStock(variantId,data,)
+          return  postVariantsVariantIdStock(variantId,data,)
         }
 
 
@@ -1133,40 +1133,40 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostAdminVariantsVariantIdStockMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>>
-    export type PostAdminVariantsVariantIdStockMutationBody = PostAdminVariantsVariantIdStockBody
-    export type PostAdminVariantsVariantIdStockMutationError = unknown
+    export type PostVariantsVariantIdStockMutationResult = NonNullable<Awaited<ReturnType<typeof postVariantsVariantIdStock>>>
+    export type PostVariantsVariantIdStockMutationBody = PostVariantsVariantIdStockBody
+    export type PostVariantsVariantIdStockMutationError = unknown
 
     /**
  * @summary Adjust variant stock
  */
-export const usePostAdminVariantsVariantIdStock = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>, TError,{variantId: string;data: PostAdminVariantsVariantIdStockBody}, TContext>, }
+export const usePostVariantsVariantIdStock = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postVariantsVariantIdStock>>, TError,{variantId: string;data: PostVariantsVariantIdStockBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAdminVariantsVariantIdStock>>,
+        Awaited<ReturnType<typeof postVariantsVariantIdStock>>,
         TError,
-        {variantId: string;data: PostAdminVariantsVariantIdStockBody},
+        {variantId: string;data: PostVariantsVariantIdStockBody},
         TContext
       > => {
-      return useMutation(getPostAdminVariantsVariantIdStockMutationOptions(options), queryClient);
+      return useMutation(getPostVariantsVariantIdStockMutationOptions(options), queryClient);
     }
     
 /**
  * @summary Add an image to a variant
  */
-export const postAdminVariantsVariantIdImages = (
+export const postVariantsVariantIdImages = (
     variantId: string,
-    postAdminVariantsVariantIdImagesBody: PostAdminVariantsVariantIdImagesBody,
+    postVariantsVariantIdImagesBody: PostVariantsVariantIdImagesBody,
  signal?: AbortSignal
 ) => {
       
       const formData = new FormData();
-if(postAdminVariantsVariantIdImagesBody.image !== undefined) {
- formData.append(`image`, postAdminVariantsVariantIdImagesBody.image);
+if(postVariantsVariantIdImagesBody.image !== undefined) {
+ formData.append(`image`, postVariantsVariantIdImagesBody.image);
  }
 
-      return customInstance<PostAdminVariantsVariantIdImages201>(
-      {url: `/admin/variants/${variantId}/images`, method: 'POST',
+      return customInstance<PostVariantsVariantIdImages201>(
+      {url: `/variants/${variantId}/images`, method: 'POST',
        data: formData, signal
     },
       );
@@ -1174,11 +1174,11 @@ if(postAdminVariantsVariantIdImagesBody.image !== undefined) {
   
 
 
-export const getPostAdminVariantsVariantIdImagesMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>, TError,{variantId: string;data: PostAdminVariantsVariantIdImagesBody}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>, TError,{variantId: string;data: PostAdminVariantsVariantIdImagesBody}, TContext> => {
+export const getPostVariantsVariantIdImagesMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postVariantsVariantIdImages>>, TError,{variantId: string;data: PostVariantsVariantIdImagesBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postVariantsVariantIdImages>>, TError,{variantId: string;data: PostVariantsVariantIdImagesBody}, TContext> => {
 
-const mutationKey = ['postAdminVariantsVariantIdImages'];
+const mutationKey = ['postVariantsVariantIdImages'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1188,10 +1188,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>, {variantId: string;data: PostAdminVariantsVariantIdImagesBody}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postVariantsVariantIdImages>>, {variantId: string;data: PostVariantsVariantIdImagesBody}> = (props) => {
           const {variantId,data} = props ?? {};
 
-          return  postAdminVariantsVariantIdImages(variantId,data,)
+          return  postVariantsVariantIdImages(variantId,data,)
         }
 
 
@@ -1201,46 +1201,46 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostAdminVariantsVariantIdImagesMutationResult = NonNullable<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>>
-    export type PostAdminVariantsVariantIdImagesMutationBody = PostAdminVariantsVariantIdImagesBody
-    export type PostAdminVariantsVariantIdImagesMutationError = unknown
+    export type PostVariantsVariantIdImagesMutationResult = NonNullable<Awaited<ReturnType<typeof postVariantsVariantIdImages>>>
+    export type PostVariantsVariantIdImagesMutationBody = PostVariantsVariantIdImagesBody
+    export type PostVariantsVariantIdImagesMutationError = unknown
 
     /**
  * @summary Add an image to a variant
  */
-export const usePostAdminVariantsVariantIdImages = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>, TError,{variantId: string;data: PostAdminVariantsVariantIdImagesBody}, TContext>, }
+export const usePostVariantsVariantIdImages = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postVariantsVariantIdImages>>, TError,{variantId: string;data: PostVariantsVariantIdImagesBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postAdminVariantsVariantIdImages>>,
+        Awaited<ReturnType<typeof postVariantsVariantIdImages>>,
         TError,
-        {variantId: string;data: PostAdminVariantsVariantIdImagesBody},
+        {variantId: string;data: PostVariantsVariantIdImagesBody},
         TContext
       > => {
-      return useMutation(getPostAdminVariantsVariantIdImagesMutationOptions(options), queryClient);
+      return useMutation(getPostVariantsVariantIdImagesMutationOptions(options), queryClient);
     }
     
 /**
  * @summary Delete a variant image
  */
-export const deleteAdminVariantsImagesImageId = (
+export const deleteVariantsImagesImageId = (
     imageId: string,
  signal?: AbortSignal
 ) => {
       
       
       return customInstance<void>(
-      {url: `/admin/variants/images/${imageId}`, method: 'DELETE', signal
+      {url: `/variants/images/${imageId}`, method: 'DELETE', signal
     },
       );
     }
   
 
 
-export const getDeleteAdminVariantsImagesImageIdMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>, TError,{imageId: string}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>, TError,{imageId: string}, TContext> => {
+export const getDeleteVariantsImagesImageIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVariantsImagesImageId>>, TError,{imageId: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteVariantsImagesImageId>>, TError,{imageId: string}, TContext> => {
 
-const mutationKey = ['deleteAdminVariantsImagesImageId'];
+const mutationKey = ['deleteVariantsImagesImageId'];
 const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1250,10 +1250,10 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>, {imageId: string}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteVariantsImagesImageId>>, {imageId: string}> = (props) => {
           const {imageId} = props ?? {};
 
-          return  deleteAdminVariantsImagesImageId(imageId,)
+          return  deleteVariantsImagesImageId(imageId,)
         }
 
 
@@ -1263,20 +1263,20 @@ const {mutation: mutationOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type DeleteAdminVariantsImagesImageIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>>
+    export type DeleteVariantsImagesImageIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteVariantsImagesImageId>>>
     
-    export type DeleteAdminVariantsImagesImageIdMutationError = void
+    export type DeleteVariantsImagesImageIdMutationError = void
 
     /**
  * @summary Delete a variant image
  */
-export const useDeleteAdminVariantsImagesImageId = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>, TError,{imageId: string}, TContext>, }
+export const useDeleteVariantsImagesImageId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVariantsImagesImageId>>, TError,{imageId: string}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof deleteAdminVariantsImagesImageId>>,
+        Awaited<ReturnType<typeof deleteVariantsImagesImageId>>,
         TError,
         {imageId: string},
         TContext
       > => {
-      return useMutation(getDeleteAdminVariantsImagesImageIdMutationOptions(options), queryClient);
+      return useMutation(getDeleteVariantsImagesImageIdMutationOptions(options), queryClient);
     }
