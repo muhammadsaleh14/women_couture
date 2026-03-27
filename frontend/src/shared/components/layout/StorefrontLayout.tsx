@@ -1,10 +1,10 @@
 import { Link, Outlet } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/core/components/ui/button";
+import { Separator } from "@/core/components/ui/separator";
 import { ROUTES } from "@/core/routes";
-import { useAuth } from "@/features/auth/use-auth";
-import { useCartStore } from "@/features/storefront/model/cart-store";
+import { useAuth } from "@/modules/auth/application/use-auth";
+import { useCartStore } from "@/modules/cart/application/cart-store";
 import { WhatsAppFab } from "./WhatsAppFab";
 
 export function StorefrontLayout() {

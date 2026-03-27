@@ -1,10 +1,10 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { Package, ShoppingCart, Warehouse } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/core/components/ui/button";
+import { Separator } from "@/core/components/ui/separator";
 import { ROUTES } from "@/core/routes";
-import { useAuth } from "@/features/auth/use-auth";
-import { cn } from "@/lib/utils";
+import { useAuth } from "@/modules/auth/application/use-auth";
+import { cn } from "@/core/lib/utils";
 
 const nav = [
   { to: ROUTES.admin.products, label: "Products / Suits", icon: Package },

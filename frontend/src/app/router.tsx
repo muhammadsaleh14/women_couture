@@ -1,17 +1,17 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ROUTES } from "@/core/routes";
 import { RootLayout } from "@/app/root-layout";
-import { RequireRole } from "@/features/auth/RequireRole";
-import { LoginPage } from "@/features/auth/pages/LoginPage";
+import { RequireRole } from "@/modules/auth/application/RequireRole";
+import { LoginPage } from "@/modules/auth/presentation/LoginPage";
 import { AdminLayout } from "@/shared/components/layout/AdminLayout";
 import { StorefrontLayout } from "@/shared/components/layout/StorefrontLayout";
-import { AdminOrdersPage } from "@/features/admin/pages/AdminOrdersPage";
-import { AdminProductFormPage } from "@/features/admin/pages/AdminProductFormPage";
-import { AdminProductsPage } from "@/features/admin/pages/AdminProductsPage";
-import { CartPage } from "@/features/storefront/pages/CartPage";
-import { CategoryPage } from "@/features/storefront/pages/CategoryPage";
-import { HomePage } from "@/features/storefront/pages/HomePage";
-import { ProductDetailPage } from "@/features/storefront/pages/ProductDetailPage";
+import { AdminOrdersPage } from "@/pages/admin/AdminOrdersPage";
+import { AdminProductFormPage } from "@/pages/admin/AdminProductFormPage";
+import { AdminProductsPage } from "@/pages/admin/AdminProductsPage";
+import { CartPage } from "@/pages/storefront/CartPage";
+import { CategoryPage } from "@/pages/storefront/CategoryPage";
+import { HomePage } from "@/pages/storefront/HomePage";
+import { ProductDetailPage } from "@/pages/storefront/ProductDetailPage";
 
 export const router = createBrowserRouter([
   {

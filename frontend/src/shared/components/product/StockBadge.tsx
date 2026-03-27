@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/core/components/ui/badge";
+import { cn } from "@/core/lib/utils";
 
 type Props = {
   inStock: boolean;
