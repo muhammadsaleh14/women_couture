@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import "dotenv/config";
-import { prisma } from "../src/lib/prisma";
+import { prisma } from "../src/core/database/prisma";
 
 async function main() {
   const username = process.env.ADMIN_USERNAME ?? "admin";

@@ -9,7 +9,7 @@
 import "dotenv/config";
 import path from "path";
 import fs from "fs/promises";
-import { prisma } from "../src/lib/prisma";
+import { prisma } from "../src/core/database/prisma";
 const UPLOAD_DIR = path.join(process.cwd(), "uploads", "products");
 
 async function main() {

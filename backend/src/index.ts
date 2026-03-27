@@ -1,6 +1,6 @@
 import { env } from "./env";
 import { createApp } from "./app";
-import { prisma } from "./lib/prisma";
+import { prisma } from "./core/database/prisma";
 
 async function main() {
   await prisma.$connect();

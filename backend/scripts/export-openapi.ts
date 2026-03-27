@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { dirname, join } from "path";
-import { generateOpenAPIDocument } from "../src/openapi/generate-spec";
+import { generateOpenAPIDocument } from "../src/core/openapi/generate-spec";
 
 const outDir = join(__dirname, "..", "openapi");
 const outFile = join(outDir, "openapi.json");

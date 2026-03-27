@@ -3,8 +3,8 @@ import express from "express";
 import path from "path";
 import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
-import { errorHandler } from "./middleware/error-handler";
-import { generateOpenAPIDocument } from "./openapi/generate-spec";
+import { errorHandler } from "./core/middleware/error-handler";
+import { generateOpenAPIDocument } from "./core/openapi/generate-spec";
 import { routes } from "./routes";
 
 export function createApp() {
@@ -19,7 +19,6 @@ export function createApp() {
   );
   app.use(express.json());
 
-  // Serve uploaded product images
   app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
   app.get("/openapi.json", (_req, res) => {

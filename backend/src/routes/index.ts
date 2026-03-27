@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authRouter } from "./auth.routes";
-import { productRouter } from "./product.routes";
-import { variantRouter } from "./variant.routes";
-import { echoRouter } from "./echo";
-import { healthRouter } from "./health";
+import { authRouter } from "../modules/auth/auth.routes";
+import { productRouter } from "../modules/product/product.routes";
+import { variantRouter } from "../modules/variant/variant.routes";
+import { echoRouter } from "../modules/common/echo.routes";
+import { healthRouter } from "../modules/common/health.routes";
 
 export const routes = Router();
 
