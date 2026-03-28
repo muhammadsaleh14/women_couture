@@ -13,7 +13,6 @@ import { VariantImageGrid } from "./VariantImageGrid";
 interface VariantCardProps {
   form: UseFormReturn<ProductFormValues>;
   index: number;
-  isFirst: boolean;
   canRemove: boolean;
   variantStockById?: Record<string, number>;
   onAdjustVariantStock?: (payload: AdjustVariantStockPayload) => void;
@@ -25,7 +24,6 @@ interface VariantCardProps {
 export function VariantCard({
   form,
   index,
-  isFirst,
   canRemove,
   variantStockById,
   onAdjustVariantStock,
@@ -55,99 +53,127 @@ export function VariantCard({
     !isNewVariant;
 
   return (
-    <div>
-      {!isFirst && <Separator className="my-4" />}
-
-      <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-5 md:items-end">
-        <div className="space-y-1.5 md:col-span-2">
-          <Label>SKU (optional)</Label>
-          <Input
-            placeholder="e.g. NVY-123"
-            {...register(`variants.${index}.sku`)}
-          />
-        </div>
-
-        <div className="space-y-1.5 md:col-span-2">
-          <Label>Sale Price (PKR)</Label>
-          <Input
-            inputMode="numeric"
-            {...register(`variants.${index}.salePrice`)}
-          />
-          {variantErrors?.salePrice && (
-            <p className="text-destructive text-sm">
-              {variantErrors.salePrice.message}
-            </p>
-          )}
-        </div>
-
-        <div className="space-y-1.5 md:col-span-2">
-          <Label>Cost Price (optional)</Label>
-          <Input
-            inputMode="numeric"
-            placeholder="e.g. 500"
-            {...register(`variants.${index}.purchasePrice`)}
-          />
-        </div>
-
-        <div className="flex justify-end pb-0.5 md:col-span-1">
-          {canRemove && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="text-stone-500 hover:text-red-500"
-              onClick={onRemove}
-              aria-label="Remove variant"
-            >
-              <Trash2 className="size-4" />
-            </Button>
-          )}
-        </div>
-      </div>
-
-      {variantStockById != null ? (
-        <div className="mt-3 flex flex-wrap items-end gap-3">
-          <div className="min-w-32 max-w-xs flex-1 space-y-1.5">
-            <Label>On hand</Label>
-            <div
-              className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm tabular-nums text-foreground"
-              aria-readonly
-            >
-              {onHand === null ? "—" : onHand}
-            </div>
-          </div>
-          {canAdjustStock ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="shrink-0"
-              onClick={() =>
-                onAdjustVariantStock?.({
-                  variantId,
-                  sku: sku?.trim() ? sku.trim() : null,
-                  stockQty: variantStockById?.[variantId] ?? 0,
-                })
-              }
-            >
-              Adjust stock
-            </Button>
-          ) : null}
-          <p className="w-full text-xs text-muted-foreground">
-            {canAdjustStock
-              ? "Read-only count — use Adjust stock or the Stock page."
-              : "Read-only · save the variant before adjusting stock."}
+    <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm ring-1 ring-border/40">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3 sm:px-5">
+        <div className="min-w-0 space-y-0.5">
+          <p className="text-sm font-semibold text-foreground">
+            Variant {index + 1}
+          </p>
+          <p className="truncate text-xs text-muted-foreground">
+            {sku?.trim() ? `SKU · ${sku.trim()}` : "No SKU yet"}
           </p>
         </div>
-      ) : null}
+        {canRemove ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="shrink-0 text-muted-foreground hover:text-destructive"
+            onClick={onRemove}
+            aria-label="Remove variant"
+          >
+            <Trash2 className="size-4" />
+          </Button>
+        ) : null}
+      </div>
 
-      <div className="mt-3">
-        <VariantImageGrid
-          sectionTitle={sectionTitle}
-          images={images}
-          onAddImages={onAddImages}
-          onRemoveImage={onRemoveImage}
-        />
+      <div className="space-y-6 p-4 sm:p-5">
+        <div>
+          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Pricing and SKU
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
+              <Label>SKU (optional)</Label>
+              <Input
+                placeholder="e.g. NVY-123"
+                {...register(`variants.${index}.sku`)}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Sale price (PKR)</Label>
+              <Input
+                inputMode="numeric"
+                {...register(`variants.${index}.salePrice`)}
+              />
+              {variantErrors?.salePrice ? (
+                <p className="text-sm text-destructive">
+                  {variantErrors.salePrice.message}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label>Cost price (optional)</Label>
+              <Input
+                inputMode="numeric"
+                placeholder="e.g. 500"
+                {...register(`variants.${index}.purchasePrice`)}
+              />
+            </div>
+          </div>
+        </div>
+
+        {variantStockById != null ? (
+          <>
+            <Separator />
+            <div>
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Inventory
+              </p>
+              <div className="rounded-lg border border-border/80 bg-muted/25 p-4">
+                <div className="flex flex-wrap items-end gap-3">
+                  <div className="min-w-32 flex-1 space-y-1.5 sm:max-w-xs">
+                    <Label>On hand</Label>
+                    <div
+                      className="flex h-9 items-center rounded-md border border-input bg-background px-3 text-sm tabular-nums text-foreground"
+                      aria-readonly
+                    >
+                      {onHand === null ? "—" : onHand}
+                    </div>
+                  </div>
+                  {canAdjustStock ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={() =>
+                        onAdjustVariantStock?.({
+                          variantId,
+                          sku: sku?.trim() ? sku.trim() : null,
+                          stockQty: variantStockById?.[variantId] ?? 0,
+                        })
+                      }
+                    >
+                      Adjust stock
+                    </Button>
+                  ) : null}
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  {canAdjustStock
+                    ? "Read-only count — use Adjust stock or the Stock page."
+                    : "Read-only · save the variant before adjusting stock."}
+                </p>
+              </div>
+            </div>
+          </>
+        ) : null}
+
+        <Separator />
+
+        <div>
+          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Images
+          </p>
+          <VariantImageGrid
+            sectionTitle={sectionTitle}
+            images={images}
+            onAddImages={onAddImages}
+            onRemoveImage={onRemoveImage}
+          />
+        </div>
       </div>
     </div>
   );

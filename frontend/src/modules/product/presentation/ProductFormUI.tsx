@@ -2,7 +2,6 @@ import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import type { FieldErrors } from "react-hook-form";
 import { Button } from "@/core/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/core/components/ui/card";
 import type {
   AdjustVariantStockPayload,
   ProductFormValues,
@@ -73,31 +72,39 @@ export function ProductFormUI({
       onSubmit={form.handleSubmit(onSubmit, (errs) => {
         toast.error(firstFieldErrorMessage(errs) ?? "Please fix the form errors");
       })}
-      className="mx-auto max-w-2xl space-y-6"
+      className="mx-auto w-full max-w-4xl space-y-8 xl:max-w-5xl"
     >
       <ProductBasicsCard form={form} />
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <CardTitle className="text-base">Variants</CardTitle>
+      <section className="space-y-4">
+        <div className="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Variants
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Each variant can have its own SKU, price, and photos. At least one
+              is required.
+            </p>
+          </div>
           <Button
             type="button"
             variant="outline"
             size="sm"
-            className="gap-1"
+            className="shrink-0 gap-1.5 self-start sm:self-auto"
             onClick={appendVariant}
           >
             <Plus className="size-4" />
-            Add Variant
+            Add variant
           </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        </div>
+
+        <div className="space-y-6">
           {variants.map((field, index) => (
             <VariantCard
               key={field.id}
               form={form}
               index={index}
-              isFirst={index === 0}
               canRemove={variants.length > 1}
               variantStockById={variantStockById}
               onAdjustVariantStock={onAdjustVariantStock}
@@ -106,13 +113,13 @@ export function ProductFormUI({
               onRemoveImage={(uid) => void removeVariantImage(index, uid)}
             />
           ))}
-          {form.formState.errors.variants?.root && (
-            <p className="mt-2 text-sm text-destructive">
-              {form.formState.errors.variants.root.message}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+        </div>
+        {form.formState.errors.variants?.root && (
+          <p className="text-sm text-destructive">
+            {form.formState.errors.variants.root.message}
+          </p>
+        )}
+      </section>
 
       <div className="flex gap-2">
         <Button type="submit" disabled={isSaving}>
