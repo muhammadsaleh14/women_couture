@@ -48,3 +48,10 @@ export const productFormSchema = z.object({
 export type ProductFormValues = z.infer<typeof productFormSchema>;
 export type VariantFormValues = z.infer<typeof productVariantSchema>;
 export type ImageItem = z.infer<typeof ImageItemSchema>;
+
+/** Passed from variant row to open the admin stock-adjust dialog. */
+export type AdjustVariantStockPayload = {
+  variantId: string;
+  sku: string | null;
+  stockQty: number;
+};

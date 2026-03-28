@@ -29,7 +29,8 @@ import type { HomeHeroSlideFormValues } from "./homeHeroSlideFormSchema";
 export function AdminHomeHeroPage() {
   const queryClient = useQueryClient();
   const { data: slides = [], isLoading, error } = useGetHomeHeroSlidesManage();
-  const { data: products = [] } = useGetProducts();
+  const { data } = useGetProducts();
+  const products = data?.items ?? [];
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<HomeHeroSlideRecord | null>(null);

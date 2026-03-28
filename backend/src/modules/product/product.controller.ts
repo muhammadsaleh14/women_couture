@@ -81,13 +81,13 @@ export async function getProducts(req: Request, res: Response, next: NextFunctio
     const isActive =
       query.isActive === "true" ? true : query.isActive === "false" ? false : undefined;
 
-    const products = await productService.getAllProducts({
+    const result = await productService.getAllProducts({
       skip: query.skip,
       take: query.take,
       isActive,
     });
 
-    res.json(products);
+    res.json(result);
   } catch (err) {
     next(err);
   }

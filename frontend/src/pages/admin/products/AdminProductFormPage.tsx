@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useGetProductsProductId } from "@/core/api/generated/api";
@@ -7,12 +7,19 @@ import { useSaveProduct } from "@/modules/product/application/useSaveProduct";
 import { mapAdminProductDetailToFormValues } from "@/modules/product/infrastructure/mapAdminProductDetailToFormValues";
 import { ProductFormUI } from "@/modules/product/presentation/ProductFormUI";
 import type { ProductFormValues } from "@/modules/product/domain/productFormSchema";
+import {
+  AdjustStockDialog,
+  type StockAdjustRow,
+} from "@/pages/admin/stock/AdjustStockDialog";
 
 export function AdminProductFormPage() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
   const isNewProduct = !productId;
   const saveMutation = useSaveProduct();
+  const [stockDialogRow, setStockDialogRow] = useState<StockAdjustRow | null>(
+    null,
+  );
 
   const { data: existing, isLoading } = useGetProductsProductId(
     productId || "",
@@ -23,6 +30,18 @@ export function AdminProductFormPage() {
     () => (existing ? mapAdminProductDetailToFormValues(existing) : undefined),
     [existing],
   );
+
+  const variantStockById = useMemo(() => {
+    if (!existing?.variants?.length) return undefined;
+    return Object.fromEntries(
+      existing.variants.map((v) => [v.id, v.stockQty ?? 0]),
+    );
+  }, [existing]);
+
+  const totalStockOnHand = useMemo(() => {
+    if (!existing?.variants?.length) return null;
+    return existing.variants.reduce((s, v) => s + (v.stockQty ?? 0), 0);
+  }, [existing]);
 
   const handleSubmit = async (values: ProductFormValues) => {
     try {
@@ -61,15 +80,45 @@ export function AdminProductFormPage() {
         <p className="text-sm text-muted-foreground">
           Fill in the product details and its variants.
         </p>
+        {totalStockOnHand !== null ? (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Total stock on hand:{" "}
+            <span className="font-semibold tabular-nums text-foreground">
+              {totalStockOnHand}
+            </span>{" "}
+            units (read-only — adjust per variant or from Stock).
+          </p>
+        ) : null}
       </div>
 
       <ProductFormUI
         key={productId ?? "new"}
         values={isNewProduct ? undefined : formValues}
+        variantStockById={isNewProduct ? undefined : variantStockById}
+        onAdjustVariantStock={
+          existing
+            ? (p) =>
+                setStockDialogRow({
+                  productId: existing.id,
+                  productName: existing.name,
+                  variantId: p.variantId,
+                  sku: p.sku,
+                  stockQty: p.stockQty,
+                })
+            : undefined
+        }
         onSubmit={(vals) => void handleSubmit(vals)}
         isSaving={saveMutation.isPending}
         onCancel={() => navigate(ROUTES.admin.products)}
       />
+
+      {existing ? (
+        <AdjustStockDialog
+          row={stockDialogRow}
+          onClose={() => setStockDialogRow(null)}
+          invalidateProductDetailId={existing.id}
+        />
+      ) : null}
     </div>
   );
 }

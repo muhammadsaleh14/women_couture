@@ -4,6 +4,7 @@ import {
   CreateProductBodySchema,
   CreateVariantBodySchema,
   ProductBaseSchema,
+  ProductListResponseSchema,
   ProductWithVariantsSchema,
   UpdateProductBodySchema,
   ProductParamsSchema,
@@ -29,7 +30,7 @@ openAPIRegistry.registerPath({
       description: "OK",
       content: {
         "application/json": {
-          schema: ProductWithVariantsSchema.array(),
+          schema: ProductListResponseSchema,
         },
       },
     },

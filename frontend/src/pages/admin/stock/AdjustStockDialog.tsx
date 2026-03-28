@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  getGetProductsProductIdQueryKey,
   getGetProductsQueryKey,
   usePostVariantsVariantIdStock,
   type PostVariantsVariantIdStockBodyType,
@@ -44,9 +45,15 @@ const ADJUST_LABELS: Record<AdjustKind, string> = {
 type Props = {
   row: StockAdjustRow | null;
   onClose: () => void;
+  /** When set, refetches this product after a successful adjustment (e.g. edit form). */
+  invalidateProductDetailId?: string;
 };
 
-export function AdjustStockDialog({ row, onClose }: Props) {
+export function AdjustStockDialog({
+  row,
+  onClose,
+  invalidateProductDetailId,
+}: Props) {
   const queryClient = useQueryClient();
   const [kind, setKind] = useState<AdjustKind>("IN");
   const [quantity, setQuantity] = useState("1");
@@ -63,6 +70,11 @@ export function AdjustStockDialog({ row, onClose }: Props) {
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getGetProductsQueryKey() });
+        if (invalidateProductDetailId) {
+          void queryClient.invalidateQueries({
+            queryKey: getGetProductsProductIdQueryKey(invalidateProductDetailId),
+          });
+        }
         toast.success("Stock updated");
         onClose();
       },

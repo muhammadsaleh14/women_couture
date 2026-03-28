@@ -50,6 +50,14 @@ export const ProductWithVariantsSchema = openAPIRegistry.register(
   }),
 );
 
+export const ProductListResponseSchema = openAPIRegistry.register(
+  "ProductListResponse",
+  z.object({
+    items: z.array(ProductWithVariantsSchema),
+    total: z.number().int().min(0),
+  }),
+);
+
 export const CreateProductBodySchema = openAPIRegistry.register(
   "CreateProductBody",
   z.object({

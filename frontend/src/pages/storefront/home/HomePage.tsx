@@ -17,10 +17,12 @@ export function HomePage() {
     categoryParam && isCategoryId(categoryParam) ? categoryParam : null;
   const invalidCategory = Boolean(categoryParam && !categoryFilter);
 
-  const { data: apiProducts = [], isLoading, isError } = useGetProducts({
+  const { data, isLoading, isError } = useGetProducts({
     isActive: "true",
     take: 100,
   });
+
+  const apiProducts = data?.items ?? [];
 
   const allProducts = useMemo(
     () =>

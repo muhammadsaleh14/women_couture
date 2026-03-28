@@ -3,7 +3,10 @@ import { toast } from "sonner";
 import type { FieldErrors } from "react-hook-form";
 import { Button } from "@/core/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/core/components/ui/card";
-import type { ProductFormValues } from "../domain/productFormSchema";
+import type {
+  AdjustVariantStockPayload,
+  ProductFormValues,
+} from "../domain/productFormSchema";
 import { useProductForm } from "../application/useProductForm";
 import { ProductBasicsCard } from "./ProductBasicsCard";
 import { VariantCard } from "./VariantCard";
@@ -27,8 +30,14 @@ function firstFieldErrorMessage(errors: FieldErrors<ProductFormValues>): string 
   return null;
 }
 
+export type { AdjustVariantStockPayload };
+
 export interface ProductFormUIProps {
   values?: ProductFormValues;
+  /** When set (edit mode), each saved variant shows read-only on-hand qty from the server. */
+  variantStockById?: Record<string, number>;
+  /** Edit mode: open stock adjustment for a saved variant. */
+  onAdjustVariantStock?: (payload: AdjustVariantStockPayload) => void;
   onSubmit: (values: ProductFormValues) => void | Promise<void>;
   isSaving: boolean;
   onCancel: () => void;
@@ -38,6 +47,8 @@ export interface ProductFormUIProps {
 
 export function ProductFormUI({
   values,
+  variantStockById,
+  onAdjustVariantStock,
   onSubmit,
   isSaving,
   onCancel,
@@ -88,6 +99,8 @@ export function ProductFormUI({
               index={index}
               isFirst={index === 0}
               canRemove={variants.length > 1}
+              variantStockById={variantStockById}
+              onAdjustVariantStock={onAdjustVariantStock}
               onRemove={() => void removeVariant(index)}
               onAddImages={(e) => addImagesToVariant(index, e)}
               onRemoveImage={(uid) => void removeVariantImage(index, uid)}

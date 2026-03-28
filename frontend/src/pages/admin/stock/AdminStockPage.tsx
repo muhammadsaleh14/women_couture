@@ -14,12 +14,14 @@ import { ROUTES } from "@/core/routes";
 import { AdjustStockDialog, type StockAdjustRow } from "./AdjustStockDialog";
 
 export function AdminStockPage() {
-  const { data: products, isLoading, error } = useGetProducts({
+  const { data, isLoading, error } = useGetProducts({
     take: 100,
   });
 
+  const products = data?.items ?? [];
+
   const rows = useMemo<StockAdjustRow[]>(() => {
-    if (!products?.length) return [];
+    if (!products.length) return [];
     const out: StockAdjustRow[] = [];
     for (const p of products) {
       for (const v of p.variants ?? []) {

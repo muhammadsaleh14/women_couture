@@ -4,7 +4,10 @@ import { Button } from "@/core/components/ui/button";
 import { Input } from "@/core/components/ui/input";
 import { Label } from "@/core/components/ui/label";
 import { Separator } from "@/core/components/ui/separator";
-import { type ProductFormValues } from "../domain/productFormSchema";
+import {
+  type AdjustVariantStockPayload,
+  type ProductFormValues,
+} from "../domain/productFormSchema";
 import { VariantImageGrid } from "./VariantImageGrid";
 
 interface VariantCardProps {
@@ -12,6 +15,8 @@ interface VariantCardProps {
   index: number;
   isFirst: boolean;
   canRemove: boolean;
+  variantStockById?: Record<string, number>;
+  onAdjustVariantStock?: (payload: AdjustVariantStockPayload) => void;
   onRemove: () => void;
   onAddImages: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveImage: (uid: string) => void;
@@ -22,6 +27,8 @@ export function VariantCard({
   index,
   isFirst,
   canRemove,
+  variantStockById,
+  onAdjustVariantStock,
   onRemove,
   onAddImages,
   onRemoveImage,
@@ -34,8 +41,18 @@ export function VariantCard({
 
   const images = watch(`variants.${index}.images`);
   const sku = watch(`variants.${index}.sku`);
+  const variantId = watch(`variants.${index}.id`);
+  const isNewVariant = watch(`variants.${index}.isNew`);
+  const onHand =
+    variantStockById && !isNewVariant
+      ? (variantStockById[variantId] ?? 0)
+      : null;
   const variantErrors = errors.variants?.[index];
   const sectionTitle = sku?.trim() ? `SKU ${sku.trim()}` : `Variant ${index + 1}`;
+  const canAdjustStock =
+    Boolean(variantStockById) &&
+    Boolean(onAdjustVariantStock) &&
+    !isNewVariant;
 
   return (
     <div>
@@ -87,6 +104,42 @@ export function VariantCard({
           )}
         </div>
       </div>
+
+      {variantStockById != null ? (
+        <div className="mt-3 flex flex-wrap items-end gap-3">
+          <div className="min-w-32 max-w-xs flex-1 space-y-1.5">
+            <Label>On hand</Label>
+            <div
+              className="flex h-9 items-center rounded-md border border-input bg-muted/40 px-3 text-sm tabular-nums text-foreground"
+              aria-readonly
+            >
+              {onHand === null ? "—" : onHand}
+            </div>
+          </div>
+          {canAdjustStock ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              onClick={() =>
+                onAdjustVariantStock?.({
+                  variantId,
+                  sku: sku?.trim() ? sku.trim() : null,
+                  stockQty: variantStockById?.[variantId] ?? 0,
+                })
+              }
+            >
+              Adjust stock
+            </Button>
+          ) : null}
+          <p className="w-full text-xs text-muted-foreground">
+            {canAdjustStock
+              ? "Read-only count — use Adjust stock or the Stock page."
+              : "Read-only · save the variant before adjusting stock."}
+          </p>
+        </div>
+      ) : null}
 
       <div className="mt-3">
         <VariantImageGrid

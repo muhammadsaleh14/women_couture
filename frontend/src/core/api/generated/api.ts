@@ -190,6 +190,11 @@ export type ProductWithVariants = ProductBase & {
   variants: ProductVariant[];
 };
 
+export interface ProductListResponse {
+  items: ProductWithVariants[];
+  total: number;
+}
+
 export type CreateProductBodyType = typeof CreateProductBodyType[keyof typeof CreateProductBodyType];
 
 
@@ -1316,7 +1321,7 @@ export const getProducts = (
 ) => {
       
       
-      return customInstance<ProductWithVariants[]>(
+      return customInstance<ProductListResponse>(
       {url: `/products`, method: 'GET',
         params, signal
     },

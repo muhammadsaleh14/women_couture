@@ -82,22 +82,26 @@ export async function getAllProducts(query: {
 }) {
   const where = query.isActive !== undefined ? { isActive: query.isActive } : {};
 
-  const products = await prisma.product.findMany({
-    where,
-    skip: query.skip,
-    take: query.take,
-    include: {
-      variants: {
-        include: {
-          images: {
-            orderBy: { order: "asc" },
+  const [total, products] = await prisma.$transaction([
+    prisma.product.count({ where }),
+    prisma.product.findMany({
+      where,
+      skip: query.skip,
+      take: query.take,
+      include: {
+        variants: {
+          include: {
+            images: {
+              orderBy: { order: "asc" },
+            },
           },
         },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-  return products.map(withImageUrls);
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  return { items: products.map(withImageUrls), total };
 }
 
 export async function getProductById(productId: string) {
