@@ -8,6 +8,7 @@ import { StorefrontLayout } from "@/shared/components/layout/StorefrontLayout";
 import { AdminOrdersPage } from "@/pages/admin/AdminOrdersPage";
 import { AdminProductFormPage } from "@/pages/admin/AdminProductFormPage";
 import { AdminProductsPage } from "@/pages/admin/AdminProductsPage";
+import { AdminHomeHeroPage } from "@/pages/admin/AdminHomeHeroPage";
 import { AdminStockPage } from "@/pages/admin/AdminStockPage";
 import { CartPage } from "@/pages/storefront/CartPage";
 import { HomePage } from "@/pages/storefront/home/HomePage";
@@ -44,6 +45,7 @@ export const router = createBrowserRouter([
             element: <Navigate to={ROUTES.admin.stock} replace />,
           },
           { path: "stock", element: <AdminStockPage /> },
+          { path: "home-hero", element: <AdminHomeHeroPage /> },
           { path: "products", element: <AdminProductsPage /> },
           { path: "products/new", element: <AdminProductFormPage /> },
           {

@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
@@ -19,6 +19,24 @@ import { StockBadge } from "@/shared/components/product/StockBadge";
 
 export function ProductDetailPage() {
   const { productId = "" } = useParams();
+  const [searchParams] = useSearchParams();
+  const variantFromUrl = searchParams.get("variant");
+  return (
+    <ProductDetailContent
+      key={`${productId}:${variantFromUrl ?? ""}`}
+      productId={productId}
+      variantFromUrl={variantFromUrl}
+    />
+  );
+}
+
+function ProductDetailContent({
+  productId,
+  variantFromUrl,
+}: {
+  productId: string;
+  variantFromUrl: string | null;
+}) {
   const navigate = useNavigate();
   const addLine = useCartStore((s) => s.addLine);
 
@@ -35,16 +53,24 @@ export function ProductDetailPage() {
     [apiProduct],
   );
 
-  const firstVariant = product?.variants[0];
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
-    firstVariant?.id ?? null,
-  );
-
-  useEffect(() => {
-    if (product?.variants[0]) {
-      setSelectedVariantId(product.variants[0].id);
+  const suggestedVariantId = useMemo(() => {
+    if (!product?.variants.length) return null;
+    if (
+      variantFromUrl &&
+      product.variants.some((v) => v.id === variantFromUrl)
+    ) {
+      return variantFromUrl;
     }
-  }, [product?.id, product?.variants]);
+    return product.variants[0].id;
+  }, [product, variantFromUrl]);
+
+  const [manualVariantId, setManualVariantId] = useState<string | null>(null);
+
+  const selectedVariantId =
+    manualVariantId &&
+    product?.variants.some((v) => v.id === manualVariantId)
+      ? manualVariantId
+      : suggestedVariantId;
 
   const variant = useMemo(() => {
     if (!product || !selectedVariantId) {
@@ -139,7 +165,7 @@ export function ProductDetailPage() {
             disabled: false,
           }))}
           selectedId={selectedVariantId}
-          onSelect={setSelectedVariantId}
+          onSelect={setManualVariantId}
         />
         <p className="text-sm text-stone-700">{variant.colorName}</p>
       </div>

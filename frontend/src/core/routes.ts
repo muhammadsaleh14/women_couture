@@ -5,6 +5,10 @@ export const ROUTES = {
   shop: (categoryId: string) =>
     `/?category=${encodeURIComponent(categoryId)}` as const,
   product: (productId: string) => `/product/${productId}` as const,
+  productDetail: (productId: string, variantId?: string | null) =>
+    variantId
+      ? (`/product/${productId}?variant=${encodeURIComponent(variantId)}` as const)
+      : (`/product/${productId}` as const),
   cart: "/cart",
   admin: {
     root: "/admin",
@@ -16,5 +20,6 @@ export const ROUTES = {
     /** @deprecated use `stock` — kept for old links */
     inventory: "/admin/inventory",
     stock: "/admin/stock",
+    homeHero: "/admin/home-hero",
   },
 } as const;

@@ -25,6 +25,115 @@ import type {
 } from '@tanstack/react-query';
 
 import { customInstance } from '../../lib/orval-mutator';
+export type HomeHeroTheme = typeof HomeHeroTheme[keyof typeof HomeHeroTheme];
+
+
+export const HomeHeroTheme = {
+  LIGHT: 'LIGHT',
+  DARK: 'DARK',
+} as const;
+
+export type HomeHeroSlideResolvedTheme = typeof HomeHeroSlideResolvedTheme[keyof typeof HomeHeroSlideResolvedTheme];
+
+
+export const HomeHeroSlideResolvedTheme = {
+  LIGHT: 'LIGHT',
+  DARK: 'DARK',
+} as const;
+
+export interface HomeHeroSlideResolved {
+  id: string;
+  theme: HomeHeroSlideResolvedTheme;
+  usePrimaryHeading: boolean;
+  eyebrow: string;
+  title: string;
+  /** @nullable */
+  description: string | null;
+  /** @nullable */
+  productId: string | null;
+  /** @nullable */
+  variantId: string | null;
+  /** @nullable */
+  imageUrl: string | null;
+}
+
+export type HomeHeroSlideRecordTheme = typeof HomeHeroSlideRecordTheme[keyof typeof HomeHeroSlideRecordTheme];
+
+
+export const HomeHeroSlideRecordTheme = {
+  LIGHT: 'LIGHT',
+  DARK: 'DARK',
+} as const;
+
+export interface HomeHeroSlideRecord {
+  id: string;
+  sortOrder: number;
+  isActive: boolean;
+  theme: HomeHeroSlideRecordTheme;
+  usePrimaryHeading: boolean;
+  /** @nullable */
+  eyebrow: string | null;
+  /** @nullable */
+  title: string | null;
+  /** @nullable */
+  description: string | null;
+  /** @nullable */
+  productVariantId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CreateHomeHeroSlideBodyTheme = typeof CreateHomeHeroSlideBodyTheme[keyof typeof CreateHomeHeroSlideBodyTheme];
+
+
+export const CreateHomeHeroSlideBodyTheme = {
+  LIGHT: 'LIGHT',
+  DARK: 'DARK',
+} as const;
+
+export interface CreateHomeHeroSlideBody {
+  sortOrder?: number;
+  isActive?: boolean;
+  theme: CreateHomeHeroSlideBodyTheme;
+  usePrimaryHeading?: boolean;
+  /** @nullable */
+  eyebrow?: string | null;
+  /** @nullable */
+  title?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  productVariantId?: string | null;
+}
+
+export type UpdateHomeHeroSlideBodyTheme = typeof UpdateHomeHeroSlideBodyTheme[keyof typeof UpdateHomeHeroSlideBodyTheme];
+
+
+export const UpdateHomeHeroSlideBodyTheme = {
+  LIGHT: 'LIGHT',
+  DARK: 'DARK',
+} as const;
+
+export interface UpdateHomeHeroSlideBody {
+  sortOrder?: number;
+  isActive?: boolean;
+  theme?: UpdateHomeHeroSlideBodyTheme;
+  usePrimaryHeading?: boolean;
+  /** @nullable */
+  eyebrow?: string | null;
+  /** @nullable */
+  title?: string | null;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  productVariantId?: string | null;
+}
+
+export interface ReorderHomeHeroSlidesBody {
+  /** @minItems 1 */
+  orderedIds: string[];
+}
+
 export type ClothingType = typeof ClothingType[keyof typeof ClothingType];
 
 
@@ -152,6 +261,40 @@ export interface UpdateProductBody {
   description?: string;
   type?: UpdateProductBodyType;
   isActive?: boolean;
+}
+
+export type SaveProductBodyType = typeof SaveProductBodyType[keyof typeof SaveProductBodyType];
+
+
+export const SaveProductBodyType = {
+  UNSTITCHED: 'UNSTITCHED',
+  THREE_PC: 'THREE_PC',
+  TWO_PC: 'TWO_PC',
+  SEPARATE: 'SEPARATE',
+} as const;
+
+export type SaveProductBodyVariantsItem = {
+  id?: string;
+  /** @minLength 1 */
+  color: string;
+  sku?: string;
+  /** @minimum 0 */
+  salePrice: number;
+  /**
+   * @minimum 0
+   * @nullable
+   */
+  purchasePrice?: number | null;
+  existingImageIds?: string[];
+};
+
+export interface SaveProductBody {
+  /** @minLength 1 */
+  name: string;
+  description?: string;
+  type: SaveProductBodyType;
+  /** @minItems 1 */
+  variants: SaveProductBodyVariantsItem[];
 }
 
 export interface ProductVariantParams {
@@ -580,6 +723,443 @@ export const usePostEcho = <TError = unknown,
         TContext
       > => {
       return useMutation(getPostEchoMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary List active home hero slides (resolved for storefront)
+ */
+export const getHomeHeroSlides = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<HomeHeroSlideResolved[]>(
+      {url: `/home-hero-slides`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetHomeHeroSlidesQueryKey = () => {
+    return [
+    `/home-hero-slides`
+    ] as const;
+    }
+
+    
+export const getGetHomeHeroSlidesQueryOptions = <TData = Awaited<ReturnType<typeof getHomeHeroSlides>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlides>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetHomeHeroSlidesQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHomeHeroSlides>>> = ({ signal }) => getHomeHeroSlides(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlides>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetHomeHeroSlidesQueryResult = NonNullable<Awaited<ReturnType<typeof getHomeHeroSlides>>>
+export type GetHomeHeroSlidesQueryError = unknown
+
+
+export function useGetHomeHeroSlides<TData = Awaited<ReturnType<typeof getHomeHeroSlides>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlides>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getHomeHeroSlides>>,
+          TError,
+          Awaited<ReturnType<typeof getHomeHeroSlides>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetHomeHeroSlides<TData = Awaited<ReturnType<typeof getHomeHeroSlides>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlides>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getHomeHeroSlides>>,
+          TError,
+          Awaited<ReturnType<typeof getHomeHeroSlides>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetHomeHeroSlides<TData = Awaited<ReturnType<typeof getHomeHeroSlides>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlides>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List active home hero slides (resolved for storefront)
+ */
+
+export function useGetHomeHeroSlides<TData = Awaited<ReturnType<typeof getHomeHeroSlides>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlides>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetHomeHeroSlidesQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * @summary Create home hero slide
+ */
+export const postHomeHeroSlides = (
+    createHomeHeroSlideBody: CreateHomeHeroSlideBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<HomeHeroSlideRecord>(
+      {url: `/home-hero-slides`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createHomeHeroSlideBody, signal
+    },
+      );
+    }
+  
+
+
+export const getPostHomeHeroSlidesMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postHomeHeroSlides>>, TError,{data: CreateHomeHeroSlideBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postHomeHeroSlides>>, TError,{data: CreateHomeHeroSlideBody}, TContext> => {
+
+const mutationKey = ['postHomeHeroSlides'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postHomeHeroSlides>>, {data: CreateHomeHeroSlideBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postHomeHeroSlides(data,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostHomeHeroSlidesMutationResult = NonNullable<Awaited<ReturnType<typeof postHomeHeroSlides>>>
+    export type PostHomeHeroSlidesMutationBody = CreateHomeHeroSlideBody
+    export type PostHomeHeroSlidesMutationError = unknown
+
+    /**
+ * @summary Create home hero slide
+ */
+export const usePostHomeHeroSlides = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postHomeHeroSlides>>, TError,{data: CreateHomeHeroSlideBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postHomeHeroSlides>>,
+        TError,
+        {data: CreateHomeHeroSlideBody},
+        TContext
+      > => {
+      return useMutation(getPostHomeHeroSlidesMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary List all home hero slides (management)
+ */
+export const getHomeHeroSlidesManage = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<HomeHeroSlideRecord[]>(
+      {url: `/home-hero-slides/manage`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetHomeHeroSlidesManageQueryKey = () => {
+    return [
+    `/home-hero-slides/manage`
+    ] as const;
+    }
+
+    
+export const getGetHomeHeroSlidesManageQueryOptions = <TData = Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetHomeHeroSlidesManageQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHomeHeroSlidesManage>>> = ({ signal }) => getHomeHeroSlidesManage(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetHomeHeroSlidesManageQueryResult = NonNullable<Awaited<ReturnType<typeof getHomeHeroSlidesManage>>>
+export type GetHomeHeroSlidesManageQueryError = unknown
+
+
+export function useGetHomeHeroSlidesManage<TData = Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getHomeHeroSlidesManage>>,
+          TError,
+          Awaited<ReturnType<typeof getHomeHeroSlidesManage>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetHomeHeroSlidesManage<TData = Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getHomeHeroSlidesManage>>,
+          TError,
+          Awaited<ReturnType<typeof getHomeHeroSlidesManage>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetHomeHeroSlidesManage<TData = Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List all home hero slides (management)
+ */
+
+export function useGetHomeHeroSlidesManage<TData = Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getHomeHeroSlidesManage>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetHomeHeroSlidesManageQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * @summary Reorder home hero slides
+ */
+export const patchHomeHeroSlidesReorder = (
+    reorderHomeHeroSlidesBody: ReorderHomeHeroSlidesBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<HomeHeroSlideRecord[]>(
+      {url: `/home-hero-slides/reorder`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: reorderHomeHeroSlidesBody, signal
+    },
+      );
+    }
+  
+
+
+export const getPatchHomeHeroSlidesReorderMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchHomeHeroSlidesReorder>>, TError,{data: ReorderHomeHeroSlidesBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchHomeHeroSlidesReorder>>, TError,{data: ReorderHomeHeroSlidesBody}, TContext> => {
+
+const mutationKey = ['patchHomeHeroSlidesReorder'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchHomeHeroSlidesReorder>>, {data: ReorderHomeHeroSlidesBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  patchHomeHeroSlidesReorder(data,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchHomeHeroSlidesReorderMutationResult = NonNullable<Awaited<ReturnType<typeof patchHomeHeroSlidesReorder>>>
+    export type PatchHomeHeroSlidesReorderMutationBody = ReorderHomeHeroSlidesBody
+    export type PatchHomeHeroSlidesReorderMutationError = unknown
+
+    /**
+ * @summary Reorder home hero slides
+ */
+export const usePatchHomeHeroSlidesReorder = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchHomeHeroSlidesReorder>>, TError,{data: ReorderHomeHeroSlidesBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchHomeHeroSlidesReorder>>,
+        TError,
+        {data: ReorderHomeHeroSlidesBody},
+        TContext
+      > => {
+      return useMutation(getPatchHomeHeroSlidesReorderMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary Update home hero slide
+ */
+export const patchHomeHeroSlidesSlideId = (
+    slideId: string,
+    updateHomeHeroSlideBody: UpdateHomeHeroSlideBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<HomeHeroSlideRecord>(
+      {url: `/home-hero-slides/${slideId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateHomeHeroSlideBody, signal
+    },
+      );
+    }
+  
+
+
+export const getPatchHomeHeroSlidesSlideIdMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchHomeHeroSlidesSlideId>>, TError,{slideId: string;data: UpdateHomeHeroSlideBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchHomeHeroSlidesSlideId>>, TError,{slideId: string;data: UpdateHomeHeroSlideBody}, TContext> => {
+
+const mutationKey = ['patchHomeHeroSlidesSlideId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchHomeHeroSlidesSlideId>>, {slideId: string;data: UpdateHomeHeroSlideBody}> = (props) => {
+          const {slideId,data} = props ?? {};
+
+          return  patchHomeHeroSlidesSlideId(slideId,data,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchHomeHeroSlidesSlideIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchHomeHeroSlidesSlideId>>>
+    export type PatchHomeHeroSlidesSlideIdMutationBody = UpdateHomeHeroSlideBody
+    export type PatchHomeHeroSlidesSlideIdMutationError = unknown
+
+    /**
+ * @summary Update home hero slide
+ */
+export const usePatchHomeHeroSlidesSlideId = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchHomeHeroSlidesSlideId>>, TError,{slideId: string;data: UpdateHomeHeroSlideBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchHomeHeroSlidesSlideId>>,
+        TError,
+        {slideId: string;data: UpdateHomeHeroSlideBody},
+        TContext
+      > => {
+      return useMutation(getPatchHomeHeroSlidesSlideIdMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary Delete home hero slide
+ */
+export const deleteHomeHeroSlidesSlideId = (
+    slideId: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/home-hero-slides/${slideId}`, method: 'DELETE', signal
+    },
+      );
+    }
+  
+
+
+export const getDeleteHomeHeroSlidesSlideIdMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteHomeHeroSlidesSlideId>>, TError,{slideId: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteHomeHeroSlidesSlideId>>, TError,{slideId: string}, TContext> => {
+
+const mutationKey = ['deleteHomeHeroSlidesSlideId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteHomeHeroSlidesSlideId>>, {slideId: string}> = (props) => {
+          const {slideId} = props ?? {};
+
+          return  deleteHomeHeroSlidesSlideId(slideId,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteHomeHeroSlidesSlideIdMutationResult = NonNullable<Awaited<ReturnType<typeof deleteHomeHeroSlidesSlideId>>>
+    
+    export type DeleteHomeHeroSlidesSlideIdMutationError = unknown
+
+    /**
+ * @summary Delete home hero slide
+ */
+export const useDeleteHomeHeroSlidesSlideId = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteHomeHeroSlidesSlideId>>, TError,{slideId: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteHomeHeroSlidesSlideId>>,
+        TError,
+        {slideId: string},
+        TContext
+      > => {
+      return useMutation(getDeleteHomeHeroSlidesSlideIdMutationOptions(options), queryClient);
     }
     
 /**

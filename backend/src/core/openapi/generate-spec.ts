@@ -2,6 +2,7 @@ import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 import { openAPIRegistry } from "./registry";
 import "../../modules/auth/openapi.paths";
 import "../../modules/common/openapi.paths";
+import "../../modules/home-hero/openapi.paths";
 import "../../modules/product/openapi.paths";
 import "../../modules/variant/openapi.paths";
 
