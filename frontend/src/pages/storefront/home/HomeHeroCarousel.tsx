@@ -19,7 +19,7 @@ export function HomeHeroCarousel() {
   if (isLoading) {
     return (
       <section aria-busy="true">
-        <div className="aspect-video animate-pulse rounded-lg bg-stone-200 sm:aspect-21/9" />
+        <div className="aspect-video animate-pulse rounded-lg bg-muted sm:aspect-21/9" />
       </section>
     );
   }

@@ -56,7 +56,9 @@ export function HomeHeroCard({
         <p
           className={cn(
             "text-xs font-medium uppercase tracking-[0.2em]",
-            hasImage || !isLight ? "text-stone-200" : "text-stone-600",
+            hasImage || !isLight
+              ? "text-stone-200"
+              : "text-muted-foreground",
           )}
         >
           {eyebrow}
@@ -66,7 +68,7 @@ export function HomeHeroCard({
             "mt-1 max-w-md text-2xl font-semibold sm:text-3xl",
             hasImage || !isLight
               ? "text-white"
-              : "tracking-tight text-stone-900",
+              : "tracking-tight text-foreground",
           )}
         >
           {title}
@@ -75,7 +77,9 @@ export function HomeHeroCard({
           <p
             className={cn(
               "mt-2 max-w-sm text-sm",
-              hasImage || !isLight ? "text-stone-200" : "text-stone-600",
+              hasImage || !isLight
+                ? "text-stone-200"
+                : "text-muted-foreground",
             )}
           >
             {description}
@@ -87,8 +91,8 @@ export function HomeHeroCard({
 
   const cardClass = cn(
     "overflow-hidden border-0 shadow-none",
-    !hasImage && isLight ? "bg-stone-200/40" : "",
-    !hasImage && !isLight ? "bg-stone-900 text-stone-50" : "",
+    !hasImage && isLight ? "bg-muted/50" : "",
+    !hasImage && !isLight ? "bg-stone-900 text-stone-50 dark:bg-stone-950" : "",
     href && "transition hover:opacity-[0.98]",
   );
 
@@ -102,7 +106,7 @@ export function HomeHeroCard({
     return (
       <Link
         to={href}
-        className="block rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2"
+        className="block rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <Card className={cn(cardClass, "p-0")}>{mediaShell}</Card>
       </Link>

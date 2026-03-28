@@ -5,6 +5,7 @@ import { Separator } from "@/core/components/ui/separator";
 import { ROUTES } from "@/core/routes";
 import { useAuth } from "@/modules/auth/application/use-auth";
 import { useCartStore } from "@/modules/cart/application/cart-store";
+import { ThemeToggle } from "@/core/components/theme/ThemeToggle";
 import { WhatsAppFab } from "./WhatsAppFab";
 
 export function StorefrontLayout() {
@@ -12,19 +13,20 @@ export function StorefrontLayout() {
   const count = useCartStore((s) => s.lines.reduce((n, l) => n + l.qty, 0));
 
   return (
-    <div className="flex min-h-screen flex-col bg-stone-50">
-      <header className="sticky top-0 z-40 border-b border-stone-200/80 bg-stone-50/95 backdrop-blur">
+    <div className="flex min-h-dvh flex-col bg-background">
+      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
         <div className="mx-auto flex h-14 max-w-lg items-center justify-between gap-2 px-4 sm:max-w-3xl lg:max-w-5xl">
           <Link
             to={ROUTES.home}
-            className="text-sm font-semibold tracking-wide text-stone-900"
+            className="text-sm font-semibold tracking-wide text-foreground"
           >
             Women Couture
           </Link>
           <div className="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
+            <ThemeToggle />
             {user ? (
               <>
-                <span className="hidden max-w-32 truncate text-xs text-stone-600 sm:inline">
+                <span className="hidden max-w-32 truncate text-xs text-muted-foreground sm:inline">
                   {user.username}
                 </span>
                 {user.role === "ADMIN" && (
@@ -58,8 +60,14 @@ export function StorefrontLayout() {
         </div>
         <Separator />
       </header>
-      <main className="mx-auto w-full max-w-lg flex-1 px-4 py-6 sm:max-w-3xl lg:max-w-5xl">
-        <Outlet />
+      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col min-h-0 px-4 py-6 sm:max-w-3xl lg:max-w-5xl">
+        {/*
+          Flex chain: min-h-0 lets flex-1 children get a real height so nested
+          pages (e.g. home backdrop with absolute inset-0) can fill the column.
+        */}
+        <div className="flex w-full min-h-0 flex-1 flex-col">
+          <Outlet />
+        </div>
       </main>
       <WhatsAppFab />
     </div>

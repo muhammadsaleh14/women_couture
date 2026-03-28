@@ -52,8 +52,8 @@ function CategoryPill({
       className={cn(
         "rounded-lg border px-3 py-2 text-left text-sm transition-colors",
         selected
-          ? "border-stone-900 bg-stone-900 text-white"
-          : "border-stone-200 bg-white text-stone-800 hover:border-stone-300 hover:bg-stone-50",
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border bg-card text-card-foreground hover:border-border hover:bg-accent hover:text-accent-foreground",
       )}
     >
       {children}

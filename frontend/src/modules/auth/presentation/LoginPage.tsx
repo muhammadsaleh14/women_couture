@@ -12,6 +12,7 @@ import {
 } from "@/core/components/ui/card";
 import { Input } from "@/core/components/ui/input";
 import { Label } from "@/core/components/ui/label";
+import { ThemeToggle } from "@/core/components/theme/ThemeToggle";
 import { ROUTES } from "@/core/routes";
 import { useAuth } from "@/modules/auth/application/use-auth";
 
@@ -46,8 +47,11 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-stone-100 px-4 py-12">
-      <Card className="w-full max-w-md border-stone-200 shadow-sm">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
+      <Card className="w-full max-w-md shadow-sm">
         <CardHeader>
           <CardTitle>Sign in</CardTitle>
           <CardDescription>

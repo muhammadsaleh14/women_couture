@@ -46,14 +46,14 @@ export function HomeCategoryBrowse({ categoryFilter, allProducts }: Props) {
   }, [categoryRaw, colorFilter, sort]);
 
   return (
-    <div className="space-y-6">
+    <div className="flex w-full min-h-0 flex-1 flex-col space-y-6">
       <div>
         <ButtonLink />
         <CategoryFilterBar activeId={categoryFilter} className="mt-4" />
-        <h1 className="mt-3 text-xl font-semibold text-stone-900">
+        <h1 className="mt-3 text-xl font-semibold text-foreground">
           {CATEGORY_LABEL[categoryFilter]}
         </h1>
-        <p className="mt-1 text-sm text-stone-600">
+        <p className="mt-1 text-sm text-muted-foreground">
           {filteredCategory.length} piece
           {filteredCategory.length === 1 ? "" : "s"}
         </p>
@@ -61,7 +61,7 @@ export function HomeCategoryBrowse({ categoryFilter, allProducts }: Props) {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="space-y-1.5">
-          <Label htmlFor="home-sort" className="text-xs text-stone-500">
+          <Label htmlFor="home-sort" className="text-xs text-muted-foreground">
             Sort
           </Label>
           <Select value={sort} onValueChange={setSort}>
@@ -76,7 +76,10 @@ export function HomeCategoryBrowse({ categoryFilter, allProducts }: Props) {
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="home-color" className="text-xs text-stone-500">
+          <Label
+            htmlFor="home-color"
+            className="text-xs text-muted-foreground"
+          >
             Filter by color
           </Label>
           <Select value={colorFilter} onValueChange={setColorFilter}>

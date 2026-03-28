@@ -4,7 +4,7 @@ export function ButtonLink() {
   return (
     <Link
       to="/"
-      className="text-sm font-medium text-stone-700 underline-offset-4 hover:underline"
+      className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
     >
       ← All products
     </Link>

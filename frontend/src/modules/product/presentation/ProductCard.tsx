@@ -22,9 +22,9 @@ export function ProductCard({ product, className }: Props) {
 
   return (
     <Link to={ROUTES.product(product.id)} className={cn("block", className)}>
-      <Card className="overflow-hidden border-stone-200/80 bg-white shadow-sm transition hover:shadow-md">
+      <Card className="overflow-hidden border-border/80 bg-card text-card-foreground shadow-sm transition hover:shadow-md">
         <CardHeader className="relative p-0">
-          <div className="aspect-[4/5] w-full overflow-hidden bg-stone-100">
+          <div className="aspect-[4/5] w-full overflow-hidden bg-muted">
             <img
               src={cover}
               alt=""
@@ -34,13 +34,15 @@ export function ProductCard({ product, className }: Props) {
           </div>
           <div className="absolute left-2 top-2 flex flex-wrap gap-1">
             {product.isNew && (
-              <Badge className="bg-stone-900 text-white">New Arrival</Badge>
+              <Badge className="bg-primary text-primary-foreground">
+                New Arrival
+              </Badge>
             )}
             {!anyStock && <Badge variant="destructive">Out of Stock</Badge>}
           </div>
         </CardHeader>
         <CardContent className="space-y-1 p-3">
-          <p className="line-clamp-2 text-sm font-medium leading-snug text-stone-900">
+          <p className="line-clamp-2 text-sm font-medium leading-snug text-foreground">
             {product.name}
           </p>
           <PriceBlock
@@ -53,7 +55,7 @@ export function ProductCard({ product, className }: Props) {
           {product.variants.slice(0, 5).map((v) => (
             <span
               key={v.id}
-              className="size-4 rounded-full border border-stone-200"
+              className="size-4 rounded-full border border-border"
               style={{ backgroundColor: v.hex }}
               title={v.colorName}
               aria-hidden

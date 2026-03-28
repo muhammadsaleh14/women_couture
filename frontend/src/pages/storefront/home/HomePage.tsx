@@ -37,8 +37,8 @@ export function HomePage() {
 
   if (invalidCategory) {
     return (
-      <div className="space-y-4 text-center">
-        <p className="text-sm text-stone-600">Category not found.</p>
+      <div className="flex flex-1 flex-col space-y-4 text-center">
+        <p className="text-sm text-muted-foreground">Category not found.</p>
         <ButtonLink />
       </div>
     );
@@ -47,12 +47,14 @@ export function HomePage() {
   if (categoryFilter) {
     if (isLoading) {
       return (
-        <p className="text-center text-sm text-stone-600">Loading…</p>
+        <p className="flex flex-1 justify-center pt-8 text-center text-sm text-muted-foreground">
+          Loading…
+        </p>
       );
     }
     if (isError) {
       return (
-        <p className="text-center text-sm text-destructive">
+        <p className="flex flex-1 justify-center pt-8 text-center text-sm text-destructive">
           Could not load products.
         </p>
       );
@@ -68,22 +70,22 @@ export function HomePage() {
   }
 
   return (
-    <div className="relative isolate">
+    <div className="relative isolate flex w-full min-h-0 flex-1 flex-col">
       <HomePageMathBackdrop />
-      <div className="relative z-0 space-y-10">
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col space-y-10">
       <HomeHeroCarousel />
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-stone-900">
+        <h2 className="text-lg font-semibold text-foreground">
           Shop by category
         </h2>
         <CategoryFilterBar activeId={null} />
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-stone-900">Products</h2>
+        <h2 className="text-lg font-semibold text-foreground">Products</h2>
         {isLoading && (
-          <p className="text-sm text-stone-500">Loading products…</p>
+          <p className="text-sm text-muted-foreground">Loading products…</p>
         )}
         {isError && (
           <p className="text-sm text-destructive">
@@ -91,7 +93,9 @@ export function HomePage() {
           </p>
         )}
         {!isLoading && !isError && allProducts.length === 0 && (
-          <p className="text-sm text-stone-600">No active products yet.</p>
+          <p className="text-sm text-muted-foreground">
+            No active products yet.
+          </p>
         )}
         {!isLoading && !isError && allProducts.length > 0 && (
           <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
