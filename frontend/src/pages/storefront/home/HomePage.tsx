@@ -12,6 +12,7 @@ import { ButtonLink } from "./ButtonLink";
 import { CategoryFilterBar } from "./CategoryFilterBar";
 import { HomeCategoryBrowse } from "./HomeCategoryBrowse";
 import { HomeHeroCarousel } from "./HomeHeroCarousel";
+import { HomePageMathBackdrop } from "./HomePageMathBackdrop";
 import { isCategoryId } from "./homeCategory";
 
 export function HomePage() {
@@ -67,7 +68,9 @@ export function HomePage() {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="relative isolate">
+      <HomePageMathBackdrop />
+      <div className="relative z-0 space-y-10">
       <HomeHeroCarousel />
 
       <section className="space-y-3">
@@ -105,6 +108,7 @@ export function HomePage() {
           </Carousel>
         )}
       </section>
+      </div>
     </div>
   );
 }

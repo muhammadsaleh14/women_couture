@@ -32,7 +32,7 @@ export function HomeHeroCarousel() {
     <section>
       <Carousel className="w-full">
         <CarouselContent>
-          {slides.map((slide) => (
+          {slides.map((slide, index) => (
             <CarouselItem key={slide.id}>
               <HomeHeroCard
                 variant={themeToVariant(slide.theme)}
@@ -41,6 +41,7 @@ export function HomeHeroCarousel() {
                 title={slide.title}
                 description={slide.description}
                 imageUrl={slide.imageUrl}
+                motionPhase={index * 2.399 + (slide.id.charCodeAt(0) % 7) * 0.17}
                 href={
                   slide.productId
                     ? ROUTES.productDetail(slide.productId, slide.variantId)

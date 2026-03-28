@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card } from "@/core/components/ui/card";
 import { cn } from "@/core/lib/utils";
+import { HeroMathBackdrop } from "./HeroMathBackdrop";
 
 export type HomeHeroCardProps = {
   variant: "light" | "dark";
@@ -12,6 +13,8 @@ export type HomeHeroCardProps = {
   imageUrl?: string | null;
   /** When set, the whole card is a link (e.g. product detail). */
   href?: string;
+  /** Phase offset for sin/cos backdrop motion (e.g. slide index). */
+  motionPhase?: number;
 };
 
 export function HomeHeroCard({
@@ -22,6 +25,7 @@ export function HomeHeroCard({
   titleAs = "h2",
   imageUrl,
   href,
+  motionPhase = 0,
 }: HomeHeroCardProps) {
   const isLight = variant === "light";
   const Title = titleAs;
@@ -29,20 +33,26 @@ export function HomeHeroCard({
 
   const inner = (
     <>
+      {!hasImage ? (
+        <HeroMathBackdrop
+          variant={isLight ? "light" : "dark"}
+          phase={motionPhase}
+        />
+      ) : null}
       {hasImage ? (
         <>
           <img
             src={imageUrl!}
             alt=""
-            className="absolute inset-0 size-full object-cover"
+            className="absolute inset-0 z-1 size-full object-cover"
           />
           <div
-            className="absolute inset-0 bg-linear-to-t from-black/75 via-black/35 to-black/10"
+            className="absolute inset-0 z-2 bg-linear-to-t from-black/75 via-black/35 to-black/10"
             aria-hidden
           />
         </>
       ) : null}
-      <div className="relative z-10 flex h-full flex-col justify-end p-6 sm:p-10">
+      <div className="relative z-3 flex h-full flex-col justify-end p-6 sm:p-10">
         <p
           className={cn(
             "text-xs font-medium uppercase tracking-[0.2em]",
@@ -77,21 +87,13 @@ export function HomeHeroCard({
 
   const cardClass = cn(
     "overflow-hidden border-0 shadow-none",
-    !hasImage && isLight ? "relative bg-stone-200/60" : "",
-    !hasImage && !isLight ? "bg-stone-800 text-stone-50" : "",
+    !hasImage && isLight ? "bg-stone-200/40" : "",
+    !hasImage && !isLight ? "bg-stone-900 text-stone-50" : "",
     href && "transition hover:opacity-[0.98]",
   );
 
   const mediaShell = (
-    <div
-      className={cn(
-        "relative aspect-video sm:aspect-21/9 w-full",
-        !hasImage &&
-          isLight &&
-          "bg-linear-to-br from-stone-200 via-stone-100 to-stone-200",
-        !hasImage && !isLight && "bg-linear-to-br from-stone-800 to-stone-700",
-      )}
-    >
+    <div className="relative aspect-video w-full overflow-hidden rounded-[inherit] sm:aspect-21/9">
       {inner}
     </div>
   );
