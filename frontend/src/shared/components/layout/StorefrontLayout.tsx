@@ -7,10 +7,12 @@ import { useAuth } from "@/modules/auth/application/use-auth";
 import { useCartStore } from "@/modules/cart/application/cart-store";
 import { ThemeToggle } from "@/core/components/theme/ThemeToggle";
 import { WhatsAppFab } from "./WhatsAppFab";
+import { StorefrontCartSheet } from "./StorefrontCartSheet";
 
 export function StorefrontLayout() {
   const { user, logout } = useAuth();
   const count = useCartStore((s) => s.lines.reduce((n, l) => n + l.qty, 0));
+  const openCartSheet = useCartStore((s) => s.openSheet);
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
@@ -51,13 +53,17 @@ export function StorefrontLayout() {
                 <Link to={ROUTES.login}>Sign in</Link>
               </Button>
             )}
-            <Button variant="ghost" size="sm" asChild className="gap-1.5">
-              <Link to={ROUTES.cart}>
-                <ShoppingBag className="size-4" aria-hidden />
-                <span className="tabular-nums">
-                  Cart{count > 0 ? ` (${count})` : ""}
-                </span>
-              </Link>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => openCartSheet()}
+            >
+              <ShoppingBag className="size-4" aria-hidden />
+              <span className="tabular-nums">
+                Cart{count > 0 ? ` (${count})` : ""}
+              </span>
             </Button>
           </nav>
         </div>
@@ -73,6 +79,7 @@ export function StorefrontLayout() {
         </div>
       </main>
       <WhatsAppFab />
+      <StorefrontCartSheet />
     </div>
   );
 }

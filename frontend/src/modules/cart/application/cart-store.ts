@@ -14,6 +14,11 @@ export interface CartLine {
 
 type CartState = {
   lines: CartLine[];
+  /** Slide-over cart (not persisted) */
+  sheetOpen: boolean;
+  openSheet: () => void;
+  closeSheet: () => void;
+  setSheetOpen: (open: boolean) => void;
   addLine: (line: Omit<CartLine, "lineId"> & { lineId?: string }) => void;
   setQty: (lineId: string, qty: number) => void;
   removeLine: (lineId: string) => void;
@@ -28,6 +33,10 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       lines: [],
+      sheetOpen: false,
+      openSheet: () => set({ sheetOpen: true }),
+      closeSheet: () => set({ sheetOpen: false }),
+      setSheetOpen: (open) => set({ sheetOpen: open }),
       addLine: (payload) => {
         const lineId =
           payload.lineId ?? makeLineId(payload.productId, payload.variantId);
@@ -65,6 +74,9 @@ export const useCartStore = create<CartState>()(
         set({ lines: get().lines.filter((l) => l.lineId !== lineId) }),
       clear: () => set({ lines: [] }),
     }),
-    { name: "wc-cart" },
+    {
+      name: "wc-cart",
+      partialize: (state) => ({ lines: state.lines }),
+    },
   ),
 );

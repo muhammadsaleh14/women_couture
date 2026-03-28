@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
@@ -37,8 +37,8 @@ function ProductDetailContent({
   productId: string;
   variantFromUrl: string | null;
 }) {
-  const navigate = useNavigate();
   const addLine = useCartStore((s) => s.addLine);
+  const openCartSheet = useCartStore((s) => s.openSheet);
 
   const { data: apiProduct, isLoading, isError } = useGetProductsProductId(
     productId,
@@ -121,16 +121,16 @@ function ProductDetailContent({
 
   const handleBuyNow = () => {
     handleAddToCart();
-    navigate(ROUTES.cart);
+    openCartSheet();
   };
 
   return (
     <div className="space-y-6 px-4 sm:px-6 lg:px-8">
-      <Carousel className="w-full">
+      <Carousel className="w-full max-w-full md:mx-auto md:max-w-md lg:max-w-lg xl:max-w-xl">
         <CarouselContent>
           {carouselImages.map((src) => (
             <CarouselItem key={src}>
-              <div className="aspect-3/4 overflow-hidden rounded-xl bg-stone-100">
+              <div className="aspect-3/4 overflow-hidden rounded-xl bg-muted">
                 <img src={src} alt="" className="size-full object-cover" />
               </div>
             </CarouselItem>
