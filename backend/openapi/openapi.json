@@ -608,6 +608,199 @@
           }
         }
       },
+      "OrderPayment": {
+        "type": "string",
+        "enum": [
+          "cod",
+          "online"
+        ]
+      },
+      "OrderStatusPublic": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "shipped",
+          "delivered"
+        ]
+      },
+      "OrderLinePublic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string",
+            "nullable": true
+          },
+          "qty": {
+            "type": "integer"
+          },
+          "unitPrice": {
+            "type": "number"
+          },
+          "lineTotal": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "productName",
+          "type",
+          "sku",
+          "qty",
+          "unitPrice",
+          "lineTotal"
+        ]
+      },
+      "OrderPublic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "orderNumber": {
+            "type": "integer"
+          },
+          "placedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "shippingAddress": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "payment": {
+            "type": "string",
+            "enum": [
+              "cod",
+              "online"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "shipped",
+              "delivered"
+            ]
+          },
+          "subtotal": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderLinePublic"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "orderNumber",
+          "placedAt",
+          "customerName",
+          "phone",
+          "shippingAddress",
+          "city",
+          "payment",
+          "status",
+          "subtotal",
+          "total",
+          "lines"
+        ]
+      },
+      "CreateOrderBody": {
+        "type": "object",
+        "properties": {
+          "customerName": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 1
+          },
+          "shippingAddress": {
+            "type": "string",
+            "minLength": 1
+          },
+          "city": {
+            "type": "string",
+            "minLength": 1
+          },
+          "payment": {
+            "type": "string",
+            "enum": [
+              "cod",
+              "online"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "variantId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "qty": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": true
+                }
+              },
+              "required": [
+                "variantId",
+                "qty"
+              ]
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "customerName",
+          "phone",
+          "shippingAddress",
+          "city",
+          "payment",
+          "items"
+        ]
+      },
+      "UpdateOrderBody": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "shipped",
+              "delivered"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
       "AuthTokenResponse": {
         "type": "object",
         "properties": {
@@ -1431,6 +1624,169 @@
           },
           "404": {
             "description": "Image not found"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "summary": "Place an order (guest or authenticated customer)",
+        "tags": [
+          "Orders"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderPublic"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation or stock error"
+          }
+        }
+      },
+      "get": {
+        "summary": "List orders (admin)",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "nullable": true,
+              "minimum": 0
+            },
+            "required": false,
+            "name": "skip",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "required": false,
+            "name": "take",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderPublic"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{orderId}": {
+      "get": {
+        "summary": "Get order by id (admin)",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "orderId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderPublic"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update order status (admin)",
+        "tags": [
+          "Orders"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "orderId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrderBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderPublic"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found"
           }
         }
       }

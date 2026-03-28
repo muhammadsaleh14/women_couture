@@ -328,6 +328,108 @@ export interface UpdateVariantBody {
   purchasePrice?: number;
 }
 
+export type OrderPayment = typeof OrderPayment[keyof typeof OrderPayment];
+
+
+export const OrderPayment = {
+  cod: 'cod',
+  online: 'online',
+} as const;
+
+export type OrderStatusPublic = typeof OrderStatusPublic[keyof typeof OrderStatusPublic];
+
+
+export const OrderStatusPublic = {
+  pending: 'pending',
+  shipped: 'shipped',
+  delivered: 'delivered',
+} as const;
+
+export interface OrderLinePublic {
+  id: string;
+  productName: string;
+  type: string;
+  /** @nullable */
+  sku: string | null;
+  qty: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+export type OrderPublicPayment = typeof OrderPublicPayment[keyof typeof OrderPublicPayment];
+
+
+export const OrderPublicPayment = {
+  cod: 'cod',
+  online: 'online',
+} as const;
+
+export type OrderPublicStatus = typeof OrderPublicStatus[keyof typeof OrderPublicStatus];
+
+
+export const OrderPublicStatus = {
+  pending: 'pending',
+  shipped: 'shipped',
+  delivered: 'delivered',
+} as const;
+
+export interface OrderPublic {
+  id: string;
+  orderNumber: number;
+  placedAt: string;
+  customerName: string;
+  phone: string;
+  shippingAddress: string;
+  city: string;
+  payment: OrderPublicPayment;
+  status: OrderPublicStatus;
+  subtotal: number;
+  total: number;
+  lines: OrderLinePublic[];
+}
+
+export type CreateOrderBodyPayment = typeof CreateOrderBodyPayment[keyof typeof CreateOrderBodyPayment];
+
+
+export const CreateOrderBodyPayment = {
+  cod: 'cod',
+  online: 'online',
+} as const;
+
+export type CreateOrderBodyItemsItem = {
+  /** @minLength 1 */
+  variantId: string;
+  /** @exclusiveMinimum 0 */
+  qty: number;
+};
+
+export interface CreateOrderBody {
+  /** @minLength 1 */
+  customerName: string;
+  /** @minLength 1 */
+  phone: string;
+  /** @minLength 1 */
+  shippingAddress: string;
+  /** @minLength 1 */
+  city: string;
+  payment: CreateOrderBodyPayment;
+  /** @minItems 1 */
+  items: CreateOrderBodyItemsItem[];
+}
+
+export type UpdateOrderBodyStatus = typeof UpdateOrderBodyStatus[keyof typeof UpdateOrderBodyStatus];
+
+
+export const UpdateOrderBodyStatus = {
+  pending: 'pending',
+  shipped: 'shipped',
+  delivered: 'delivered',
+} as const;
+
+export interface UpdateOrderBody {
+  status: UpdateOrderBodyStatus;
+}
+
 export type UserPublicRole = typeof UserPublicRole[keyof typeof UserPublicRole];
 
 
@@ -431,6 +533,19 @@ export type PostVariantsVariantIdImages201 = {
   id: string;
   url: string;
   order: number;
+};
+
+export type GetOrdersParams = {
+/**
+ * @minimum 0
+ * @nullable
+ */
+skip?: number | null;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+take?: number;
 };
 
 /**
@@ -1850,4 +1965,316 @@ export const useDeleteVariantsImagesImageId = <TError = void,
         TContext
       > => {
       return useMutation(getDeleteVariantsImagesImageIdMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary Place an order (guest or authenticated customer)
+ */
+export const postOrders = (
+    createOrderBody: CreateOrderBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<OrderPublic>(
+      {url: `/orders`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createOrderBody, signal
+    },
+      );
+    }
+  
+
+
+export const getPostOrdersMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postOrders>>, TError,{data: CreateOrderBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof postOrders>>, TError,{data: CreateOrderBody}, TContext> => {
+
+const mutationKey = ['postOrders'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postOrders>>, {data: CreateOrderBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postOrders(data,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostOrdersMutationResult = NonNullable<Awaited<ReturnType<typeof postOrders>>>
+    export type PostOrdersMutationBody = CreateOrderBody
+    export type PostOrdersMutationError = void
+
+    /**
+ * @summary Place an order (guest or authenticated customer)
+ */
+export const usePostOrders = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postOrders>>, TError,{data: CreateOrderBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postOrders>>,
+        TError,
+        {data: CreateOrderBody},
+        TContext
+      > => {
+      return useMutation(getPostOrdersMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary List orders (admin)
+ */
+export const getOrders = (
+    params?: GetOrdersParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<OrderPublic[]>(
+      {url: `/orders`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetOrdersQueryKey = (params?: GetOrdersParams,) => {
+    return [
+    `/orders`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+    
+export const getGetOrdersQueryOptions = <TData = Awaited<ReturnType<typeof getOrders>>, TError = unknown>(params?: GetOrdersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrders>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrdersQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrders>>> = ({ signal }) => getOrders(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOrders>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrdersQueryResult = NonNullable<Awaited<ReturnType<typeof getOrders>>>
+export type GetOrdersQueryError = unknown
+
+
+export function useGetOrders<TData = Awaited<ReturnType<typeof getOrders>>, TError = unknown>(
+ params: undefined |  GetOrdersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrders>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrders>>,
+          TError,
+          Awaited<ReturnType<typeof getOrders>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrders<TData = Awaited<ReturnType<typeof getOrders>>, TError = unknown>(
+ params?: GetOrdersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrders>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrders>>,
+          TError,
+          Awaited<ReturnType<typeof getOrders>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrders<TData = Awaited<ReturnType<typeof getOrders>>, TError = unknown>(
+ params?: GetOrdersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrders>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List orders (admin)
+ */
+
+export function useGetOrders<TData = Awaited<ReturnType<typeof getOrders>>, TError = unknown>(
+ params?: GetOrdersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrders>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrdersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * @summary Get order by id (admin)
+ */
+export const getOrdersOrderId = (
+    orderId: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<OrderPublic>(
+      {url: `/orders/${orderId}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetOrdersOrderIdQueryKey = (orderId: string,) => {
+    return [
+    `/orders/${orderId}`
+    ] as const;
+    }
+
+    
+export const getGetOrdersOrderIdQueryOptions = <TData = Awaited<ReturnType<typeof getOrdersOrderId>>, TError = void>(orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrdersOrderId>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOrdersOrderIdQueryKey(orderId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrdersOrderId>>> = ({ signal }) => getOrdersOrderId(orderId, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(orderId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOrdersOrderId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetOrdersOrderIdQueryResult = NonNullable<Awaited<ReturnType<typeof getOrdersOrderId>>>
+export type GetOrdersOrderIdQueryError = void
+
+
+export function useGetOrdersOrderId<TData = Awaited<ReturnType<typeof getOrdersOrderId>>, TError = void>(
+ orderId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrdersOrderId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrdersOrderId>>,
+          TError,
+          Awaited<ReturnType<typeof getOrdersOrderId>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrdersOrderId<TData = Awaited<ReturnType<typeof getOrdersOrderId>>, TError = void>(
+ orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrdersOrderId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getOrdersOrderId>>,
+          TError,
+          Awaited<ReturnType<typeof getOrdersOrderId>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetOrdersOrderId<TData = Awaited<ReturnType<typeof getOrdersOrderId>>, TError = void>(
+ orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrdersOrderId>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get order by id (admin)
+ */
+
+export function useGetOrdersOrderId<TData = Awaited<ReturnType<typeof getOrdersOrderId>>, TError = void>(
+ orderId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrdersOrderId>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetOrdersOrderIdQueryOptions(orderId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * @summary Update order status (admin)
+ */
+export const patchOrdersOrderId = (
+    orderId: string,
+    updateOrderBody: UpdateOrderBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<OrderPublic>(
+      {url: `/orders/${orderId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateOrderBody, signal
+    },
+      );
+    }
+  
+
+
+export const getPatchOrdersOrderIdMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchOrdersOrderId>>, TError,{orderId: string;data: UpdateOrderBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchOrdersOrderId>>, TError,{orderId: string;data: UpdateOrderBody}, TContext> => {
+
+const mutationKey = ['patchOrdersOrderId'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchOrdersOrderId>>, {orderId: string;data: UpdateOrderBody}> = (props) => {
+          const {orderId,data} = props ?? {};
+
+          return  patchOrdersOrderId(orderId,data,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchOrdersOrderIdMutationResult = NonNullable<Awaited<ReturnType<typeof patchOrdersOrderId>>>
+    export type PatchOrdersOrderIdMutationBody = UpdateOrderBody
+    export type PatchOrdersOrderIdMutationError = void
+
+    /**
+ * @summary Update order status (admin)
+ */
+export const usePatchOrdersOrderId = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchOrdersOrderId>>, TError,{orderId: string;data: UpdateOrderBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchOrdersOrderId>>,
+        TError,
+        {orderId: string;data: UpdateOrderBody},
+        TContext
+      > => {
+      return useMutation(getPatchOrdersOrderIdMutationOptions(options), queryClient);
     }

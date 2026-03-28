@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useState, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
@@ -15,8 +14,8 @@ import { Label } from "@/core/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/core/components/ui/radio-group";
 import { Separator } from "@/core/components/ui/separator";
 import { ROUTES } from "@/core/routes";
+import { usePostOrders } from "@/core/api/generated/api";
 import { useCartStore } from "@/modules/cart/application/cart-store";
-import { postOrder } from "@/modules/order/infrastructure/orders.api";
 import type { PaymentMethod } from "@/shared/model/types";
 import { PriceBlock } from "@/shared/components/product/PriceBlock";
 
@@ -29,22 +28,23 @@ type Props = {
 
 export function CartCheckoutPanel({ mode, onDismiss }: Props) {
   const { lines, setQty, removeLine, clear } = useCartStore();
-  const placeOrderMutation = useMutation({
-    mutationFn: postOrder,
-    onSuccess: (order) => {
-      toast.success(`Order #${order.orderNumber} placed.`);
-      clear();
-      onDismiss?.();
-    },
-    onError: (err: unknown) => {
-      const msg =
-        isAxiosError(err) &&
-        err.response?.data &&
-        typeof err.response.data === "object" &&
-        "message" in err.response.data
-          ? String((err.response.data as { message: unknown }).message)
-          : "Could not place order. Try again.";
-      toast.error(msg);
+  const placeOrderMutation = usePostOrders({
+    mutation: {
+      onSuccess: (order) => {
+        toast.success(`Order #${order.orderNumber} placed.`);
+        clear();
+        onDismiss?.();
+      },
+      onError: (err: unknown) => {
+        const msg =
+          isAxiosError(err) &&
+          err.response?.data &&
+          typeof err.response.data === "object" &&
+          "message" in err.response.data
+            ? String((err.response.data as { message: unknown }).message)
+            : "Could not place order. Try again.";
+        toast.error(msg);
+      },
     },
   });
   const [payment, setPayment] = useState<PaymentMethod>("cod");
@@ -65,12 +65,14 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
       return;
     }
     placeOrderMutation.mutate({
-      customerName: name.trim(),
-      phone: phone.trim(),
-      shippingAddress: address.trim(),
-      city: city.trim(),
-      payment,
-      items: lines.map((l) => ({ variantId: l.variantId, qty: l.qty })),
+      data: {
+        customerName: name.trim(),
+        phone: phone.trim(),
+        shippingAddress: address.trim(),
+        city: city.trim(),
+        payment,
+        items: lines.map((l) => ({ variantId: l.variantId, qty: l.qty })),
+      },
     });
   };
 

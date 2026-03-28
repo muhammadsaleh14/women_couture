@@ -1,7 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useMemo, useState, type MouseEvent } from "react";
 import { toast } from "sonner";
+import {
+  type OrderPublic,
+  getGetOrdersQueryKey,
+  useGetOrders,
+  usePatchOrdersOrderId,
+} from "@/core/api/generated/api";
 import {
   Table,
   TableBody,
@@ -24,13 +30,10 @@ import {
   SelectValue,
 } from "@/core/components/ui/select";
 import { Label } from "@/core/components/ui/label";
-import {
-  fetchOrders,
-  patchOrderStatus,
-} from "@/modules/order/infrastructure/orders.api";
+import { mapOrderPublicToOrder } from "@/modules/order/infrastructure/order.mapper";
 import type { Order, OrderStatus } from "@/shared/model/types";
 
-const ORDERS_QUERY_KEY = ["admin-orders"] as const;
+const ORDERS_LIST_PARAMS = { take: 100 } as const;
 
 function formatWhen(iso: string) {
   const d = new Date(iso);
@@ -46,34 +49,40 @@ function formatMoney(n: number) {
 
 export function AdminOrdersPage() {
   const queryClient = useQueryClient();
-  const { data: orders = [], isPending, isError, refetch } = useQuery({
-    queryKey: ORDERS_QUERY_KEY,
-    queryFn: () => fetchOrders({ take: 100 }),
-  });
+  const {
+    data: orderRows,
+    isPending,
+    isError,
+    refetch,
+  } = useGetOrders(ORDERS_LIST_PARAMS);
 
-  const patchStatus = useMutation({
-    mutationFn: ({
-      id,
-      status,
-    }: {
-      id: string;
-      status: OrderStatus;
-    }) => patchOrderStatus(id, status),
-    onSuccess: (updated) => {
-      queryClient.setQueryData<Order[]>(ORDERS_QUERY_KEY, (old) =>
-        old?.map((o) => (o.id === updated.id ? updated : o)) ?? [updated],
-      );
-    },
-    onError: (err: unknown) => {
-      const msg =
-        isAxiosError(err) &&
-        err.response?.data &&
-        typeof err.response.data === "object" &&
-        "message" in err.response.data
-          ? String((err.response.data as { message: unknown }).message)
-          : "Could not update status.";
-      toast.error(msg);
-      void queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
+  const orders = useMemo(
+    () => (orderRows ?? []).map(mapOrderPublicToOrder),
+    [orderRows],
+  );
+
+  const patchStatus = usePatchOrdersOrderId({
+    mutation: {
+      onSuccess: (updated) => {
+        queryClient.setQueryData<OrderPublic[]>(
+          getGetOrdersQueryKey(ORDERS_LIST_PARAMS),
+          (old) =>
+            old?.map((o) => (o.id === updated.id ? updated : o)) ?? [updated],
+        );
+      },
+      onError: (err: unknown) => {
+        const msg =
+          isAxiosError(err) &&
+          err.response?.data &&
+          typeof err.response.data === "object" &&
+          "message" in err.response.data
+            ? String((err.response.data as { message: unknown }).message)
+            : "Could not update status.";
+        toast.error(msg);
+        void queryClient.invalidateQueries({
+          queryKey: getGetOrdersQueryKey(ORDERS_LIST_PARAMS),
+        });
+      },
     },
   });
 
@@ -155,12 +164,12 @@ export function AdminOrdersPage() {
                     value={o.status}
                     disabled={
                       patchStatus.isPending &&
-                      patchStatus.variables?.id === o.id
+                      patchStatus.variables?.orderId === o.id
                     }
                     onValueChange={(v: string) =>
                       patchStatus.mutate({
-                        id: o.id,
-                        status: v as OrderStatus,
+                        orderId: o.id,
+                        data: { status: v as OrderStatus },
                       })
                     }
                   >
