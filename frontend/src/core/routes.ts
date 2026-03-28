@@ -1,7 +1,9 @@
 export const ROUTES = {
   login: "/login",
   home: "/",
-  shop: (categoryId: string) => `/shop/${categoryId}` as const,
+  /** Category browse uses the home page with a query param. */
+  shop: (categoryId: string) =>
+    `/?category=${encodeURIComponent(categoryId)}` as const,
   product: (productId: string) => `/product/${productId}` as const,
   cart: "/cart",
   admin: {
