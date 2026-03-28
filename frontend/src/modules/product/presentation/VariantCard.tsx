@@ -196,7 +196,7 @@ export function VariantCard({
                 </div>
                 <p className="mt-3 text-xs text-muted-foreground">
                   {canAdjustStock
-                    ? "Read-only count — use Adjust stock or the Stock page."
+                    ? "Read-only count — use Adjust stock, or open Stock moves from the product list preview."
                     : "Read-only · save the variant before adjusting stock."}
                 </p>
               </div>

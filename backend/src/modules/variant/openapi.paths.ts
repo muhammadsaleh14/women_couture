@@ -3,8 +3,35 @@ import { openAPIRegistry } from "../../core/openapi/registry";
 import {
   CreateVariantBodySchema,
   ProductVariantSchema,
+  VariantStockMovesResponseSchema,
 } from "../product/product.schema";
 import { UpdateVariantBodySchema } from "./variant.schema";
+
+openAPIRegistry.registerPath({
+  method: "get",
+  path: "/variants/{variantId}/stock-moves",
+  summary: "List stock moves for a variant",
+  tags: ["Variants"],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({
+      variantId: z.string(),
+    }),
+  },
+  responses: {
+    200: {
+      description: "OK",
+      content: {
+        "application/json": {
+          schema: VariantStockMovesResponseSchema,
+        },
+      },
+    },
+    404: {
+      description: "Variant not found",
+    },
+  },
+});
 
 openAPIRegistry.registerPath({
   method: "patch",

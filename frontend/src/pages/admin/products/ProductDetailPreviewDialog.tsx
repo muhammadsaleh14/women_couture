@@ -1,5 +1,8 @@
+import { Link } from "react-router-dom";
+import { History } from "lucide-react";
 import type { ProductWithVariants } from "@/core/api/generated/api";
 import { Button } from "@/core/components/ui/button";
+import { ROUTES } from "@/core/routes";
 import {
   Dialog,
   DialogContent,
@@ -138,6 +141,14 @@ export function ProductDetailPreviewDialog({ product, onClose }: Props) {
                           <dd>{formatDate(v.updatedAt)}</dd>
                         </div>
                       </dl>
+                      <div className="mt-3">
+                        <Button variant="outline" size="sm" className="gap-1.5" asChild>
+                          <Link to={ROUTES.admin.variantStockMoves(v.id)}>
+                            <History className="size-4" />
+                            Stock moves
+                          </Link>
+                        </Button>
+                      </div>
                       {(v.images?.length ?? 0) > 0 ? (
                         <div className="mt-3">
                           <p className="text-xs text-muted-foreground">

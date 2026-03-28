@@ -59,6 +59,20 @@ export async function deleteVariant(req: Request, res: Response, next: NextFunct
   }
 }
 
+export async function listStockMoves(req: Request, res: Response, next: NextFunction) {
+  try {
+    const params = ProductVariantParamsSchema.parse(req.params);
+    const result = await variantService.listStockMovesForVariant(params.variantId);
+    if (!result) {
+      res.status(404).json({ message: "Variant not found" });
+      return;
+    }
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function adjustStock(req: Request, res: Response, next: NextFunction) {
   try {
     const params = ProductVariantParamsSchema.parse(req.params);

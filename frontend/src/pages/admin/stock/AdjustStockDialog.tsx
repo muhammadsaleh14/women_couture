@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   getGetProductsProductIdQueryKey,
   getGetProductsQueryKey,
+  getGetVariantsVariantIdStockMovesQueryKey,
   usePostVariantsVariantIdStock,
   type PostVariantsVariantIdStockBodyType,
 } from "@/core/api/generated/api";
@@ -47,6 +48,8 @@ type Props = {
   onClose: () => void;
   /** When set, refetches this product after a successful adjustment (e.g. edit form). */
   invalidateProductDetailId?: string;
+  /** When set, refetches stock moves for this variant (e.g. stock moves page). */
+  invalidateVariantStockMovesId?: string;
 };
 
 export function AdjustStockDialog({
@@ -73,6 +76,13 @@ export function AdjustStockDialog({
         if (invalidateProductDetailId) {
           void queryClient.invalidateQueries({
             queryKey: getGetProductsProductIdQueryKey(invalidateProductDetailId),
+          });
+        }
+        if (invalidateVariantStockMovesId) {
+          void queryClient.invalidateQueries({
+            queryKey: getGetVariantsVariantIdStockMovesQueryKey(
+              invalidateVariantStockMovesId,
+            ),
           });
         }
         toast.success("Stock updated");

@@ -484,6 +484,79 @@
           "quantity"
         ]
       },
+      "StockMoveRecord": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "productVariantId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "IN",
+              "OUT",
+              "ADJUSTMENT"
+            ]
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "productVariantId",
+          "type",
+          "quantity",
+          "notes",
+          "createdAt"
+        ]
+      },
+      "VariantStockMovesResponse": {
+        "type": "object",
+        "properties": {
+          "variantId": {
+            "type": "string"
+          },
+          "sku": {
+            "type": "string",
+            "nullable": true
+          },
+          "stockQty": {
+            "type": "integer"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "moves": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StockMoveRecord"
+            }
+          }
+        },
+        "required": [
+          "variantId",
+          "sku",
+          "stockQty",
+          "productId",
+          "productName",
+          "moves"
+        ]
+      },
       "UpdateProductBody": {
         "type": "object",
         "properties": {
@@ -1464,6 +1537,44 @@
         "responses": {
           "201": {
             "description": "Created"
+          }
+        }
+      }
+    },
+    "/variants/{variantId}/stock-moves": {
+      "get": {
+        "summary": "List stock moves for a variant",
+        "tags": [
+          "Variants"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "name": "variantId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VariantStockMovesResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Variant not found"
           }
         }
       }

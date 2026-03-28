@@ -247,6 +247,35 @@ export interface AdjustStockBody {
   notes?: string;
 }
 
+export type StockMoveRecordType = typeof StockMoveRecordType[keyof typeof StockMoveRecordType];
+
+
+export const StockMoveRecordType = {
+  IN: 'IN',
+  OUT: 'OUT',
+  ADJUSTMENT: 'ADJUSTMENT',
+} as const;
+
+export interface StockMoveRecord {
+  id: string;
+  productVariantId: string;
+  type: StockMoveRecordType;
+  quantity: number;
+  /** @nullable */
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface VariantStockMovesResponse {
+  variantId: string;
+  /** @nullable */
+  sku: string | null;
+  stockQty: number;
+  productId: string;
+  productName: string;
+  moves: StockMoveRecord[];
+}
+
 export type UpdateProductBodyType = typeof UpdateProductBodyType[keyof typeof UpdateProductBodyType];
 
 
@@ -1691,6 +1720,97 @@ export const usePostProductsProductIdVariants = <TError = unknown,
       return useMutation(getPostProductsProductIdVariantsMutationOptions(options), queryClient);
     }
     
+/**
+ * @summary List stock moves for a variant
+ */
+export const getVariantsVariantIdStockMoves = (
+    variantId: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<VariantStockMovesResponse>(
+      {url: `/variants/${variantId}/stock-moves`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetVariantsVariantIdStockMovesQueryKey = (variantId: string,) => {
+    return [
+    `/variants/${variantId}/stock-moves`
+    ] as const;
+    }
+
+    
+export const getGetVariantsVariantIdStockMovesQueryOptions = <TData = Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError = void>(variantId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVariantsVariantIdStockMovesQueryKey(variantId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>> = ({ signal }) => getVariantsVariantIdStockMoves(variantId, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(variantId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetVariantsVariantIdStockMovesQueryResult = NonNullable<Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>>
+export type GetVariantsVariantIdStockMovesQueryError = void
+
+
+export function useGetVariantsVariantIdStockMoves<TData = Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError = void>(
+ variantId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>,
+          TError,
+          Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetVariantsVariantIdStockMoves<TData = Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError = void>(
+ variantId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>,
+          TError,
+          Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetVariantsVariantIdStockMoves<TData = Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError = void>(
+ variantId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List stock moves for a variant
+ */
+
+export function useGetVariantsVariantIdStockMoves<TData = Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError = void>(
+ variantId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getVariantsVariantIdStockMoves>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetVariantsVariantIdStockMovesQueryOptions(variantId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
 /**
  * @summary Update variant details
  */

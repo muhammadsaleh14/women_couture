@@ -95,6 +95,30 @@ export const AdjustStockBodySchema = openAPIRegistry.register(
   }),
 );
 
+export const StockMoveRecordSchema = openAPIRegistry.register(
+  "StockMoveRecord",
+  z.object({
+    id: z.string(),
+    productVariantId: z.string(),
+    type: z.enum(["IN", "OUT", "ADJUSTMENT"]),
+    quantity: z.number().int(),
+    notes: z.string().nullable(),
+    createdAt: z.string().datetime(),
+  }),
+);
+
+export const VariantStockMovesResponseSchema = openAPIRegistry.register(
+  "VariantStockMovesResponse",
+  z.object({
+    variantId: z.string(),
+    sku: z.string().nullable(),
+    stockQty: z.number().int(),
+    productId: z.string(),
+    productName: z.string(),
+    moves: z.array(StockMoveRecordSchema),
+  }),
+);
+
 export const UpdateProductBodySchema = openAPIRegistry.register(
   "UpdateProductBody",
   z.object({

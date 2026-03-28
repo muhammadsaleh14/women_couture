@@ -48,6 +48,34 @@ export async function updateVariant(
   });
 }
 
+export async function listStockMovesForVariant(variantId: string) {
+  const variant = await prisma.productVariant.findUnique({
+    where: { id: variantId },
+    include: {
+      product: { select: { id: true, name: true } },
+      stockMoves: { orderBy: { createdAt: "desc" } },
+    },
+  });
+
+  if (!variant) return null;
+
+  return {
+    variantId: variant.id,
+    sku: variant.sku,
+    stockQty: variant.stockQty,
+    productId: variant.productId,
+    productName: variant.product.name,
+    moves: variant.stockMoves.map((m) => ({
+      id: m.id,
+      productVariantId: m.productVariantId,
+      type: m.type,
+      quantity: m.quantity,
+      notes: m.notes,
+      createdAt: m.createdAt.toISOString(),
+    })),
+  };
+}
+
 export async function deleteVariant(variantId: string) {
   const variant = await prisma.productVariant.findUnique({
     where: { id: variantId },

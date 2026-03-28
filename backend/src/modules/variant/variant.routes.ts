@@ -8,6 +8,8 @@ export const variantRouter = Router();
 variantRouter.use(authenticate);
 variantRouter.use(authorizeRole("ADMIN"));
 
+variantRouter.get("/:variantId/stock-moves", variantController.listStockMoves);
+
 variantRouter.patch("/:variantId", variantController.updateVariant);
 
 variantRouter.delete("/:variantId", variantController.deleteVariant);

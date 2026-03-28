@@ -52,9 +52,9 @@ const AdminHomeHeroPage = lazy(() =>
   })),
 );
 
-const AdminStockPage = lazy(() =>
-  import("@/pages/admin/stock/AdminStockPage").then((m) => ({
-    default: m.AdminStockPage,
+const AdminVariantStockMovesPage = lazy(() =>
+  import("@/pages/admin/stock/AdminVariantStockMovesPage").then((m) => ({
+    default: m.AdminVariantStockMovesPage,
   })),
 );
 
@@ -95,9 +95,16 @@ export const router = createBrowserRouter([
           },
           {
             path: "inventory",
-            element: <Navigate to={ROUTES.admin.stock} replace />,
+            element: <Navigate to={ROUTES.admin.products} replace />,
           },
-          { path: "stock", element: <AdminStockPage /> },
+          {
+            path: "stock",
+            element: <Navigate to={ROUTES.admin.products} replace />,
+          },
+          {
+            path: "variants/:variantId/stock-moves",
+            element: <AdminVariantStockMovesPage />,
+          },
           { path: "home-hero", element: <AdminHomeHeroPage /> },
           { path: "products", element: <AdminProductsPage /> },
           { path: "products/new", element: <AdminProductFormPage /> },

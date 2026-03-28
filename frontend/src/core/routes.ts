@@ -18,9 +18,12 @@ export const ROUTES = {
       `/admin/products/${productId}/edit` as const,
     orders: "/admin/orders",
     order: (orderId: string) => `/admin/orders/${orderId}` as const,
-    /** @deprecated use `stock` — kept for old links */
+    /** @deprecated redirects to products */
     inventory: "/admin/inventory",
+    /** @deprecated redirects to products */
     stock: "/admin/stock",
+    variantStockMoves: (variantId: string) =>
+      `/admin/variants/${encodeURIComponent(variantId)}/stock-moves` as const,
     homeHero: "/admin/home-hero",
   },
 } as const;

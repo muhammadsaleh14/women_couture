@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { LayoutTemplate, Package, ShoppingCart, Warehouse } from "lucide-react";
+import { LayoutTemplate, Package, ShoppingCart } from "lucide-react";
 import { Button } from "@/core/components/ui/button";
 import { Separator } from "@/core/components/ui/separator";
 import { ROUTES } from "@/core/routes";
@@ -12,7 +12,6 @@ import { AdminNotificationBell } from "@/modules/notification/presentation/Admin
 
 const nav = [
   { to: ROUTES.admin.products, label: "Products / Suits", icon: Package },
-  { to: ROUTES.admin.stock, label: "Stock", icon: Warehouse },
   { to: ROUTES.admin.homeHero, label: "Home hero", icon: LayoutTemplate },
   { to: ROUTES.admin.orders, label: "Orders", icon: ShoppingCart },
 ];
