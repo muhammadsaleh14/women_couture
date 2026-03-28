@@ -3,12 +3,12 @@ import { useSearchParams } from "react-router-dom";
 import { useGetProducts } from "@/core/api/generated/api";
 import { mapProductWithVariantsToStorefront } from "@/modules/product/infrastructure/mapProductWithVariantsToStorefront";
 import { ProductCard } from "@/modules/product/presentation/ProductCard";
-import { ButtonLink } from "./ButtonLink";
-import { CategoryFilterBar } from "./CategoryFilterBar";
-import { HomeCategoryBrowse } from "./HomeCategoryBrowse";
-import { HomeHeroCarousel } from "./HomeHeroCarousel";
-import { HomePageMathBackdrop } from "./HomePageMathBackdrop";
-import { isCategoryId } from "./homeCategory";
+import { ButtonLink } from "./components/ButtonLink";
+import { CategoryFilterBar } from "./components/CategoryFilterBar";
+import { HomeCategoryBrowse } from "./components/HomeCategoryBrowse";
+import { HomeHeroCarousel } from "./components/HomeHeroCarousel";
+import { HomePageMathBackdrop } from "./components/HomePageMathBackdrop";
+import { isCategoryId } from "./components/homeCategory";
 
 export function HomePage() {
   const [searchParams] = useSearchParams();
@@ -71,38 +71,38 @@ export function HomePage() {
         <HomeHeroCarousel />
       </div>
       <div className="relative z-10 flex min-h-0 flex-1 flex-col space-y-10 px-4 pt-10 sm:px-6 lg:px-8">
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-foreground">
-          Shop by category
-        </h2>
-        <CategoryFilterBar activeId={null} />
-      </section>
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground">
+            Shop by category
+          </h2>
+          <CategoryFilterBar activeId={null} />
+        </section>
 
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">Products</h2>
-        {isLoading && (
-          <p className="text-sm text-muted-foreground">Loading products…</p>
-        )}
-        {isError && (
-          <p className="text-sm text-destructive">
-            Could not load products. Check that the API is running.
-          </p>
-        )}
-        {!isLoading && !isError && allProducts.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            No active products yet.
-          </p>
-        )}
-        {!isLoading && !isError && allProducts.length > 0 && (
-          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {allProducts.map((p) => (
-              <li key={p.id} className="min-w-0">
-                <ProductCard product={p} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Products</h2>
+          {isLoading && (
+            <p className="text-sm text-muted-foreground">Loading products…</p>
+          )}
+          {isError && (
+            <p className="text-sm text-destructive">
+              Could not load products. Check that the API is running.
+            </p>
+          )}
+          {!isLoading && !isError && allProducts.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              No active products yet.
+            </p>
+          )}
+          {!isLoading && !isError && allProducts.length > 0 && (
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {allProducts.map((p) => (
+                <li key={p.id} className="min-w-0">
+                  <ProductCard product={p} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </div>
   );
