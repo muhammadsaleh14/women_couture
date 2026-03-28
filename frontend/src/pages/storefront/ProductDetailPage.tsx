@@ -125,80 +125,92 @@ function ProductDetailContent({
   };
 
   return (
-    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
-      <Carousel className="w-full max-w-full md:mx-auto md:max-w-md lg:max-w-lg xl:max-w-xl">
-        <CarouselContent>
-          {carouselImages.map((src) => (
-            <CarouselItem key={src}>
-              <div className="aspect-3/4 overflow-hidden rounded-xl bg-muted">
-                <img src={src} alt="" className="size-full object-cover" />
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="left-2" />
-        <CarouselNext className="right-2" />
-      </Carousel>
+    <div className="px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10 xl:gap-12">
+          <div className="w-full shrink-0 lg:max-w-xs xl:max-w-sm">
+            <Carousel className="w-full max-w-md mx-auto lg:max-w-xs lg:mx-0 xl:max-w-sm">
+              <CarouselContent>
+                {carouselImages.map((src) => (
+                  <CarouselItem key={src}>
+                    <div className="aspect-3/4 overflow-hidden rounded-xl bg-muted">
+                      <img src={src} alt="" className="size-full object-cover" />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-2" />
+              <CarouselNext className="right-2" />
+            </Carousel>
+          </div>
 
-      <div className="space-y-3">
-        <h1 className="text-xl font-semibold leading-snug text-stone-900">
-          {product.name}
-        </h1>
-        <PriceBlock
-          regularPrice={product.regularPrice}
-          salePrice={product.salePrice}
-        />
-        <StockBadge inStock={inStock} />
+          <div className="min-w-0 flex-1 space-y-6">
+            <div className="space-y-3">
+              <h1 className="text-xl font-semibold leading-snug text-foreground sm:text-2xl">
+                {product.name}
+              </h1>
+              <PriceBlock
+                regularPrice={product.regularPrice}
+                salePrice={product.salePrice}
+              />
+              <StockBadge inStock={inStock} />
+            </div>
+
+            <Separator />
+
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              {product.description || "No description yet."}
+            </p>
+
+            <div className="space-y-2">
+              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Options
+              </p>
+              <VariantImageThumbnails
+                variants={product.variants.map((v) => ({
+                  id: v.id,
+                  imageUrl: v.imageUrl,
+                  sku: v.sku,
+                  disabled: false,
+                }))}
+                selectedId={selectedVariantId}
+                onSelect={setManualVariantId}
+              />
+              {variant.sku ? (
+                <p className="text-sm text-muted-foreground">
+                  SKU: {variant.sku}
+                </p>
+              ) : null}
+            </div>
+
+            <div className="flex flex-col gap-2 sm:flex-row sm:max-w-md lg:max-w-none">
+              <Button
+                size="lg"
+                className="flex-1"
+                disabled={!inStock}
+                onClick={handleAddToCart}
+              >
+                Add to Cart
+              </Button>
+              <Button
+                size="lg"
+                variant="secondary"
+                className="flex-1"
+                disabled={!inStock}
+                onClick={handleBuyNow}
+              >
+                Buy Now
+              </Button>
+            </div>
+
+            <Button variant="link" className="h-auto px-0 text-muted-foreground" asChild>
+              <Link to={ROUTES.shop(product.categoryId)}>
+                Back to category
+              </Link>
+            </Button>
+          </div>
+        </div>
       </div>
-
-      <Separator />
-
-      <p className="text-sm leading-relaxed text-stone-600">
-        {product.description || "No description yet."}
-      </p>
-
-      <div className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wider text-stone-500">
-          Options
-        </p>
-        <VariantImageThumbnails
-          variants={product.variants.map((v) => ({
-            id: v.id,
-            imageUrl: v.imageUrl,
-            sku: v.sku,
-            disabled: false,
-          }))}
-          selectedId={selectedVariantId}
-          onSelect={setManualVariantId}
-        />
-        {variant.sku ? (
-          <p className="text-sm text-muted-foreground">SKU: {variant.sku}</p>
-        ) : null}
-      </div>
-
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Button
-          size="lg"
-          className="flex-1"
-          disabled={!inStock}
-          onClick={handleAddToCart}
-        >
-          Add to Cart
-        </Button>
-        <Button
-          size="lg"
-          variant="secondary"
-          className="flex-1"
-          disabled={!inStock}
-          onClick={handleBuyNow}
-        >
-          Buy Now
-        </Button>
-      </div>
-
-      <Button variant="link" className="h-auto px-0 text-stone-600" asChild>
-        <Link to={ROUTES.shop(product.categoryId)}>Back to category</Link>
-      </Button>
     </div>
   );
 }
