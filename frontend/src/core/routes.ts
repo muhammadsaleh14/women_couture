@@ -11,6 +11,8 @@ export const ROUTES = {
     productEdit: (productId: string) =>
       `/admin/products/${productId}/edit` as const,
     orders: "/admin/orders",
+    /** @deprecated use `stock` — kept for old links */
     inventory: "/admin/inventory",
+    stock: "/admin/stock",
   },
 } as const;

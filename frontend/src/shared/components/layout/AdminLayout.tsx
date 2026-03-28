@@ -8,8 +8,8 @@ import { cn } from "@/core/lib/utils";
 
 const nav = [
   { to: ROUTES.admin.products, label: "Products / Suits", icon: Package },
+  { to: ROUTES.admin.stock, label: "Stock", icon: Warehouse },
   { to: ROUTES.admin.orders, label: "Orders", icon: ShoppingCart },
-  { to: ROUTES.admin.inventory, label: "Inventory", icon: Warehouse },
 ];
 
 export function AdminLayout() {
