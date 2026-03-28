@@ -8,6 +8,7 @@ import { useAuth } from "@/modules/auth/application/use-auth";
 import { ThemeToggle } from "@/core/components/theme/ThemeToggle";
 import { cn } from "@/core/lib/utils";
 import { PageLoadingFallback } from "@/app/page-loading-fallback";
+import { AdminNotificationBell } from "@/modules/notification/presentation/AdminNotificationBell";
 
 const nav = [
   { to: ROUTES.admin.products, label: "Products / Suits", icon: Package },
@@ -29,7 +30,10 @@ export function AdminLayout() {
             </p>
             <p className="text-lg font-semibold text-foreground">Dashboard</p>
           </div>
-          <ThemeToggle className="size-8" />
+          <div className="flex shrink-0 items-center gap-1">
+            <AdminNotificationBell />
+            <ThemeToggle className="size-8" />
+          </div>
         </div>
         <Separator />
         <nav className="flex flex-1 flex-col gap-0.5 p-2">
@@ -75,7 +79,10 @@ export function AdminLayout() {
         <div className="border-b border-border bg-card px-4 py-3 md:hidden">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-semibold text-foreground">Admin</p>
-            <ThemeToggle className="size-8" />
+            <div className="flex items-center gap-1">
+              <AdminNotificationBell />
+              <ThemeToggle className="size-8" />
+            </div>
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             {nav.map(({ to, label }) => (

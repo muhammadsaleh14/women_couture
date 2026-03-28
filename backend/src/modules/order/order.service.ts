@@ -7,6 +7,7 @@ import {
 } from "@prisma/client";
 import { prisma } from "../../core/database/prisma";
 import { HttpError } from "../../core/errors/http-error";
+import * as notificationService from "../notification/notification.service";
 
 export type CreateOrderInput = {
   customerName: string;
@@ -181,6 +182,13 @@ export async function createOrder(input: CreateOrderInput) {
         data: { stockQty: { decrement: row.qty } },
       });
     }
+
+    await notificationService.createOrderPlacedNotification(tx, {
+      id: order.id,
+      orderNumber: order.orderNumber,
+      customerName: order.customerName,
+      city: order.city,
+    });
 
     return serializeOrder(order);
   });

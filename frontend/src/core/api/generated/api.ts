@@ -430,6 +430,32 @@ export interface UpdateOrderBody {
   status: UpdateOrderBodyStatus;
 }
 
+export type NotificationTypePublic = typeof NotificationTypePublic[keyof typeof NotificationTypePublic];
+
+
+export const NotificationTypePublic = {
+  ORDER_PLACED: 'ORDER_PLACED',
+} as const;
+
+export type NotificationPublicType = typeof NotificationPublicType[keyof typeof NotificationPublicType];
+
+
+export const NotificationPublicType = {
+  ORDER_PLACED: 'ORDER_PLACED',
+} as const;
+
+export interface NotificationPublic {
+  id: string;
+  type: NotificationPublicType;
+  title: string;
+  /** @nullable */
+  body: string | null;
+  /** @nullable */
+  orderId: string | null;
+  createdAt: string;
+  read: boolean;
+}
+
 export type UserPublicRole = typeof UserPublicRole[keyof typeof UserPublicRole];
 
 
@@ -536,6 +562,19 @@ export type PostVariantsVariantIdImages201 = {
 };
 
 export type GetOrdersParams = {
+/**
+ * @minimum 0
+ * @nullable
+ */
+skip?: number | null;
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+take?: number;
+};
+
+export type GetNotificationsParams = {
 /**
  * @minimum 0
  * @nullable
@@ -2277,4 +2316,158 @@ export const usePatchOrdersOrderId = <TError = void,
         TContext
       > => {
       return useMutation(getPatchOrdersOrderIdMutationOptions(options), queryClient);
+    }
+    
+/**
+ * @summary List admin notifications (newest first)
+ */
+export const getNotifications = (
+    params?: GetNotificationsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<NotificationPublic[]>(
+      {url: `/notifications`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getGetNotificationsQueryKey = (params?: GetNotificationsParams,) => {
+    return [
+    `/notifications`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+    
+export const getGetNotificationsQueryOptions = <TData = Awaited<ReturnType<typeof getNotifications>>, TError = unknown>(params?: GetNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotifications>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetNotificationsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getNotifications>>> = ({ signal }) => getNotifications(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getNotifications>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetNotificationsQueryResult = NonNullable<Awaited<ReturnType<typeof getNotifications>>>
+export type GetNotificationsQueryError = unknown
+
+
+export function useGetNotifications<TData = Awaited<ReturnType<typeof getNotifications>>, TError = unknown>(
+ params: undefined |  GetNotificationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotifications>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNotifications>>,
+          TError,
+          Awaited<ReturnType<typeof getNotifications>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNotifications<TData = Awaited<ReturnType<typeof getNotifications>>, TError = unknown>(
+ params?: GetNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotifications>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getNotifications>>,
+          TError,
+          Awaited<ReturnType<typeof getNotifications>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetNotifications<TData = Awaited<ReturnType<typeof getNotifications>>, TError = unknown>(
+ params?: GetNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotifications>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List admin notifications (newest first)
+ */
+
+export function useGetNotifications<TData = Awaited<ReturnType<typeof getNotifications>>, TError = unknown>(
+ params?: GetNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getNotifications>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetNotificationsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+/**
+ * @summary Mark a notification as read for the current admin
+ */
+export const patchNotificationsNotificationIdRead = (
+    notificationId: string,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<NotificationPublic>(
+      {url: `/notifications/${notificationId}/read`, method: 'PATCH', signal
+    },
+      );
+    }
+  
+
+
+export const getPatchNotificationsNotificationIdReadMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchNotificationsNotificationIdRead>>, TError,{notificationId: string}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof patchNotificationsNotificationIdRead>>, TError,{notificationId: string}, TContext> => {
+
+const mutationKey = ['patchNotificationsNotificationIdRead'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchNotificationsNotificationIdRead>>, {notificationId: string}> = (props) => {
+          const {notificationId} = props ?? {};
+
+          return  patchNotificationsNotificationIdRead(notificationId,)
+        }
+
+
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchNotificationsNotificationIdReadMutationResult = NonNullable<Awaited<ReturnType<typeof patchNotificationsNotificationIdRead>>>
+    
+    export type PatchNotificationsNotificationIdReadMutationError = void
+
+    /**
+ * @summary Mark a notification as read for the current admin
+ */
+export const usePatchNotificationsNotificationIdRead = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchNotificationsNotificationIdRead>>, TError,{notificationId: string}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchNotificationsNotificationIdRead>>,
+        TError,
+        {notificationId: string},
+        TContext
+      > => {
+      return useMutation(getPatchNotificationsNotificationIdReadMutationOptions(options), queryClient);
     }

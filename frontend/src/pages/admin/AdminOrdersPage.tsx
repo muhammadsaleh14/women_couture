@@ -1,11 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
-import { useMemo, useState, type MouseEvent } from "react";
+import { useMemo, type MouseEvent } from "react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import {
   type OrderPublic,
+  getGetOrdersOrderIdQueryKey,
   getGetOrdersQueryKey,
   useGetOrders,
+  useGetOrdersOrderId,
   usePatchOrdersOrderId,
 } from "@/core/api/generated/api";
 import {
@@ -49,6 +52,9 @@ function formatMoney(n: number) {
 
 export function AdminOrdersPage() {
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const openOrderId = searchParams.get("open");
+
   const {
     data: orderRows,
     isPending,
@@ -61,6 +67,35 @@ export function AdminOrdersPage() {
     [orderRows],
   );
 
+  const orderInList =
+    !!openOrderId && orders.some((o) => o.id === openOrderId);
+
+  const detailQuery = useGetOrdersOrderId(openOrderId ?? "", {
+    query: {
+      enabled: !!openOrderId && !orderInList,
+      retry: false,
+    },
+  });
+
+  const selected: Order | null = useMemo(() => {
+    if (!openOrderId) return null;
+    const fromList = orders.find((o) => o.id === openOrderId);
+    if (fromList) return fromList;
+    if (detailQuery.data) return mapOrderPublicToOrder(detailQuery.data);
+    return null;
+  }, [openOrderId, orders, detailQuery.data]);
+
+  const dialogOpen =
+    !!openOrderId &&
+    (!!selected ||
+      detailQuery.isLoading ||
+      detailQuery.isFetching ||
+      detailQuery.isError);
+
+  function closeOrderDialog() {
+    setSearchParams({}, { replace: true });
+  }
+
   const patchStatus = usePatchOrdersOrderId({
     mutation: {
       onSuccess: (updated) => {
@@ -69,6 +104,9 @@ export function AdminOrdersPage() {
           (old) =>
             old?.map((o) => (o.id === updated.id ? updated : o)) ?? [updated],
         );
+        void queryClient.invalidateQueries({
+          queryKey: getGetOrdersOrderIdQueryKey(updated.id),
+        });
       },
       onError: (err: unknown) => {
         const msg =
@@ -85,12 +123,6 @@ export function AdminOrdersPage() {
       },
     },
   });
-
-  const [openId, setOpenId] = useState<string | null>(null);
-  const selected = useMemo(
-    () => orders.find((o) => o.id === openId) ?? null,
-    [orders, openId],
-  );
 
   return (
     <div className="space-y-6">
@@ -135,7 +167,9 @@ export function AdminOrdersPage() {
               <TableRow
                 key={o.id}
                 className="cursor-pointer"
-                onClick={() => setOpenId(o.id)}
+                onClick={() =>
+                  setSearchParams({ open: o.id }, { replace: true })
+                }
               >
                 <TableCell className="font-mono text-sm tabular-nums">
                   {o.orderNumber}
@@ -189,20 +223,31 @@ export function AdminOrdersPage() {
         </Table>
       </div>
 
-      <Dialog
-        open={!!selected}
-        onOpenChange={(open: boolean) => !open && setOpenId(null)}
-      >
+      <Dialog open={dialogOpen} onOpenChange={(open) => !open && closeOrderDialog()}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              Order #{selected?.orderNumber}{" "}
-              <span className="font-normal text-muted-foreground">
-                ({selected?.id})
-              </span>
+              {selected ? (
+                <>
+                  Order #{selected.orderNumber}{" "}
+                  <span className="font-normal text-muted-foreground">
+                    ({selected.id})
+                  </span>
+                </>
+              ) : detailQuery.isError ? (
+                "Order"
+              ) : (
+                "Loading order…"
+              )}
             </DialogTitle>
           </DialogHeader>
-          {selected && (
+          {detailQuery.isError ? (
+            <p className="text-sm text-destructive">
+              This order could not be loaded. It may be outside the current list
+              or no longer exists.
+            </p>
+          ) : null}
+          {selected ? (
             <div className="space-y-4 text-sm">
               <div>
                 <Label className="text-muted-foreground">Ship to</Label>
@@ -253,7 +298,9 @@ export function AdminOrdersPage() {
                 </span>
               </div>
             </div>
-          )}
+          ) : !detailQuery.isError ? (
+            <p className="text-sm text-muted-foreground">Loading…</p>
+          ) : null}
         </DialogContent>
       </Dialog>
     </div>
