@@ -20,30 +20,16 @@ type Props = {
 
 export function HomeCategoryBrowse({ categoryFilter, allProducts }: Props) {
   const [sort, setSort] = useState("new");
-  const [colorFilter, setColorFilter] = useState<string>("all");
 
   const categoryRaw = useMemo(
     () => allProducts.filter((p) => p.categoryId === categoryFilter),
     [allProducts, categoryFilter],
   );
 
-  const colors = useMemo(() => {
-    const set = new Set<string>();
-    categoryRaw.forEach((p) =>
-      p.variants.forEach((v) => set.add(v.colorName)),
-    );
-    return Array.from(set).sort();
-  }, [categoryRaw]);
-
-  const filteredCategory = useMemo(() => {
-    let list = categoryRaw;
-    if (colorFilter !== "all") {
-      list = list.filter((p) =>
-        p.variants.some((v) => v.colorName === colorFilter),
-      );
-    }
-    return sortProducts(list, sort);
-  }, [categoryRaw, colorFilter, sort]);
+  const filteredCategory = useMemo(
+    () => sortProducts(categoryRaw, sort),
+    [categoryRaw, sort],
+  );
 
   return (
     <div className="flex w-full min-h-0 flex-1 flex-col space-y-6 px-4 sm:px-6 lg:px-8">
@@ -72,27 +58,6 @@ export function HomeCategoryBrowse({ categoryFilter, allProducts }: Props) {
               <SelectItem value="new">Newest first</SelectItem>
               <SelectItem value="price-asc">Price: Low to High</SelectItem>
               <SelectItem value="price-desc">Price: High to Low</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label
-            htmlFor="home-color"
-            className="text-xs text-muted-foreground"
-          >
-            Filter by color
-          </Label>
-          <Select value={colorFilter} onValueChange={setColorFilter}>
-            <SelectTrigger id="home-color" className="w-full sm:w-44">
-              <SelectValue placeholder="Color" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All colors</SelectItem>
-              {colors.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
-              ))}
             </SelectContent>
           </Select>
         </div>

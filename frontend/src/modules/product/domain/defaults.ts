@@ -4,7 +4,6 @@ export function emptyVariant() {
   return {
     id: crypto.randomUUID(),
     isNew: true,
-    color: "",
     sku: "",
     salePrice: "",
     purchasePrice: "",

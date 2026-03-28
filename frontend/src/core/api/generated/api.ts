@@ -174,7 +174,6 @@ export interface ProductImage {
 export interface ProductVariant {
   id: string;
   productId: string;
-  color: string;
   /** @nullable */
   sku: string | null;
   /** @nullable */
@@ -202,8 +201,6 @@ export const CreateProductBodyType = {
 } as const;
 
 export type CreateProductBodyVariantsItem = {
-  /** @minLength 1 */
-  color: string;
   sku?: string;
   /** @exclusiveMinimum 0 */
   salePrice: number;
@@ -220,8 +217,6 @@ export interface CreateProductBody {
 }
 
 export interface CreateVariantBody {
-  /** @minLength 1 */
-  color: string;
   sku?: string;
   /** @exclusiveMinimum 0 */
   salePrice: number;
@@ -275,8 +270,6 @@ export const SaveProductBodyType = {
 
 export type SaveProductBodyVariantsItem = {
   id?: string;
-  /** @minLength 1 */
-  color: string;
   sku?: string;
   /** @minimum 0 */
   salePrice: number;
@@ -328,8 +321,6 @@ export interface ProductQuery {
 }
 
 export interface UpdateVariantBody {
-  /** @minLength 1 */
-  color?: string;
   sku?: string;
   /** @exclusiveMinimum 0 */
   salePrice?: number;

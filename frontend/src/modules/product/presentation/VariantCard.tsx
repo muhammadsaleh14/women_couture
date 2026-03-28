@@ -33,27 +33,15 @@ export function VariantCard({
   } = form;
 
   const images = watch(`variants.${index}.images`);
-  const color = watch(`variants.${index}.color`);
+  const sku = watch(`variants.${index}.sku`);
   const variantErrors = errors.variants?.[index];
+  const sectionTitle = sku?.trim() ? `SKU ${sku.trim()}` : `Variant ${index + 1}`;
 
   return (
     <div>
       {!isFirst && <Separator className="my-4" />}
 
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-5 md:items-end">
-        <div className="space-y-1.5 md:col-span-2">
-          <Label>Color / Group Name</Label>
-          <Input
-            placeholder="e.g. Navy Blue"
-            {...register(`variants.${index}.color`)}
-          />
-          {variantErrors?.color && (
-            <p className="text-destructive text-sm">
-              {variantErrors.color.message}
-            </p>
-          )}
-        </div>
-
         <div className="space-y-1.5 md:col-span-2">
           <Label>SKU (optional)</Label>
           <Input
@@ -102,7 +90,7 @@ export function VariantCard({
 
       <div className="mt-3">
         <VariantImageGrid
-          colorLabel={color || "this variant"}
+          sectionTitle={sectionTitle}
           images={images}
           onAddImages={onAddImages}
           onRemoveImage={onRemoveImage}

@@ -6,7 +6,7 @@ export interface CartLine {
   productId: string;
   variantId: string;
   title: string;
-  colorName: string;
+  sku: string | null;
   unitPrice: number;
   qty: number;
   imageUrl: string;

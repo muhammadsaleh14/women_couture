@@ -13,7 +13,7 @@ import { useGetProductsProductId } from "@/core/api/generated/api";
 import { ROUTES } from "@/core/routes";
 import { mapProductWithVariantsToStorefront } from "@/modules/product/infrastructure/mapProductWithVariantsToStorefront";
 import { useCartStore } from "@/modules/cart/application/cart-store";
-import { ColorSwatches } from "@/shared/components/product/ColorSwatches";
+import { VariantImageThumbnails } from "@/shared/components/product/VariantImageThumbnails";
 import { PriceBlock } from "@/shared/components/product/PriceBlock";
 import { StockBadge } from "@/shared/components/product/StockBadge";
 
@@ -112,7 +112,7 @@ function ProductDetailContent({
       productId: product.id,
       variantId: variant.id,
       title: product.name,
-      colorName: variant.colorName,
+      sku: variant.sku,
       unitPrice,
       qty: 1,
       imageUrl: variant.imageUrl,
@@ -159,19 +159,21 @@ function ProductDetailContent({
 
       <div className="space-y-2">
         <p className="text-xs font-medium uppercase tracking-wider text-stone-500">
-          Color
+          Options
         </p>
-        <ColorSwatches
+        <VariantImageThumbnails
           variants={product.variants.map((v) => ({
             id: v.id,
-            colorName: v.colorName,
-            hex: v.hex,
+            imageUrl: v.imageUrl,
+            sku: v.sku,
             disabled: false,
           }))}
           selectedId={selectedVariantId}
           onSelect={setManualVariantId}
         />
-        <p className="text-sm text-stone-700">{variant.colorName}</p>
+        {variant.sku ? (
+          <p className="text-sm text-muted-foreground">SKU: {variant.sku}</p>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row">

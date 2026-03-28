@@ -30,7 +30,6 @@ export async function createProduct(
     description?: string;
     type: ClothingType;
     variants?: Array<{
-      color: string;
       sku?: string;
       salePrice: number;
       purchasePrice?: number;
@@ -47,7 +46,6 @@ export async function createProduct(
       variants: data.variants
         ? {
             create: data.variants.map((v, i) => ({
-              color: v.color,
               sku: v.sku,
               salePrice: v.salePrice,
               purchasePrice: v.purchasePrice,
@@ -236,7 +234,6 @@ export async function replaceProductFull(
         await tx.productVariant.update({
           where: { id: v.id },
           data: {
-            color: v.color,
             sku: v.sku ?? null,
             salePrice: v.salePrice,
             purchasePrice: v.purchasePrice ?? null,
@@ -268,7 +265,6 @@ export async function replaceProductFull(
         await tx.productVariant.create({
           data: {
             productId,
-            color: v.color,
             sku: v.sku ?? null,
             salePrice: v.salePrice,
             purchasePrice: v.purchasePrice ?? null,

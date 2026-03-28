@@ -65,7 +65,11 @@ export function CartPage() {
                       <p className="font-medium leading-snug text-stone-900">
                         {line.title}
                       </p>
-                      <p className="text-xs text-stone-600">{line.colorName}</p>
+                      {line.sku ? (
+                        <p className="text-xs text-muted-foreground">
+                          SKU: {line.sku}
+                        </p>
+                      ) : null}
                       <PriceBlock
                         regularPrice={line.unitPrice}
                         className="text-sm"

@@ -27,7 +27,6 @@ export function AdminStockPage() {
           productId: p.id,
           productName: p.name,
           variantId: v.id,
-          color: v.color,
           sku: v.sku,
           stockQty: v.stockQty,
         });
@@ -60,7 +59,6 @@ export function AdminStockPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Product</TableHead>
-              <TableHead>Color</TableHead>
               <TableHead>SKU</TableHead>
               <TableHead className="text-right tabular-nums">On hand</TableHead>
               <TableHead className="w-32" />
@@ -70,7 +68,7 @@ export function AdminStockPage() {
             {rows.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={4}
                   className="py-10 text-center text-sm text-muted-foreground"
                 >
                   No variants yet.{" "}
@@ -94,7 +92,6 @@ export function AdminStockPage() {
                       {row.productName}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">{row.color}</TableCell>
                   <TableCell className="text-muted-foreground">
                     {row.sku || "—"}
                   </TableCell>

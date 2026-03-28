@@ -3,24 +3,16 @@ import { prisma } from "../../core/database/prisma";
 
 export async function createVariant(
   productId: string,
-  data: { color: string; sku?: string; salePrice: number; purchasePrice?: number },
+  data: { sku?: string; salePrice: number; purchasePrice?: number },
 ) {
   const product = await prisma.product.findUnique({ where: { id: productId } });
   if (!product) {
     throw new Error("Product not found");
   }
 
-  const existing = await prisma.productVariant.findUnique({
-    where: { productId_color: { productId, color: data.color } },
-  });
-  if (existing) {
-    throw new Error(`Variant with color '${data.color}' already exists for this product.`);
-  }
-
   return prisma.productVariant.create({
     data: {
       productId,
-      color: data.color,
       sku: data.sku,
       salePrice: data.salePrice,
       purchasePrice: data.purchasePrice,
@@ -35,7 +27,6 @@ export async function createVariant(
 export async function updateVariant(
   variantId: string,
   data: {
-    color?: string;
     sku?: string;
     salePrice?: number;
     purchasePrice?: number;

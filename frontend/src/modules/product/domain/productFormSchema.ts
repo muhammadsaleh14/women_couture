@@ -30,7 +30,6 @@ const ImageItemSchema = z.object({
 export const productVariantSchema = z.object({
   id: z.string(),
   isNew: z.boolean(),
-  color: z.string().min(1, "Color/Group name is required"),
   sku: z.string().optional(),
   salePrice: nonNegativeMoneyString,
   purchasePrice: optionalNonNegativeMoneyString.optional(),

@@ -8,15 +8,6 @@ import type { CategoryId, Product } from "@/shared/model/types";
 const PLACEHOLDER_IMG =
   "https://placehold.co/800x1000/f5f5f4/78716c?text=Women+Couture";
 
-export function colorLabelToHex(label: string): string {
-  let h = 0;
-  for (let i = 0; i < label.length; i++) {
-    h = (Math.imul(31, h) + label.charCodeAt(i)) | 0;
-  }
-  const hue = Math.abs(h) % 360;
-  return `hsl(${hue} 42% 42%)`;
-}
-
 function apiTypeToCategoryId(type: ProductBaseType): CategoryId {
   switch (type) {
     case "THREE_PC":
@@ -94,8 +85,7 @@ export function mapProductWithVariantsToStorefront(
           const imageUrl = firstVariantImageUrl(v) || PLACEHOLDER_IMG;
           return {
             id: v.id,
-            colorName: v.color,
-            hex: colorLabelToHex(v.color),
+            sku: v.sku,
             stock: v.stockQty,
             imageUrl,
           };
@@ -103,8 +93,7 @@ export function mapProductWithVariantsToStorefront(
       : [
           {
             id: `${product.id}-placeholder`,
-            colorName: "—",
-            hex: "#78716c",
+            sku: null,
             stock: 0,
             imageUrl: PLACEHOLDER_IMG,
           },

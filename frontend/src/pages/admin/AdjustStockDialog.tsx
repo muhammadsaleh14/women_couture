@@ -29,7 +29,6 @@ export type StockAdjustRow = {
   productId: string;
   productName: string;
   variantId: string;
-  color: string;
   sku: string | null;
   stockQty: number;
 };
@@ -117,8 +116,12 @@ export function AdjustStockDialog({ row, onClose }: Props) {
                 <span className="font-medium text-foreground">
                   {row.productName}
                 </span>
-                {" · "}
-                {row.color}
+                {row.sku ? (
+                  <>
+                    {" · "}
+                    <span className="tabular-nums">SKU {row.sku}</span>
+                  </>
+                ) : null}
                 <span className="mt-1 block text-muted-foreground">
                   Current on hand:{" "}
                   <span className="tabular-nums font-medium">{row.stockQty}</span>

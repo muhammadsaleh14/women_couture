@@ -46,30 +46,27 @@ model Product {
   updatedAt   DateTime     @updatedAt
 }
 
-// 3. Product Variants (Different Colors)
+// 3. Product Variants
 model ProductVariant {
   id            String         @id @default(cuid())
   productId     String
   product       Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
-  color         String         // e.g., "Red", "Navy Blue"
+
   sku           String?        @unique // Optional: Stock Keeping Unit
-  
+
   salePrice     Decimal
   purchasePrice Decimal?
-  
-  // Cached stock value for fast queries. 
+
+  // Cached stock value for fast queries.
   // It gets updated whenever a StockMove is created.
-  stockQty      Int            @default(0) 
-  
+  stockQty      Int            @default(0)
+
   images        ProductImage[]
   stockMoves    StockMove[]
   heroSlides    HomeHeroSlide[]
 
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  
-  @@unique([productId, color]) // Prevent duplicate colors for the same product
 }
 
 enum HomeHeroTheme {

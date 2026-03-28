@@ -2,8 +2,7 @@ export type CategoryId = "three-piece" | "two-piece" | "separates";
 
 export interface ProductVariant {
   id: string;
-  colorName: string;
-  hex: string;
+  sku: string | null;
   stock: number;
   imageUrl: string;
 }
@@ -30,7 +29,8 @@ export type OrderStatus = "pending" | "shipped" | "delivered";
 export interface OrderLine {
   productName: string;
   type: string;
-  color: string;
+  /** Optional SKU for the line item */
+  sku?: string | null;
   qty: number;
 }
 

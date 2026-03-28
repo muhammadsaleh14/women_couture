@@ -38,7 +38,7 @@ export function AdminHomeHeroPage() {
     return products.flatMap((p) =>
       (p.variants ?? []).map((v) => ({
         id: v.id,
-        label: `${p.name} · ${v.color}`,
+        label: v.sku ? `${p.name} · ${v.sku}` : p.name,
       })),
     );
   }, [products]);

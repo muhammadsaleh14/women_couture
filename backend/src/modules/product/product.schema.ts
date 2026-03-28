@@ -33,7 +33,6 @@ export const ProductVariantSchema = openAPIRegistry.register(
   z.object({
     id: z.string(),
     productId: z.string(),
-    color: z.string(),
     sku: z.string().nullable(),
     salePrice: z.coerce.number(),
     purchasePrice: z.coerce.number().nullable(),
@@ -60,7 +59,6 @@ export const CreateProductBodySchema = openAPIRegistry.register(
     variants: z
       .array(
         z.object({
-          color: z.string().min(1, "Color is required"),
           sku: z.string().optional(),
           salePrice: z.number().positive("Sale price must be positive"),
           purchasePrice: z.number().positive().optional(),
@@ -73,7 +71,6 @@ export const CreateProductBodySchema = openAPIRegistry.register(
 export const CreateVariantBodySchema = openAPIRegistry.register(
   "CreateVariantBody",
   z.object({
-    color: z.string().min(1, "Color is required"),
     sku: z.string().optional(),
     salePrice: z.number().positive("Sale price must be positive"),
     purchasePrice: z.number().positive().optional(),
@@ -102,7 +99,6 @@ export const UpdateProductBodySchema = openAPIRegistry.register(
 /** Full product save (create/update) sent as multipart `data` JSON + `variants[i]` files. */
 export const SaveProductVariantInputSchema = z.object({
   id: z.string().optional(),
-  color: z.string().min(1, "Color is required"),
   sku: z.string().optional(),
   salePrice: z.number().nonnegative(),
   purchasePrice: z.number().nonnegative().optional().nullable(),

@@ -20,7 +20,6 @@ export async function saveProductMultipart(
     type: values.type,
     variants: values.variants.map((v) => ({
       ...(v.isNew ? {} : { id: v.id }),
-      color: v.color,
       sku: v.sku?.trim() ? v.sku : undefined,
       salePrice: parseMoney(v.salePrice),
       purchasePrice:

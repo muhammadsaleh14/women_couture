@@ -55,11 +55,15 @@ export function ProductCard({ product, className }: Props) {
           {product.variants.slice(0, 5).map((v) => (
             <span
               key={v.id}
-              className="size-4 rounded-full border border-border"
-              style={{ backgroundColor: v.hex }}
-              title={v.colorName}
-              aria-hidden
-            />
+              className="size-8 shrink-0 overflow-hidden rounded-md border border-border"
+              title={v.sku ?? "Variant"}
+            >
+              <img
+                src={v.imageUrl}
+                alt=""
+                className="size-full object-cover"
+              />
+            </span>
           ))}
         </CardFooter>
       </Card>

@@ -14,7 +14,6 @@ export function mapAdminProductDetailToFormValues(
         ? product.variants.map((v) => ({
             id: v.id,
             isNew: false,
-            color: v.color,
             sku: v.sku || "",
             salePrice: String(v.salePrice ?? 0),
             purchasePrice: v.purchasePrice ? String(v.purchasePrice) : "",

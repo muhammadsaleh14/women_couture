@@ -22,7 +22,7 @@ function resolveSlide(slide: SlideWithVariant) {
   const imageUrl = firstImg ? toImageUrl(firstImg.url) : null;
 
   const title = slide.title?.trim() || product?.name || "Untitled";
-  const eyebrow = slide.eyebrow?.trim() || v?.color || "Featured";
+  const eyebrow = slide.eyebrow?.trim() || "Featured";
   const description = slide.description?.trim() || product?.description || null;
 
   return {

@@ -3,14 +3,14 @@ import { Label } from "@/core/components/ui/label";
 import { type ImageItem } from "../domain/productFormSchema";
 
 interface VariantImageGridProps {
-  colorLabel: string;
+  sectionTitle: string;
   images: ImageItem[];
   onAddImages: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveImage: (uid: string) => void;
 }
 
 export function VariantImageGrid({
-  colorLabel,
+  sectionTitle,
   images,
   onAddImages,
   onRemoveImage,
@@ -19,7 +19,7 @@ export function VariantImageGrid({
     <div>
       <div className="mb-2 flex items-center gap-2">
         <Label className="text-xs text-stone-500">
-          Photos for "{colorLabel}"
+          Photos — {sectionTitle}
         </Label>
         <label className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-stone-300 bg-white px-2 py-1 text-xs text-stone-600 transition-colors hover:bg-stone-50">
           <ImagePlus className="size-3" />

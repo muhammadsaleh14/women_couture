@@ -82,8 +82,9 @@ export function AdminOrdersPage() {
                 </TableCell>
                 <TableCell className="max-w-[200px] text-sm text-muted-foreground">
                   {o.lines.map((l) => (
-                    <div key={`${o.id}-${l.productName}-${l.color}`}>
-                      {l.productName} · {l.type} · {l.color} ×{l.qty}
+                    <div key={`${o.id}-${l.productName}-${l.sku ?? "x"}`}>
+                      {l.productName} · {l.type}
+                      {l.sku ? ` · ${l.sku}` : ""} ×{l.qty}
                     </div>
                   ))}
                 </TableCell>

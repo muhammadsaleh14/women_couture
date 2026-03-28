@@ -304,9 +304,6 @@
           "productId": {
             "type": "string"
           },
-          "color": {
-            "type": "string"
-          },
           "sku": {
             "type": "string",
             "nullable": true
@@ -340,7 +337,6 @@
         "required": [
           "id",
           "productId",
-          "color",
           "sku",
           "salePrice",
           "purchasePrice",
@@ -394,10 +390,6 @@
             "items": {
               "type": "object",
               "properties": {
-                "color": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "sku": {
                   "type": "string"
                 },
@@ -413,7 +405,6 @@
                 }
               },
               "required": [
-                "color",
                 "salePrice"
               ]
             }
@@ -427,10 +418,6 @@
       "CreateVariantBody": {
         "type": "object",
         "properties": {
-          "color": {
-            "type": "string",
-            "minLength": 1
-          },
           "sku": {
             "type": "string"
           },
@@ -446,7 +433,6 @@
           }
         },
         "required": [
-          "color",
           "salePrice"
         ]
       },
@@ -526,10 +512,6 @@
                 "id": {
                   "type": "string"
                 },
-                "color": {
-                  "type": "string",
-                  "minLength": 1
-                },
                 "sku": {
                   "type": "string"
                 },
@@ -550,7 +532,6 @@
                 }
               },
               "required": [
-                "color",
                 "salePrice"
               ]
             },
@@ -612,10 +593,6 @@
       "UpdateVariantBody": {
         "type": "object",
         "properties": {
-          "color": {
-            "type": "string",
-            "minLength": 1
-          },
           "sku": {
             "type": "string"
           },

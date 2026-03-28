@@ -61,7 +61,6 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
         description: body.description,
         type: body.type,
         variants: body.variants.map((v) => ({
-          color: v.color,
           sku: v.sku ?? undefined,
           salePrice: v.salePrice,
           purchasePrice: v.purchasePrice ?? undefined,

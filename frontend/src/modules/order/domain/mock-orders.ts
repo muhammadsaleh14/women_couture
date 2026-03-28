@@ -10,7 +10,7 @@ export const mockOrders: Order[] = [
       {
         productName: "Embroidered Lawn 3PC",
         type: "3 PC",
-        color: "Navy Blue",
+        sku: "LWN-NVY-01",
         qty: 1,
       },
     ],
@@ -28,13 +28,13 @@ export const mockOrders: Order[] = [
       {
         productName: "Chiffon Dupatta Set",
         type: "3 PC",
-        color: "Maroon",
+        sku: "CHF-MRN-12",
         qty: 2,
       },
       {
         productName: "Cotton Trouser Separate",
         type: "Separates",
-        color: "White",
+        sku: "TRS-WHT-9",
         qty: 1,
       },
     ],
@@ -52,7 +52,7 @@ export const mockOrders: Order[] = [
       {
         productName: "Printed 2PC Kurta",
         type: "2 PC",
-        color: "Teal",
+        sku: "2PC-TEAL-3",
         qty: 1,
       },
     ],
