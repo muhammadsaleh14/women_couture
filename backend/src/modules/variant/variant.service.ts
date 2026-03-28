@@ -10,6 +10,12 @@ export async function createVariant(
     throw new Error("Product not found");
   }
 
+  const agg = await prisma.productVariant.aggregate({
+    where: { productId },
+    _max: { sortOrder: true },
+  });
+  const nextOrder = (agg._max.sortOrder ?? -1) + 1;
+
   return prisma.productVariant.create({
     data: {
       productId,
@@ -17,6 +23,7 @@ export async function createVariant(
       salePrice: data.salePrice,
       purchasePrice: data.purchasePrice,
       stockQty: 0,
+      sortOrder: nextOrder,
     },
     include: {
       images: { orderBy: { order: "asc" } },

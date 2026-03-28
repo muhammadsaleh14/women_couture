@@ -181,6 +181,7 @@ export interface ProductVariant {
   /** @nullable */
   purchasePrice: number | null;
   stockQty: number;
+  sortOrder: number;
   images?: ProductImage[];
   createdAt: string;
   updatedAt: string;
@@ -192,6 +193,7 @@ export type ProductWithVariants = ProductBase & {
 
 export interface ProductListResponse {
   items: ProductWithVariants[];
+  /** @minimum 0 */
   total: number;
 }
 

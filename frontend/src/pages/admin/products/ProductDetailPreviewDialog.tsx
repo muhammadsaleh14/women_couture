@@ -85,13 +85,20 @@ export function ProductDetailPreviewDialog({ product, onClose }: Props) {
                   Variants ({product.variants?.length ?? 0})
                 </h3>
                 <ul className="mt-3 space-y-4">
-                  {(product.variants ?? []).map((v, idx) => (
+                  {[...(product.variants ?? [])]
+                    .sort(
+                      (a, b) =>
+                        (a.sortOrder ?? 0) - (b.sortOrder ?? 0) ||
+                        new Date(a.createdAt).getTime() -
+                          new Date(b.createdAt).getTime(),
+                    )
+                    .map((v, idx) => (
                     <li
                       key={v.id}
                       className="rounded-lg border border-border bg-muted/30 p-3"
                     >
                       <p className="text-xs font-medium text-muted-foreground">
-                        Variant {idx + 1}
+                        Variant {idx + 1} of {product.variants?.length ?? 0}
                       </p>
                       <dl className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
                         <div className="sm:col-span-2">

@@ -319,6 +319,9 @@
           "stockQty": {
             "type": "integer"
           },
+          "sortOrder": {
+            "type": "integer"
+          },
           "images": {
             "type": "array",
             "items": {
@@ -341,6 +344,7 @@
           "salePrice",
           "purchasePrice",
           "stockQty",
+          "sortOrder",
           "createdAt",
           "updatedAt"
         ]
@@ -364,6 +368,25 @@
               "variants"
             ]
           }
+        ]
+      },
+      "ProductListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductWithVariants"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "items",
+          "total"
         ]
       },
       "CreateProductBody": {
@@ -1298,10 +1321,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProductWithVariants"
-                  }
+                  "$ref": "#/components/schemas/ProductListResponse"
                 }
               }
             }

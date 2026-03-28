@@ -59,6 +59,7 @@ export function ProductFormUI({
     variants,
     appendVariant,
     removeVariant,
+    moveVariant,
     addImagesToVariant,
     removeVariantImage,
   } = useProductForm({
@@ -84,7 +85,8 @@ export function ProductFormUI({
             </h2>
             <p className="text-sm text-muted-foreground">
               Each variant can have its own SKU, price, and photos. At least one
-              is required.
+              is required. Order controls how variants appear in the storefront
+              and admin lists.
             </p>
           </div>
           <Button
@@ -109,6 +111,16 @@ export function ProductFormUI({
               variantStockById={variantStockById}
               onAdjustVariantStock={onAdjustVariantStock}
               onRemove={() => void removeVariant(index)}
+              onMoveUp={
+                index > 0
+                  ? () => moveVariant(index, index - 1)
+                  : undefined
+              }
+              onMoveDown={
+                index < variants.length - 1
+                  ? () => moveVariant(index, index + 1)
+                  : undefined
+              }
               onAddImages={(e) => addImagesToVariant(index, e)}
               onRemoveImage={(uid) => void removeVariantImage(index, uid)}
             />

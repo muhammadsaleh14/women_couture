@@ -38,10 +38,23 @@ export function useProductForm(options: UseProductFormOptions) {
 
   const { control } = form;
 
-  const { fields: variants, append, remove, update } = useFieldArray({
+  const { fields: variants, append, remove, update, move } = useFieldArray({
     control,
     name: "variants",
   });
+
+  const moveVariant = (fromIndex: number, toIndex: number) => {
+    if (
+      fromIndex === toIndex ||
+      fromIndex < 0 ||
+      toIndex < 0 ||
+      fromIndex >= variants.length ||
+      toIndex >= variants.length
+    ) {
+      return;
+    }
+    move(fromIndex, toIndex);
+  };
 
   const addImagesToVariant = (index: number, e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -97,6 +110,7 @@ export function useProductForm(options: UseProductFormOptions) {
     variants,
     appendVariant: () => append(emptyVariant()),
     removeVariant,
+    moveVariant,
     addImagesToVariant,
     removeVariantImage,
   };

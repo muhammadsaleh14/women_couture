@@ -37,6 +37,7 @@ export const ProductVariantSchema = openAPIRegistry.register(
     salePrice: z.coerce.number(),
     purchasePrice: z.coerce.number().nullable(),
     stockQty: z.number().int(),
+    sortOrder: z.number().int(),
     images: z.array(ProductImageSchema).optional(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),

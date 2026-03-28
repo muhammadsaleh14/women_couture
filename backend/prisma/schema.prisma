@@ -62,6 +62,8 @@ model ProductVariant {
   // Cached stock value for fast queries.
   // It gets updated whenever a StockMove is created.
   stockQty      Int            @default(0)
+  /** Display order within the product (0 = first). */
+  sortOrder     Int            @default(0)
 
   images        ProductImage[]
   stockMoves    StockMove[]
@@ -70,6 +72,8 @@ model ProductVariant {
 
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+
+  @@index([productId, sortOrder])
 }
 
 enum OrderStatus {

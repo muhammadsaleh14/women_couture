@@ -11,7 +11,13 @@ export function mapAdminProductDetailToFormValues(
     type: product.type,
     variants:
       product.variants && product.variants.length > 0
-        ? product.variants.map((v) => ({
+        ? [...product.variants]
+            .sort(
+              (a, b) =>
+                (a.sortOrder ?? 0) - (b.sortOrder ?? 0) ||
+                new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+            )
+            .map((v) => ({
             id: v.id,
             isNew: false,
             sku: v.sku || "",

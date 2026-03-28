@@ -77,7 +77,11 @@ function isRecentlyCreated(createdAt: string): boolean {
 export function mapProductWithVariantsToStorefront(
   product: ProductWithVariants,
 ): Product {
-  const variants = product.variants ?? [];
+  const variants = [...(product.variants ?? [])].sort(
+    (a, b) =>
+      (a.sortOrder ?? 0) - (b.sortOrder ?? 0) ||
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+  );
   const gallery = collectGalleryImages(variants);
   const mappedVariants =
     variants.length > 0

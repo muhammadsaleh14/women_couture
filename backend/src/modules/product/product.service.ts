@@ -1,9 +1,18 @@
 import * as fs from "fs/promises";
 import path from "path";
-import { ClothingType, StockMoveType } from "@prisma/client";
+import { ClothingType, Prisma, StockMoveType } from "@prisma/client";
 import { prisma } from "../../core/database/prisma";
 import { toImageUrl } from "../../core/utils/image-url";
 import type { SaveProductBody } from "./product.schema";
+
+const variantsBySortOrder = {
+  orderBy: [{ sortOrder: "asc" as const }, { createdAt: "asc" as const }],
+  include: {
+    images: {
+      orderBy: { order: "asc" as const },
+    },
+  },
+} satisfies Prisma.Product$include["variants"];
 
 function withImageUrls<
   T extends {
@@ -50,6 +59,7 @@ export async function createProduct(
               salePrice: v.salePrice,
               purchasePrice: v.purchasePrice,
               stockQty: 0,
+              sortOrder: i,
               images: variantImages?.has(i)
                 ? {
                     create: variantImages.get(i)!.map((url, order) => ({
@@ -63,13 +73,7 @@ export async function createProduct(
         : undefined,
     },
     include: {
-      variants: {
-        include: {
-          images: {
-            orderBy: { order: "asc" },
-          },
-        },
-      },
+      variants: variantsBySortOrder,
     },
   });
   return withImageUrls(product);
@@ -89,13 +93,7 @@ export async function getAllProducts(query: {
       skip: query.skip,
       take: query.take,
       include: {
-        variants: {
-          include: {
-            images: {
-              orderBy: { order: "asc" },
-            },
-          },
-        },
+        variants: variantsBySortOrder,
       },
       orderBy: { createdAt: "desc" },
     }),
@@ -108,13 +106,7 @@ export async function getProductById(productId: string) {
   const product = await prisma.product.findUnique({
     where: { id: productId },
     include: {
-      variants: {
-        include: {
-          images: {
-            orderBy: { order: "asc" },
-          },
-        },
-      },
+      variants: variantsBySortOrder,
     },
   });
   return product ? withImageUrls(product) : null;
@@ -241,6 +233,7 @@ export async function replaceProductFull(
             sku: v.sku ?? null,
             salePrice: v.salePrice,
             purchasePrice: v.purchasePrice ?? null,
+            sortOrder: i,
           },
         });
 
@@ -273,6 +266,7 @@ export async function replaceProductFull(
             salePrice: v.salePrice,
             purchasePrice: v.purchasePrice ?? null,
             stockQty: 0,
+            sortOrder: i,
             images:
               newUrls.length > 0
                 ? {
