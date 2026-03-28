@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useGetProductsProductId } from "@/core/api/generated/api";
 import { ROUTES } from "@/core/routes";
+import { useSaveProduct } from "@/modules/product/application/useSaveProduct";
 import { mapAdminProductDetailToFormValues } from "@/modules/product/infrastructure/mapAdminProductDetailToFormValues";
-import { saveProductMultipart } from "@/modules/product/infrastructure/saveProductMultipart";
 import { ProductFormUI } from "@/modules/product/presentation/ProductFormUI";
 import type { ProductFormValues } from "@/modules/product/domain/productFormSchema";
 
@@ -12,7 +12,7 @@ export function AdminProductFormPage() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
   const isNewProduct = !productId;
-  const [saving, setSaving] = useState(false);
+  const saveMutation = useSaveProduct();
 
   const { data: existing, isLoading } = useGetProductsProductId(
     productId || "",
@@ -25,16 +25,16 @@ export function AdminProductFormPage() {
   );
 
   const handleSubmit = async (values: ProductFormValues) => {
-    setSaving(true);
     try {
-      await saveProductMultipart(isNewProduct ? undefined : productId, values);
+      await saveMutation.mutateAsync({
+        productId: isNewProduct ? undefined : productId,
+        values,
+      });
       toast.success("Product saved successfully");
       navigate(ROUTES.admin.products);
     } catch (err) {
       console.error("Failed to save product:", err);
       toast.error("Failed to save product");
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -67,7 +67,7 @@ export function AdminProductFormPage() {
         key={productId ?? "new"}
         values={isNewProduct ? undefined : formValues}
         onSubmit={(vals) => void handleSubmit(vals)}
-        isSaving={saving}
+        isSaving={saveMutation.isPending}
         onCancel={() => navigate(ROUTES.admin.products)}
       />
     </div>

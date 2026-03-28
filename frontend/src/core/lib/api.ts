@@ -1,4 +1,8 @@
-import axios, { type InternalAxiosRequestConfig } from "axios";
+import axios, {
+  type AxiosError,
+  type InternalAxiosRequestConfig,
+} from "axios";
+import { ROUTES } from "@/core/routes";
 
 const TOKEN_KEY = "wc_access_token";
 
@@ -33,3 +37,23 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   }
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    if (error.response?.status !== 401) {
+      return Promise.reject(error);
+    }
+    const url = error.config?.url ?? "";
+    if (url.includes("/auth/login") || url.includes("/auth/register")) {
+      return Promise.reject(error);
+    }
+    if (getStoredToken()) {
+      setStoredToken(null);
+      if (window.location.pathname !== ROUTES.login) {
+        window.location.href = ROUTES.login;
+      }
+    }
+    return Promise.reject(error);
+  },
+);

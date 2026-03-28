@@ -22,7 +22,10 @@ export function StorefrontLayout() {
           >
             Women Couture
           </Link>
-          <div className="flex flex-wrap items-center justify-end gap-1 sm:gap-2">
+          <nav
+            className="flex flex-wrap items-center justify-end gap-1 sm:gap-2"
+            aria-label="Main navigation"
+          >
             <ThemeToggle />
             {user ? (
               <>
@@ -56,7 +59,7 @@ export function StorefrontLayout() {
                 </span>
               </Link>
             </Button>
-          </div>
+          </nav>
         </div>
         <Separator />
       </header>

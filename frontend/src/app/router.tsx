@@ -1,24 +1,69 @@
+/* eslint-disable react-refresh/only-export-components -- route table + lazy imports are not Fast Refresh components */
+import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { ROUTES } from "@/core/routes";
 import { RootLayout } from "@/app/root-layout";
+import { SuspensePage } from "@/app/page-loading-fallback";
 import { RequireRole } from "@/modules/auth/application/RequireRole";
-import { LoginPage } from "@/modules/auth/presentation/LoginPage";
-import { AdminLayout } from "@/shared/components/layout/AdminLayout";
 import { StorefrontLayout } from "@/shared/components/layout/StorefrontLayout";
-import { AdminOrdersPage } from "@/pages/admin/AdminOrdersPage";
-import { AdminProductFormPage } from "@/pages/admin/AdminProductFormPage";
-import { AdminProductsPage } from "@/pages/admin/AdminProductsPage";
-import { AdminHomeHeroPage } from "@/pages/admin/AdminHomeHeroPage";
-import { AdminStockPage } from "@/pages/admin/AdminStockPage";
-import { CartPage } from "@/pages/storefront/CartPage";
 import { HomePage } from "@/pages/storefront/home/HomePage";
+import { CartPage } from "@/pages/storefront/CartPage";
 import { ProductDetailPage } from "@/pages/storefront/ProductDetailPage";
+
+const LoginPage = lazy(() =>
+  import("@/modules/auth/presentation/LoginPage").then((m) => ({
+    default: m.LoginPage,
+  })),
+);
+
+const AdminLayout = lazy(() =>
+  import("@/shared/components/layout/AdminLayout").then((m) => ({
+    default: m.AdminLayout,
+  })),
+);
+
+const AdminOrdersPage = lazy(() =>
+  import("@/pages/admin/AdminOrdersPage").then((m) => ({
+    default: m.AdminOrdersPage,
+  })),
+);
+
+const AdminProductFormPage = lazy(() =>
+  import("@/pages/admin/AdminProductFormPage").then((m) => ({
+    default: m.AdminProductFormPage,
+  })),
+);
+
+const AdminProductsPage = lazy(() =>
+  import("@/pages/admin/AdminProductsPage").then((m) => ({
+    default: m.AdminProductsPage,
+  })),
+);
+
+const AdminHomeHeroPage = lazy(() =>
+  import("@/pages/admin/AdminHomeHeroPage").then((m) => ({
+    default: m.AdminHomeHeroPage,
+  })),
+);
+
+const AdminStockPage = lazy(() =>
+  import("@/pages/admin/AdminStockPage").then((m) => ({
+    default: m.AdminStockPage,
+  })),
+);
 
 export const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
-      { path: "login", element: <LoginPage /> },
+      {
+        path: "login",
+        element: (
+          <SuspensePage>
+            <LoginPage />
+          </SuspensePage>
+        ),
+      },
       {
         path: "/",
         element: <StorefrontLayout />,
@@ -32,7 +77,9 @@ export const router = createBrowserRouter([
         path: "admin",
         element: (
           <RequireRole role="ADMIN">
-            <AdminLayout />
+            <SuspensePage>
+              <AdminLayout />
+            </SuspensePage>
           </RequireRole>
         ),
         children: [

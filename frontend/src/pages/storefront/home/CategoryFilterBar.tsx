@@ -13,9 +13,8 @@ export function CategoryFilterBar({
   className?: string;
 }) {
   return (
-    <div
+    <nav
       className={cn("flex flex-wrap gap-2", className)}
-      role="navigation"
       aria-label="Product categories"
     >
       <CategoryPill to="/" selected={activeId === null}>
@@ -33,7 +32,7 @@ export function CategoryFilterBar({
           </span>
         </CategoryPill>
       ))}
-    </div>
+    </nav>
   );
 }
 

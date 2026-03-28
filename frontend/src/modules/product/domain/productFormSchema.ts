@@ -1,5 +1,26 @@
 import { z } from "zod";
 
+function parseMoneyInput(val: string): number {
+  return Number(String(val).replace(",", ".").replace(/\s/g, "").trim());
+}
+
+const nonNegativeMoneyString = z
+  .string()
+  .min(1, "Sale price is required")
+  .refine((val) => {
+    const n = parseMoneyInput(val);
+    return !Number.isNaN(n) && n >= 0;
+  }, "Enter a valid non-negative price");
+
+const optionalNonNegativeMoneyString = z
+  .string()
+  .refine((val) => {
+    const t = val.trim();
+    if (t === "") return true;
+    const n = parseMoneyInput(t);
+    return !Number.isNaN(n) && n >= 0;
+  }, "Enter a valid non-negative price or leave empty");
+
 const ImageItemSchema = z.object({
   uid: z.string(),
   preview: z.string(),
@@ -11,8 +32,8 @@ export const productVariantSchema = z.object({
   isNew: z.boolean(),
   color: z.string().min(1, "Color/Group name is required"),
   sku: z.string().optional(),
-  salePrice: z.string().min(1, "Sale price is required"),
-  purchasePrice: z.string().optional(),
+  salePrice: nonNegativeMoneyString,
+  purchasePrice: optionalNonNegativeMoneyString.optional(),
   images: z.array(ImageItemSchema),
 });
 

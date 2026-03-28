@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { LayoutTemplate, Package, ShoppingCart, Warehouse } from "lucide-react";
 import { Button } from "@/core/components/ui/button";
@@ -6,6 +7,7 @@ import { ROUTES } from "@/core/routes";
 import { useAuth } from "@/modules/auth/application/use-auth";
 import { ThemeToggle } from "@/core/components/theme/ThemeToggle";
 import { cn } from "@/core/lib/utils";
+import { PageLoadingFallback } from "@/app/page-loading-fallback";
 
 const nav = [
   { to: ROUTES.admin.products, label: "Products / Suits", icon: Package },
@@ -95,7 +97,9 @@ export function AdminLayout() {
           </div>
         </div>
         <div className="p-4 md:p-8">
-          <Outlet />
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Outlet />
+          </Suspense>
         </div>
       </div>
     </div>

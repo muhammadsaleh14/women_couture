@@ -2,22 +2,6 @@ import { useMemo, useState } from "react";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/core/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/core/components/ui/dialog";
-import { Input } from "@/core/components/ui/input";
-import { Label } from "@/core/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/core/components/ui/select";
 import { Switch } from "@/core/components/ui/switch";
 import {
   Table,
@@ -27,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
-import { Textarea } from "@/core/components/ui/textarea";
 import {
   getGetHomeHeroSlidesManageQueryKey,
   getGetHomeHeroSlidesQueryKey,
@@ -37,43 +20,11 @@ import {
   usePatchHomeHeroSlidesReorder,
   usePatchHomeHeroSlidesSlideId,
   usePostHomeHeroSlides,
-  type HomeHeroSlideRecord,
   type CreateHomeHeroSlideBody,
+  type HomeHeroSlideRecord,
 } from "@/core/api/generated/api";
-
-type FormState = {
-  theme: CreateHomeHeroSlideBody["theme"];
-  usePrimaryHeading: boolean;
-  isActive: boolean;
-  eyebrow: string;
-  title: string;
-  description: string;
-  productVariantId: string;
-};
-
-function emptyForm(): FormState {
-  return {
-    theme: "LIGHT",
-    usePrimaryHeading: false,
-    isActive: true,
-    eyebrow: "",
-    title: "",
-    description: "",
-    productVariantId: "",
-  };
-}
-
-function recordToForm(s: HomeHeroSlideRecord): FormState {
-  return {
-    theme: s.theme,
-    usePrimaryHeading: s.usePrimaryHeading,
-    isActive: s.isActive,
-    eyebrow: s.eyebrow ?? "",
-    title: s.title ?? "",
-    description: s.description ?? "",
-    productVariantId: s.productVariantId ?? "",
-  };
-}
+import { HomeHeroSlideDialog } from "./HomeHeroSlideDialog";
+import type { HomeHeroSlideFormValues } from "./homeHeroSlideFormSchema";
 
 export function AdminHomeHeroPage() {
   const queryClient = useQueryClient();
@@ -82,7 +33,6 @@ export function AdminHomeHeroPage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<HomeHeroSlideRecord | null>(null);
-  const [form, setForm] = useState<FormState>(emptyForm);
 
   const variantOptions = useMemo(() => {
     return products.flatMap((p) =>
@@ -125,30 +75,28 @@ export function AdminHomeHeroPage() {
 
   const openCreate = () => {
     setEditing(null);
-    setForm(emptyForm());
     setDialogOpen(true);
   };
 
   const openEdit = (s: HomeHeroSlideRecord) => {
     setEditing(s);
-    setForm(recordToForm(s));
     setDialogOpen(true);
   };
 
-  const submitForm = () => {
-    const variantId = form.productVariantId.trim() || null;
-    const titleTrim = form.title.trim();
+  const handleSlideSave = (values: HomeHeroSlideFormValues) => {
+    const variantId = values.productVariantId.trim() || null;
+    const titleTrim = values.title.trim();
 
     if (editing) {
       patchMutation.mutate({
         slideId: editing.id,
         data: {
-          theme: form.theme,
-          usePrimaryHeading: form.usePrimaryHeading,
-          isActive: form.isActive,
-          eyebrow: form.eyebrow.trim() || null,
+          theme: values.theme,
+          usePrimaryHeading: values.usePrimaryHeading,
+          isActive: values.isActive,
+          eyebrow: values.eyebrow.trim() || null,
           title: titleTrim || null,
-          description: form.description.trim() || null,
+          description: values.description.trim() || null,
           productVariantId: variantId,
         },
       });
@@ -156,11 +104,11 @@ export function AdminHomeHeroPage() {
     }
 
     const data: CreateHomeHeroSlideBody = {
-      theme: form.theme,
-      isActive: form.isActive,
-      usePrimaryHeading: form.usePrimaryHeading,
-      eyebrow: form.eyebrow.trim() || null,
-      description: form.description.trim() || null,
+      theme: values.theme,
+      isActive: values.isActive,
+      usePrimaryHeading: values.usePrimaryHeading,
+      eyebrow: values.eyebrow.trim() || null,
+      description: values.description.trim() || null,
       productVariantId: variantId,
     };
     if (titleTrim) data.title = titleTrim;
@@ -323,134 +271,14 @@ export function AdminHomeHeroPage() {
         </Table>
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {editing ? "Edit slide" : "New slide"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-2">
-            <div className="space-y-2">
-              <Label htmlFor="hh-theme">Theme</Label>
-              <Select
-                value={form.theme}
-                onValueChange={(v) =>
-                  setForm((f) => ({
-                    ...f,
-                    theme: v as FormState["theme"],
-                  }))
-                }
-              >
-                <SelectTrigger id="hh-theme">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="LIGHT">Light</SelectItem>
-                  <SelectItem value="DARK">Dark</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <Label htmlFor="hh-active">Active</Label>
-              <Switch
-                id="hh-active"
-                checked={form.isActive}
-                onCheckedChange={(v) =>
-                  setForm((f) => ({ ...f, isActive: v }))
-                }
-              />
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <Label htmlFor="hh-h1">Use main page heading (H1)</Label>
-              <Switch
-                id="hh-h1"
-                checked={form.usePrimaryHeading}
-                onCheckedChange={(v) =>
-                  setForm((f) => ({ ...f, usePrimaryHeading: v }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="hh-eyebrow">Eyebrow</Label>
-              <Input
-                id="hh-eyebrow"
-                value={form.eyebrow}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, eyebrow: e.target.value }))
-                }
-                placeholder="Optional; falls back from variant"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="hh-title">Title</Label>
-              <Input
-                id="hh-title"
-                value={form.title}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, title: e.target.value }))
-                }
-                placeholder="Required if no variant"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="hh-desc">Description</Label>
-              <Textarea
-                id="hh-desc"
-                value={form.description}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, description: e.target.value }))
-                }
-                rows={3}
-                placeholder="Optional"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="hh-variant">Product variant</Label>
-              <Select
-                value={form.productVariantId || "__none__"}
-                onValueChange={(v) =>
-                  setForm((f) => ({
-                    ...f,
-                    productVariantId: v === "__none__" ? "" : v,
-                  }))
-                }
-              >
-                <SelectTrigger id="hh-variant">
-                  <SelectValue placeholder="None" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__none__">None</SelectItem>
-                  {variantOptions.map((o) => (
-                    <SelectItem key={o.id} value={o.id}>
-                      {o.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              onClick={submitForm}
-              disabled={
-                busy ||
-                (!form.productVariantId.trim() && !form.title.trim())
-              }
-            >
-              {editing ? "Save" : "Create"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <HomeHeroSlideDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        editing={editing}
+        variantOptions={variantOptions}
+        isSaving={postMutation.isPending || patchMutation.isPending}
+        onSave={handleSlideSave}
+      />
     </div>
   );
 }
