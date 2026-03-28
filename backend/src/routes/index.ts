@@ -5,6 +5,7 @@ import { variantRouter } from "../modules/variant/variant.routes";
 import { echoRouter } from "../modules/common/echo.routes";
 import { healthRouter } from "../modules/common/health.routes";
 import { homeHeroRouter } from "../modules/home-hero/home-hero.routes";
+import { orderRouter } from "../modules/order/order.routes";
 
 export const routes = Router();
 
@@ -15,6 +16,7 @@ v1Router.use("/auth", authRouter);
 v1Router.use("/products", productRouter);
 v1Router.use("/home-hero-slides", homeHeroRouter);
 v1Router.use("/variants", variantRouter);
+v1Router.use("/orders", orderRouter);
 v1Router.use("/echo", echoRouter);
 
 routes.use("/api/v1", v1Router);

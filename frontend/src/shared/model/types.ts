@@ -27,15 +27,20 @@ export type PaymentMethod = "cod" | "online";
 export type OrderStatus = "pending" | "shipped" | "delivered";
 
 export interface OrderLine {
+  id?: string;
   productName: string;
   type: string;
   /** Optional SKU for the line item */
   sku?: string | null;
   qty: number;
+  unitPrice?: number;
+  lineTotal?: number;
 }
 
 export interface Order {
   id: string;
+  /** Monotonic display number from the server */
+  orderNumber: number;
   placedAt: string;
   customerName: string;
   phone: string;
@@ -44,4 +49,6 @@ export interface Order {
   status: OrderStatus;
   shippingAddress: string;
   city: string;
+  subtotal: number;
+  total: number;
 }

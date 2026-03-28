@@ -1,4 +1,7 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import { useMemo, useState, type MouseEvent } from "react";
+import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -21,8 +24,13 @@ import {
   SelectValue,
 } from "@/core/components/ui/select";
 import { Label } from "@/core/components/ui/label";
-import { mockOrders } from "@/modules/order/domain/mock-orders";
+import {
+  fetchOrders,
+  patchOrderStatus,
+} from "@/modules/order/infrastructure/orders.api";
 import type { Order, OrderStatus } from "@/shared/model/types";
+
+const ORDERS_QUERY_KEY = ["admin-orders"] as const;
 
 function formatWhen(iso: string) {
   const d = new Date(iso);
@@ -32,36 +40,83 @@ function formatWhen(iso: string) {
   });
 }
 
+function formatMoney(n: number) {
+  return `Rs. ${n.toLocaleString("en-PK")}`;
+}
+
 export function AdminOrdersPage() {
-  const [orders, setOrders] = useState<Order[]>(() =>
-    [...mockOrders].sort(
-      (a, b) => new Date(b.placedAt).getTime() - new Date(a.placedAt).getTime(),
-    ),
-  );
+  const queryClient = useQueryClient();
+  const { data: orders = [], isPending, isError, refetch } = useQuery({
+    queryKey: ORDERS_QUERY_KEY,
+    queryFn: () => fetchOrders({ take: 100 }),
+  });
+
+  const patchStatus = useMutation({
+    mutationFn: ({
+      id,
+      status,
+    }: {
+      id: string;
+      status: OrderStatus;
+    }) => patchOrderStatus(id, status),
+    onSuccess: (updated) => {
+      queryClient.setQueryData<Order[]>(ORDERS_QUERY_KEY, (old) =>
+        old?.map((o) => (o.id === updated.id ? updated : o)) ?? [updated],
+      );
+    },
+    onError: (err: unknown) => {
+      const msg =
+        isAxiosError(err) &&
+        err.response?.data &&
+        typeof err.response.data === "object" &&
+        "message" in err.response.data
+          ? String((err.response.data as { message: unknown }).message)
+          : "Could not update status.";
+      toast.error(msg);
+      void queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
+    },
+  });
+
   const [openId, setOpenId] = useState<string | null>(null);
   const selected = useMemo(
     () => orders.find((o) => o.id === openId) ?? null,
     [orders, openId],
   );
 
-  const setStatus = (id: string, status: OrderStatus) => {
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
-  };
-
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-foreground">Orders</h1>
-        <p className="text-sm text-muted-foreground">Newest first — prototype data.</p>
+        <p className="text-sm text-muted-foreground">
+          Newest first — loaded from the server.
+        </p>
       </div>
+
+      {isPending ? (
+        <p className="text-sm text-muted-foreground">Loading orders…</p>
+      ) : null}
+      {isError ? (
+        <p className="text-sm text-destructive">
+          Could not load orders.{" "}
+          <button
+            type="button"
+            className="underline"
+            onClick={() => void refetch()}
+          >
+            Retry
+          </button>
+        </p>
+      ) : null}
 
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-24">#</TableHead>
               <TableHead>When</TableHead>
               <TableHead>Customer</TableHead>
               <TableHead>Items</TableHead>
+              <TableHead>Total</TableHead>
               <TableHead>Payment</TableHead>
               <TableHead className="w-40">Status</TableHead>
             </TableRow>
@@ -73,6 +128,9 @@ export function AdminOrdersPage() {
                 className="cursor-pointer"
                 onClick={() => setOpenId(o.id)}
               >
+                <TableCell className="font-mono text-sm tabular-nums">
+                  {o.orderNumber}
+                </TableCell>
                 <TableCell className="whitespace-nowrap text-sm">
                   {formatWhen(o.placedAt)}
                 </TableCell>
@@ -82,18 +140,28 @@ export function AdminOrdersPage() {
                 </TableCell>
                 <TableCell className="max-w-[200px] text-sm text-muted-foreground">
                   {o.lines.map((l) => (
-                    <div key={`${o.id}-${l.productName}-${l.sku ?? "x"}`}>
+                    <div key={l.id ?? `${o.id}-${l.productName}-${l.sku ?? "x"}`}>
                       {l.productName} · {l.type}
                       {l.sku ? ` · ${l.sku}` : ""} ×{l.qty}
                     </div>
                   ))}
                 </TableCell>
+                <TableCell className="whitespace-nowrap text-sm font-medium tabular-nums">
+                  {formatMoney(o.total)}
+                </TableCell>
                 <TableCell className="uppercase">{o.payment}</TableCell>
                 <TableCell onClick={(e: MouseEvent) => e.stopPropagation()}>
                   <Select
                     value={o.status}
+                    disabled={
+                      patchStatus.isPending &&
+                      patchStatus.variables?.id === o.id
+                    }
                     onValueChange={(v: string) =>
-                      setStatus(o.id, v as OrderStatus)
+                      patchStatus.mutate({
+                        id: o.id,
+                        status: v as OrderStatus,
+                      })
                     }
                   >
                     <SelectTrigger className="h-9">
@@ -118,10 +186,15 @@ export function AdminOrdersPage() {
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Order {selected?.id}</DialogTitle>
+            <DialogTitle>
+              Order #{selected?.orderNumber}{" "}
+              <span className="font-normal text-muted-foreground">
+                ({selected?.id})
+              </span>
+            </DialogTitle>
           </DialogHeader>
           {selected && (
-            <div className="space-y-3 text-sm">
+            <div className="space-y-4 text-sm">
               <div>
                 <Label className="text-muted-foreground">Ship to</Label>
                 <p className="mt-1 font-medium">{selected.customerName}</p>
@@ -130,6 +203,45 @@ export function AdminOrdersPage() {
                   {selected.shippingAddress}
                 </p>
                 <p className="text-foreground">{selected.city}</p>
+              </div>
+              <div>
+                <Label className="text-muted-foreground">Items</Label>
+                <ul className="mt-2 space-y-2">
+                  {selected.lines.map((l) => (
+                    <li
+                      key={l.id ?? `${selected.id}-${l.productName}-${l.sku}`}
+                      className="flex justify-between gap-2 border-b border-border pb-2 last:border-0"
+                    >
+                      <span>
+                        {l.productName} · {l.type}
+                        {l.sku ? ` · ${l.sku}` : ""} ×{l.qty}
+                      </span>
+                      <span className="shrink-0 tabular-nums">
+                        {l.lineTotal != null
+                          ? formatMoney(l.lineTotal)
+                          : "—"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex justify-between border-t border-border pt-2 font-medium">
+                <span>Total</span>
+                <span className="tabular-nums">{formatMoney(selected.total)}</span>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
+                <span>
+                  Payment:{" "}
+                  <span className="text-foreground uppercase">
+                    {selected.payment}
+                  </span>
+                </span>
+                <span>
+                  Status:{" "}
+                  <span className="capitalize text-foreground">
+                    {selected.status}
+                  </span>
+                </span>
               </div>
             </div>
           )}

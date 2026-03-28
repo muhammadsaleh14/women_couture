@@ -5,6 +5,7 @@ import "../../modules/common/openapi.paths";
 import "../../modules/home-hero/openapi.paths";
 import "../../modules/product/openapi.paths";
 import "../../modules/variant/openapi.paths";
+import "../../modules/order/openapi.paths";
 
 function serverPort(): number {
   const raw = process.env.PORT;
