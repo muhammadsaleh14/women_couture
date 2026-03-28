@@ -13,8 +13,6 @@ export type HomeHeroCardProps = {
   imageUrl?: string | null;
   /** When set, the whole card is a link (e.g. product detail). */
   href?: string;
-  /** Phase offset for sin/cos backdrop motion (e.g. slide index). */
-  motionPhase?: number;
 };
 
 export function HomeHeroCard({
@@ -25,7 +23,6 @@ export function HomeHeroCard({
   titleAs = "h2",
   imageUrl,
   href,
-  motionPhase = 0,
 }: HomeHeroCardProps) {
   const isLight = variant === "light";
   const Title = titleAs;
@@ -34,10 +31,7 @@ export function HomeHeroCard({
   const inner = (
     <>
       {!hasImage ? (
-        <HeroMathBackdrop
-          variant={isLight ? "light" : "dark"}
-          phase={motionPhase}
-        />
+        <HeroMathBackdrop variant={isLight ? "light" : "dark"} />
       ) : null}
       {hasImage ? (
         <>

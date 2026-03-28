@@ -132,7 +132,7 @@ export function AdminStockPage() {
   };
 
   if (isLoading) {
-    return <div className="p-8 text-stone-500">Loading stock…</div>;
+    return <div className="p-8 text-muted-foreground">Loading stock…</div>;
   }
 
   if (error) {
@@ -142,13 +142,13 @@ export function AdminStockPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-stone-900">Stock</h1>
-        <p className="text-sm text-stone-600">
+        <h1 className="text-2xl font-semibold text-foreground">Stock</h1>
+        <p className="text-sm text-muted-foreground">
           Adjust inventory per variant (add, remove, or set total on hand).
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white">
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -164,12 +164,12 @@ export function AdminStockPage() {
               <TableRow>
                 <TableCell
                   colSpan={5}
-                  className="py-10 text-center text-sm text-stone-500"
+                  className="py-10 text-center text-sm text-muted-foreground"
                 >
                   No variants yet.{" "}
                   <Link
                     to={ROUTES.admin.productNew}
-                    className="font-medium text-stone-900 underline-offset-4 hover:underline"
+                    className="font-medium text-foreground underline-offset-4 hover:underline"
                   >
                     Add a product
                   </Link>
@@ -182,13 +182,13 @@ export function AdminStockPage() {
                   <TableCell className="font-medium">
                     <Link
                       to={ROUTES.admin.productEdit(row.productId)}
-                      className="text-stone-900 underline-offset-4 hover:underline"
+                      className="text-foreground underline-offset-4 hover:underline"
                     >
                       {row.productName}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-stone-700">{row.color}</TableCell>
-                  <TableCell className="text-stone-600">
+                  <TableCell className="text-muted-foreground">{row.color}</TableCell>
+                  <TableCell className="text-muted-foreground">
                     {row.sku || "—"}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
@@ -221,12 +221,12 @@ export function AdminStockPage() {
             <DialogDescription>
               {dialogRow ? (
                 <>
-                  <span className="font-medium text-stone-900">
+                  <span className="font-medium text-foreground">
                     {dialogRow.productName}
                   </span>
                   {" · "}
                   {dialogRow.color}
-                  <span className="mt-1 block text-stone-600">
+                  <span className="mt-1 block text-muted-foreground">
                     Current on hand:{" "}
                     <span className="tabular-nums font-medium">
                       {dialogRow.stockQty}
@@ -254,7 +254,7 @@ export function AdminStockPage() {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-muted-foreground">
                 {kind === "IN" && "Units received into inventory."}
                 {kind === "OUT" && "Units sold or written off."}
                 {kind === "ADJUSTMENT" &&

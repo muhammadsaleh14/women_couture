@@ -51,11 +51,11 @@ export function AdminOrdersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-stone-900">Orders</h1>
-        <p className="text-sm text-stone-600">Newest first — prototype data.</p>
+        <h1 className="text-2xl font-semibold text-foreground">Orders</h1>
+        <p className="text-sm text-muted-foreground">Newest first — prototype data.</p>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white">
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -78,9 +78,9 @@ export function AdminOrdersPage() {
                 </TableCell>
                 <TableCell>
                   <div className="font-medium">{o.customerName}</div>
-                  <div className="text-xs text-stone-600">{o.phone}</div>
+                  <div className="text-xs text-muted-foreground">{o.phone}</div>
                 </TableCell>
-                <TableCell className="max-w-[200px] text-sm text-stone-700">
+                <TableCell className="max-w-[200px] text-sm text-muted-foreground">
                   {o.lines.map((l) => (
                     <div key={`${o.id}-${l.productName}-${l.color}`}>
                       {l.productName} · {l.type} · {l.color} ×{l.qty}
@@ -122,13 +122,13 @@ export function AdminOrdersPage() {
           {selected && (
             <div className="space-y-3 text-sm">
               <div>
-                <Label className="text-stone-500">Ship to</Label>
+                <Label className="text-muted-foreground">Ship to</Label>
                 <p className="mt-1 font-medium">{selected.customerName}</p>
-                <p className="text-stone-600">{selected.phone}</p>
-                <p className="mt-2 text-stone-700">
+                <p className="text-muted-foreground">{selected.phone}</p>
+                <p className="mt-2 text-foreground">
                   {selected.shippingAddress}
                 </p>
-                <p className="text-stone-700">{selected.city}</p>
+                <p className="text-foreground">{selected.city}</p>
               </div>
             </div>
           )}

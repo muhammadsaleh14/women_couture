@@ -31,7 +31,7 @@ export function AdminProductsPage() {
   });
 
   if (isLoading) {
-    return <div className="p-8 text-stone-500">Loading products...</div>;
+    return <div className="p-8 text-muted-foreground">Loading products...</div>;
   }
 
   if (error) {
@@ -44,8 +44,8 @@ export function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-stone-900">Products</h1>
-          <p className="text-sm text-stone-600">
+          <h1 className="text-2xl font-semibold text-foreground">Products</h1>
+          <p className="text-sm text-muted-foreground">
             Toggle visibility or open an item to edit.
           </p>
         </div>
@@ -57,7 +57,7 @@ export function AdminProductsPage() {
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white">
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -90,7 +90,7 @@ export function AdminProductsPage() {
                     />
                   </TableCell>
                   <TableCell className="font-medium">{p.name}</TableCell>
-                  <TableCell className="text-stone-600">
+                  <TableCell className="text-muted-foreground">
                     {subCategoryType}
                   </TableCell>
                   <TableCell className="text-right tabular-nums">

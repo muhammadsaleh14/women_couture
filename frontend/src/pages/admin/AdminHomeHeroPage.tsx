@@ -180,7 +180,7 @@ export function AdminHomeHeroPage() {
   };
 
   if (isLoading) {
-    return <div className="text-stone-500">Loading hero slides…</div>;
+    return <div className="text-muted-foreground">Loading hero slides…</div>;
   }
 
   if (error) {
@@ -197,8 +197,8 @@ export function AdminHomeHeroPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-stone-900">Home hero</h1>
-          <p className="text-sm text-stone-600">
+          <h1 className="text-2xl font-semibold text-foreground">Home hero</h1>
+          <p className="text-sm text-muted-foreground">
             Carousel on the storefront home page. Optional product variant for
             image and link.
           </p>
@@ -209,7 +209,7 @@ export function AdminHomeHeroPage() {
         </Button>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-stone-200 bg-white">
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
@@ -226,7 +226,7 @@ export function AdminHomeHeroPage() {
               <TableRow>
                 <TableCell
                   colSpan={6}
-                  className="py-8 text-center text-stone-500"
+                  className="py-8 text-center text-muted-foreground"
                 >
                   No slides yet. Add one to show the hero carousel.
                 </TableCell>
@@ -234,7 +234,7 @@ export function AdminHomeHeroPage() {
             ) : (
               slides.map((s, i) => (
                 <TableRow key={s.id}>
-                  <TableCell className="tabular-nums text-stone-600">
+                  <TableCell className="tabular-nums text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Button
                         type="button"
@@ -263,12 +263,12 @@ export function AdminHomeHeroPage() {
                   <TableCell className="font-medium">
                     {s.title || "—"}
                     {s.usePrimaryHeading ? (
-                      <span className="ml-2 text-xs font-normal text-stone-500">
+                      <span className="ml-2 text-xs font-normal text-muted-foreground">
                         (H1)
                       </span>
                     ) : null}
                   </TableCell>
-                  <TableCell className="text-stone-600">{s.theme}</TableCell>
+                  <TableCell className="text-muted-foreground">{s.theme}</TableCell>
                   <TableCell className="text-center">
                     <Switch
                       checked={s.isActive}
@@ -282,7 +282,7 @@ export function AdminHomeHeroPage() {
                       aria-label={`Active ${s.id}`}
                     />
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate text-xs text-stone-600">
+                  <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">
                     {s.productVariantId
                       ? variantOptions.find((o) => o.id === s.productVariantId)
                           ?.label ?? s.productVariantId
