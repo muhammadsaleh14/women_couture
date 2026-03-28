@@ -9,8 +9,9 @@ import {
 } from "@/core/components/ui/carousel";
 import { Button } from "@/core/components/ui/button";
 import { Separator } from "@/core/components/ui/separator";
+import { useGetProductsProductId } from "@/core/api/generated/api";
 import { ROUTES } from "@/core/routes";
-import { getProductById } from "@/modules/product/infrastructure/mock-products";
+import { mapProductWithVariantsToStorefront } from "@/modules/product/infrastructure/mapProductWithVariantsToStorefront";
 import { useCartStore } from "@/modules/cart/application/cart-store";
 import { ColorSwatches } from "@/shared/components/product/ColorSwatches";
 import { PriceBlock } from "@/shared/components/product/PriceBlock";
@@ -19,8 +20,20 @@ import { StockBadge } from "@/shared/components/product/StockBadge";
 export function ProductDetailPage() {
   const { productId = "" } = useParams();
   const navigate = useNavigate();
-  const product = getProductById(productId);
   const addLine = useCartStore((s) => s.addLine);
+
+  const { data: apiProduct, isLoading, isError } = useGetProductsProductId(
+    productId,
+    { query: { enabled: !!productId } },
+  );
+
+  const product = useMemo(
+    () =>
+      apiProduct && apiProduct.isActive
+        ? mapProductWithVariantsToStorefront(apiProduct)
+        : undefined,
+    [apiProduct],
+  );
 
   const firstVariant = product?.variants[0];
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
@@ -31,7 +44,7 @@ export function ProductDetailPage() {
     if (product?.variants[0]) {
       setSelectedVariantId(product.variants[0].id);
     }
-  }, [product?.id]);
+  }, [product?.id, product?.variants]);
 
   const variant = useMemo(() => {
     if (!product || !selectedVariantId) {
@@ -49,7 +62,13 @@ export function ProductDetailPage() {
     return [primary, ...rest];
   }, [product, variant]);
 
-  if (!product || !variant) {
+  if (isLoading) {
+    return (
+      <p className="text-center text-sm text-stone-600">Loading product…</p>
+    );
+  }
+
+  if (isError || !product || !variant) {
     return (
       <p className="text-center text-sm text-stone-600">Product not found.</p>
     );
@@ -105,7 +124,7 @@ export function ProductDetailPage() {
       <Separator />
 
       <p className="text-sm leading-relaxed text-stone-600">
-        {product.description}
+        {product.description || "No description yet."}
       </p>
 
       <div className="space-y-2">

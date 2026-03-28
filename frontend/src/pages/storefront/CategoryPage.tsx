@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useGetProducts } from "@/core/api/generated/api";
 import {
   Select,
   SelectContent,
@@ -9,7 +10,7 @@ import {
 } from "@/core/components/ui/select";
 import { Label } from "@/core/components/ui/label";
 import type { CategoryId, Product } from "@/shared/model/types";
-import { getProductsByCategory } from "@/modules/product/infrastructure/mock-products";
+import { mapProductWithVariantsToStorefront } from "@/modules/product/infrastructure/mapProductWithVariantsToStorefront";
 import { ProductCard } from "@/modules/product/presentation/ProductCard";
 
 const CATEGORY_LABEL: Record<CategoryId, string> = {
@@ -47,8 +48,20 @@ export function CategoryPage() {
   const [sort, setSort] = useState("new");
   const [colorFilter, setColorFilter] = useState<string>("all");
 
+  const { data: apiProducts = [], isLoading, isError } = useGetProducts({
+    isActive: "true",
+    take: 100,
+  });
+
   const valid = isCategoryId(categoryId);
-  const raw = valid ? getProductsByCategory(categoryId) : [];
+
+  const raw = useMemo(() => {
+    if (!valid) return [];
+    return apiProducts
+      .filter((p) => p.isActive)
+      .map(mapProductWithVariantsToStorefront)
+      .filter((p) => p.categoryId === categoryId);
+  }, [apiProducts, categoryId, valid]);
 
   const colors = useMemo(() => {
     const set = new Set<string>();
@@ -69,6 +82,20 @@ export function CategoryPage() {
   if (!valid) {
     return (
       <p className="text-center text-sm text-stone-600">Category not found.</p>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <p className="text-center text-sm text-stone-600">Loading category…</p>
+    );
+  }
+
+  if (isError) {
+    return (
+      <p className="text-center text-sm text-destructive">
+        Could not load products.
+      </p>
     );
   }
 

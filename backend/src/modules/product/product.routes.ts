@@ -7,15 +7,16 @@ import { upload } from "../../core/middleware/upload";
 
 export const productRouter = Router();
 
-productRouter.use(authenticate);
-productRouter.use(authorizeRole("ADMIN"));
-
+/** Storefront catalog: list + detail without auth. */
 productRouter.get("/", productController.getProducts);
-
 productRouter.get("/:productId", productController.getProduct);
 
-productRouter.post("/", upload.any(), productController.createProduct);
+const protectedProductRouter = Router();
+protectedProductRouter.use(authenticate);
+protectedProductRouter.use(authorizeRole("ADMIN"));
 
-productRouter.post("/:productId/variants", variantController.createVariant);
+protectedProductRouter.post("/", upload.any(), productController.createProduct);
+protectedProductRouter.post("/:productId/variants", variantController.createVariant);
+protectedProductRouter.patch("/:productId", upload.any(), productController.updateProduct);
 
-productRouter.patch("/:productId", upload.any(), productController.updateProduct);
+productRouter.use(protectedProductRouter);
