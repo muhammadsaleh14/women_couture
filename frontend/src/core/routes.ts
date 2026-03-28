@@ -17,9 +17,7 @@ export const ROUTES = {
     productEdit: (productId: string) =>
       `/admin/products/${productId}/edit` as const,
     orders: "/admin/orders",
-    /** Deep-link order detail dialog on the orders page */
-    ordersOpen: (orderId: string) =>
-      `/admin/orders?${new URLSearchParams({ open: orderId }).toString()}` as const,
+    order: (orderId: string) => `/admin/orders/${orderId}` as const,
     /** @deprecated use `stock` — kept for old links */
     inventory: "/admin/inventory",
     stock: "/admin/stock",

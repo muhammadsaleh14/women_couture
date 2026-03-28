@@ -60,7 +60,7 @@ export function AdminNotificationBell() {
     } finally {
       setSheetOpen(false);
       if (n.orderId) {
-        navigate(ROUTES.admin.ordersOpen(n.orderId));
+        navigate(ROUTES.admin.order(n.orderId));
       }
     }
   }

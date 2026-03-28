@@ -23,31 +23,37 @@ const AdminLayout = lazy(() =>
 );
 
 const AdminOrdersPage = lazy(() =>
-  import("@/pages/admin/AdminOrdersPage").then((m) => ({
+  import("@/pages/admin/orders/AdminOrdersPage").then((m) => ({
     default: m.AdminOrdersPage,
   })),
 );
 
+const AdminOrderDetailPage = lazy(() =>
+  import("@/pages/admin/orders/AdminOrderDetailPage").then((m) => ({
+    default: m.AdminOrderDetailPage,
+  })),
+);
+
 const AdminProductFormPage = lazy(() =>
-  import("@/pages/admin/AdminProductFormPage").then((m) => ({
+  import("@/pages/admin/products/AdminProductFormPage").then((m) => ({
     default: m.AdminProductFormPage,
   })),
 );
 
 const AdminProductsPage = lazy(() =>
-  import("@/pages/admin/AdminProductsPage").then((m) => ({
+  import("@/pages/admin/products/AdminProductsPage").then((m) => ({
     default: m.AdminProductsPage,
   })),
 );
 
 const AdminHomeHeroPage = lazy(() =>
-  import("@/pages/admin/AdminHomeHeroPage").then((m) => ({
+  import("@/pages/admin/home-hero/AdminHomeHeroPage").then((m) => ({
     default: m.AdminHomeHeroPage,
   })),
 );
 
 const AdminStockPage = lazy(() =>
-  import("@/pages/admin/AdminStockPage").then((m) => ({
+  import("@/pages/admin/stock/AdminStockPage").then((m) => ({
     default: m.AdminStockPage,
   })),
 );
@@ -100,6 +106,7 @@ export const router = createBrowserRouter([
             element: <AdminProductFormPage />,
           },
           { path: "orders", element: <AdminOrdersPage /> },
+          { path: "orders/:orderId", element: <AdminOrderDetailPage /> },
         ],
       },
     ],

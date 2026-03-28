@@ -1,14 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useMemo, type MouseEvent } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
   type OrderPublic,
-  getGetOrdersOrderIdQueryKey,
   getGetOrdersQueryKey,
   useGetOrders,
-  useGetOrdersOrderId,
   usePatchOrdersOrderId,
 } from "@/core/api/generated/api";
 import {
@@ -20,21 +18,15 @@ import {
   TableRow,
 } from "@/core/components/ui/table";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/core/components/ui/dialog";
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/core/components/ui/select";
-import { Label } from "@/core/components/ui/label";
+import { ROUTES } from "@/core/routes";
 import { mapOrderPublicToOrder } from "@/modules/order/infrastructure/order.mapper";
-import type { Order, OrderStatus } from "@/shared/model/types";
+import type { OrderStatus } from "@/shared/model/types";
 
 const ORDERS_LIST_PARAMS = { take: 100 } as const;
 
@@ -51,9 +43,8 @@ function formatMoney(n: number) {
 }
 
 export function AdminOrdersPage() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const openOrderId = searchParams.get("open");
 
   const {
     data: orderRows,
@@ -67,35 +58,6 @@ export function AdminOrdersPage() {
     [orderRows],
   );
 
-  const orderInList =
-    !!openOrderId && orders.some((o) => o.id === openOrderId);
-
-  const detailQuery = useGetOrdersOrderId(openOrderId ?? "", {
-    query: {
-      enabled: !!openOrderId && !orderInList,
-      retry: false,
-    },
-  });
-
-  const selected: Order | null = useMemo(() => {
-    if (!openOrderId) return null;
-    const fromList = orders.find((o) => o.id === openOrderId);
-    if (fromList) return fromList;
-    if (detailQuery.data) return mapOrderPublicToOrder(detailQuery.data);
-    return null;
-  }, [openOrderId, orders, detailQuery.data]);
-
-  const dialogOpen =
-    !!openOrderId &&
-    (!!selected ||
-      detailQuery.isLoading ||
-      detailQuery.isFetching ||
-      detailQuery.isError);
-
-  function closeOrderDialog() {
-    setSearchParams({}, { replace: true });
-  }
-
   const patchStatus = usePatchOrdersOrderId({
     mutation: {
       onSuccess: (updated) => {
@@ -104,9 +66,6 @@ export function AdminOrdersPage() {
           (old) =>
             old?.map((o) => (o.id === updated.id ? updated : o)) ?? [updated],
         );
-        void queryClient.invalidateQueries({
-          queryKey: getGetOrdersOrderIdQueryKey(updated.id),
-        });
       },
       onError: (err: unknown) => {
         const msg =
@@ -129,7 +88,7 @@ export function AdminOrdersPage() {
       <div>
         <h1 className="text-2xl font-semibold text-foreground">Orders</h1>
         <p className="text-sm text-muted-foreground">
-          Newest first — loaded from the server.
+          Newest first — click a row to open the full order page.
         </p>
       </div>
 
@@ -167,9 +126,7 @@ export function AdminOrdersPage() {
               <TableRow
                 key={o.id}
                 className="cursor-pointer"
-                onClick={() =>
-                  setSearchParams({ open: o.id }, { replace: true })
-                }
+                onClick={() => navigate(ROUTES.admin.order(o.id))}
               >
                 <TableCell className="font-mono text-sm tabular-nums">
                   {o.orderNumber}
@@ -222,87 +179,6 @@ export function AdminOrdersPage() {
           </TableBody>
         </Table>
       </div>
-
-      <Dialog open={dialogOpen} onOpenChange={(open) => !open && closeOrderDialog()}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {selected ? (
-                <>
-                  Order #{selected.orderNumber}{" "}
-                  <span className="font-normal text-muted-foreground">
-                    ({selected.id})
-                  </span>
-                </>
-              ) : detailQuery.isError ? (
-                "Order"
-              ) : (
-                "Loading order…"
-              )}
-            </DialogTitle>
-          </DialogHeader>
-          {detailQuery.isError ? (
-            <p className="text-sm text-destructive">
-              This order could not be loaded. It may be outside the current list
-              or no longer exists.
-            </p>
-          ) : null}
-          {selected ? (
-            <div className="space-y-4 text-sm">
-              <div>
-                <Label className="text-muted-foreground">Ship to</Label>
-                <p className="mt-1 font-medium">{selected.customerName}</p>
-                <p className="text-muted-foreground">{selected.phone}</p>
-                <p className="mt-2 text-foreground">
-                  {selected.shippingAddress}
-                </p>
-                <p className="text-foreground">{selected.city}</p>
-              </div>
-              <div>
-                <Label className="text-muted-foreground">Items</Label>
-                <ul className="mt-2 space-y-2">
-                  {selected.lines.map((l) => (
-                    <li
-                      key={l.id ?? `${selected.id}-${l.productName}-${l.sku}`}
-                      className="flex justify-between gap-2 border-b border-border pb-2 last:border-0"
-                    >
-                      <span>
-                        {l.productName} · {l.type}
-                        {l.sku ? ` · ${l.sku}` : ""} ×{l.qty}
-                      </span>
-                      <span className="shrink-0 tabular-nums">
-                        {l.lineTotal != null
-                          ? formatMoney(l.lineTotal)
-                          : "—"}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="flex justify-between border-t border-border pt-2 font-medium">
-                <span>Total</span>
-                <span className="tabular-nums">{formatMoney(selected.total)}</span>
-              </div>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
-                <span>
-                  Payment:{" "}
-                  <span className="text-foreground uppercase">
-                    {selected.payment}
-                  </span>
-                </span>
-                <span>
-                  Status:{" "}
-                  <span className="capitalize text-foreground">
-                    {selected.status}
-                  </span>
-                </span>
-              </div>
-            </div>
-          ) : !detailQuery.isError ? (
-            <p className="text-sm text-muted-foreground">Loading…</p>
-          ) : null}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
