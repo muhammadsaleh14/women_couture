@@ -15,7 +15,7 @@ export function StorefrontLayout() {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
-        <div className="mx-auto flex h-14 max-w-lg items-center justify-between gap-2 px-4 sm:max-w-3xl lg:max-w-5xl">
+        <div className="flex h-14 w-full items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
           <Link
             to={ROUTES.home}
             className="text-sm font-semibold tracking-wide text-foreground"
@@ -60,12 +60,12 @@ export function StorefrontLayout() {
         </div>
         <Separator />
       </header>
-      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col min-h-0 px-4 py-6 sm:max-w-3xl lg:max-w-5xl">
+      <main className="flex min-h-0 w-full flex-1 flex-col py-6">
         {/*
-          Flex chain: min-h-0 lets flex-1 children get a real height so nested
-          pages (e.g. home backdrop with absolute inset-0) can fill the column.
+          Full-width main so page backgrounds (e.g. home mesh) match the shell.
+          Individual routes add horizontal padding where needed.
         */}
-        <div className="flex w-full min-h-0 flex-1 flex-col">
+        <div className="flex min-h-0 w-full flex-1 flex-col">
           <Outlet />
         </div>
       </main>

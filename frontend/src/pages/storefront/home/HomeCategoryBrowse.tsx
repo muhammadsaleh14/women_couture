@@ -46,7 +46,7 @@ export function HomeCategoryBrowse({ categoryFilter, allProducts }: Props) {
   }, [categoryRaw, colorFilter, sort]);
 
   return (
-    <div className="flex w-full min-h-0 flex-1 flex-col space-y-6">
+    <div className="flex w-full min-h-0 flex-1 flex-col space-y-6 px-4 sm:px-6 lg:px-8">
       <div>
         <ButtonLink />
         <CategoryFilterBar activeId={categoryFilter} className="mt-4" />

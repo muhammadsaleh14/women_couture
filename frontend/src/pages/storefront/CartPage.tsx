@@ -36,7 +36,7 @@ export function CartPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 px-4 sm:px-6 lg:px-8">
       <h1 className="text-xl font-semibold text-stone-900">Cart & Checkout</h1>
 
       <section className="space-y-3">

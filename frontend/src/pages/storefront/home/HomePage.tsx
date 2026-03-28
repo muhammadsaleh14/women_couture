@@ -1,10 +1,5 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/core/components/ui/carousel";
 import { useGetProducts } from "@/core/api/generated/api";
 import { mapProductWithVariantsToStorefront } from "@/modules/product/infrastructure/mapProductWithVariantsToStorefront";
 import { ProductCard } from "@/modules/product/presentation/ProductCard";
@@ -37,7 +32,7 @@ export function HomePage() {
 
   if (invalidCategory) {
     return (
-      <div className="flex flex-1 flex-col space-y-4 text-center">
+      <div className="flex flex-1 flex-col space-y-4 px-4 text-center sm:px-6 lg:px-8">
         <p className="text-sm text-muted-foreground">Category not found.</p>
         <ButtonLink />
       </div>
@@ -47,14 +42,14 @@ export function HomePage() {
   if (categoryFilter) {
     if (isLoading) {
       return (
-        <p className="flex flex-1 justify-center pt-8 text-center text-sm text-muted-foreground">
+        <p className="flex flex-1 justify-center px-4 pt-8 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
           Loading…
         </p>
       );
     }
     if (isError) {
       return (
-        <p className="flex flex-1 justify-center pt-8 text-center text-sm text-destructive">
+        <p className="flex flex-1 justify-center px-4 pt-8 text-center text-sm text-destructive sm:px-6 lg:px-8">
           Could not load products.
         </p>
       );
@@ -72,9 +67,10 @@ export function HomePage() {
   return (
     <div className="relative isolate flex w-full min-h-0 flex-1 flex-col">
       <HomePageMathBackdrop />
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col space-y-10">
-      <HomeHeroCarousel />
-
+      <div className="relative z-10 w-full">
+        <HomeHeroCarousel />
+      </div>
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col space-y-10 px-4 pt-10 sm:px-6 lg:px-8">
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-foreground">
           Shop by category
@@ -98,18 +94,13 @@ export function HomePage() {
           </p>
         )}
         {!isLoading && !isError && allProducts.length > 0 && (
-          <Carousel opts={{ align: "start", dragFree: true }} className="w-full">
-            <CarouselContent className="-ml-2">
-              {allProducts.map((p) => (
-                <CarouselItem
-                  key={p.id}
-                  className="basis-[70%] pl-2 sm:basis-[45%] md:basis-[33%]"
-                >
-                  <ProductCard product={p} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+          <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {allProducts.map((p) => (
+              <li key={p.id} className="min-w-0">
+                <ProductCard product={p} />
+              </li>
+            ))}
+          </ul>
         )}
       </section>
       </div>

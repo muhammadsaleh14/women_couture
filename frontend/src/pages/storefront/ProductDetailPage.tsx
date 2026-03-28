@@ -90,13 +90,17 @@ function ProductDetailContent({
 
   if (isLoading) {
     return (
-      <p className="text-center text-sm text-stone-600">Loading product…</p>
+      <p className="px-4 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
+        Loading product…
+      </p>
     );
   }
 
   if (isError || !product || !variant) {
     return (
-      <p className="text-center text-sm text-stone-600">Product not found.</p>
+      <p className="px-4 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
+        Product not found.
+      </p>
     );
   }
 
@@ -121,7 +125,7 @@ function ProductDetailContent({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
       <Carousel className="w-full">
         <CarouselContent>
           {carouselImages.map((src) => (
