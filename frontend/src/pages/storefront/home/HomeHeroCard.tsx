@@ -46,9 +46,7 @@ export function HomeHeroCard({
           <Title
             className={cn(
               "mt-1 max-w-md text-2xl font-semibold sm:text-3xl",
-              isLight
-                ? "tracking-tight text-stone-900"
-                : "text-stone-50",
+              isLight ? "tracking-tight text-stone-900" : "text-stone-50",
             )}
           >
             {title}

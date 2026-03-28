@@ -10,7 +10,7 @@ import { AdminProductFormPage } from "@/pages/admin/AdminProductFormPage";
 import { AdminProductsPage } from "@/pages/admin/AdminProductsPage";
 import { AdminStockPage } from "@/pages/admin/AdminStockPage";
 import { CartPage } from "@/pages/storefront/CartPage";
-import { HomePage } from "@/pages/storefront/HomePage";
+import { HomePage } from "@/pages/storefront/home/HomePage";
 import { ProductDetailPage } from "@/pages/storefront/ProductDetailPage";
 
 export const router = createBrowserRouter([
