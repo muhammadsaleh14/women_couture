@@ -56,6 +56,7 @@ export function AdjustStockDialog({
   row,
   onClose,
   invalidateProductDetailId,
+  invalidateVariantStockMovesId,
 }: Props) {
   const queryClient = useQueryClient();
   const [kind, setKind] = useState<AdjustKind>("IN");
