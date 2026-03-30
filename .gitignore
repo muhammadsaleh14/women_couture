@@ -7,7 +7,6 @@ keys/
 !.env.example
 
 # Build output
-dist/
 build/
 *.tsbuildinfo
 
