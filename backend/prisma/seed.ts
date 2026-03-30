@@ -1,3 +1,4 @@
+/** Run with `npm run db:seed` or `npx tsx prisma/seed.ts` — not `node` (TS + import paths). */
 import bcrypt from "bcrypt";
 import "dotenv/config";
 import { prisma } from "../src/core/database/prisma";
