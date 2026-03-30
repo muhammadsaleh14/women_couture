@@ -1,0 +1,71 @@
+import type { HomeHeroTheme } from "@prisma/client";
+export declare function listResolvedPublic(): Promise<{
+    id: string;
+    theme: import(".prisma/client").$Enums.HomeHeroTheme;
+    usePrimaryHeading: boolean;
+    eyebrow: string;
+    title: string;
+    description: string | null;
+    productId: string | null;
+    variantId: string | null;
+    imageUrl: string | null;
+}[]>;
+export declare function listAllSlideRecords(): Promise<{
+    id: string;
+    sortOrder: number;
+    isActive: boolean;
+    theme: import(".prisma/client").$Enums.HomeHeroTheme;
+    usePrimaryHeading: boolean;
+    eyebrow: string | null;
+    title: string | null;
+    description: string | null;
+    productVariantId: string | null;
+    createdAt: string;
+    updatedAt: string;
+}[]>;
+export declare function createSlide(data: {
+    sortOrder?: number;
+    isActive?: boolean;
+    theme: HomeHeroTheme;
+    usePrimaryHeading?: boolean;
+    eyebrow?: string | null;
+    title?: string | null;
+    description?: string | null;
+    productVariantId?: string | null;
+}): Promise<{
+    id: string;
+    sortOrder: number;
+    isActive: boolean;
+    theme: import(".prisma/client").$Enums.HomeHeroTheme;
+    usePrimaryHeading: boolean;
+    eyebrow: string | null;
+    title: string | null;
+    description: string | null;
+    productVariantId: string | null;
+    createdAt: string;
+    updatedAt: string;
+}>;
+export declare function updateSlide(id: string, data: Partial<{
+    sortOrder: number;
+    isActive: boolean;
+    theme: HomeHeroTheme;
+    usePrimaryHeading: boolean;
+    eyebrow: string | null;
+    title: string | null;
+    description: string | null;
+    productVariantId: string | null;
+}>): Promise<{
+    id: string;
+    sortOrder: number;
+    isActive: boolean;
+    theme: import(".prisma/client").$Enums.HomeHeroTheme;
+    usePrimaryHeading: boolean;
+    eyebrow: string | null;
+    title: string | null;
+    description: string | null;
+    productVariantId: string | null;
+    createdAt: string;
+    updatedAt: string;
+}>;
+export declare function deleteSlide(id: string): Promise<void>;
+export declare function reorderSlides(orderedIds: string[]): Promise<void>;

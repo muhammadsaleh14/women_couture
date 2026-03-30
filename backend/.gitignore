@@ -9,7 +9,6 @@ uploads/
 !.env.example
 
 # TypeScript build
-dist/
 *.tsbuildinfo
 
 # Logs
