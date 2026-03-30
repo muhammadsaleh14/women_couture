@@ -12,7 +12,7 @@ const variantsBySortOrder = {
       orderBy: { order: "asc" as const },
     },
   },
-} satisfies Prisma.Product$include["variants"];
+} satisfies NonNullable<Prisma.ProductInclude["variants"]>;
 
 function withImageUrls<
   T extends {
