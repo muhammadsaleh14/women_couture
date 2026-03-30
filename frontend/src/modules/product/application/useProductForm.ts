@@ -6,6 +6,7 @@ import {
   type ProductFormValues,
   type ImageItem,
 } from "../domain/productFormSchema";
+import { generateUuid } from "@/core/lib/randomUuid";
 import { emptyVariant, defaultProductFormValues } from "../domain/defaults";
 
 export interface UseProductFormOptions {
@@ -61,7 +62,7 @@ export function useProductForm(options: UseProductFormOptions) {
     if (!files || files.length === 0) return;
 
     const items: ImageItem[] = Array.from(files).map((f) => ({
-      uid: crypto.randomUUID(),
+      uid: generateUuid(),
       preview: URL.createObjectURL(f),
       file: f,
     }));

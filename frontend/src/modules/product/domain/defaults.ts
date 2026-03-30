@@ -1,8 +1,9 @@
+import { generateUuid } from "@/core/lib/randomUuid";
 import type { ImageItem, ProductFormValues } from "./productFormSchema";
 
 export function emptyVariant() {
   return {
-    id: crypto.randomUUID(),
+    id: generateUuid(),
     isNew: true,
     sku: "",
     salePrice: "",
