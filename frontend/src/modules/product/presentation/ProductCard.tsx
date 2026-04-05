@@ -1,11 +1,7 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Badge } from "@/core/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/core/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/core/components/ui/card";
 import { cn } from "@/core/lib/utils";
 import type { Product } from "@/shared/model/types";
 import { ROUTES } from "@/core/routes";
@@ -18,8 +14,18 @@ type Props = {
 };
 
 export function ProductCard({ product, className }: Props) {
-  const cover = product.variants[0]?.imageUrl ?? product.images[0];
+  const [selectedVariantId, setSelectedVariantId] = useState(
+    () => product.variants[0]?.id ?? "",
+  );
+
+  const selectedVariant = useMemo(() => {
+    const v = product.variants.find((x) => x.id === selectedVariantId);
+    return v ?? product.variants[0];
+  }, [product.variants, selectedVariantId]);
+
+  const cover = selectedVariant?.imageUrl ?? product.images[0] ?? "";
   const anyStock = product.variants.some((v) => v.stock > 0);
+  const variants = product.variants.slice(0, 5);
 
   return (
     <Link to={ROUTES.product(product.id)} className={cn("block", className)}>
@@ -42,7 +48,7 @@ export function ProductCard({ product, className }: Props) {
             {!anyStock && <Badge variant="destructive">Out of Stock</Badge>}
           </div>
         </CardHeader>
-        <CardContent className="space-y-1 p-3">
+        <CardContent className="flex flex-col gap-2 p-3 pt-3">
           <p className="line-clamp-2 text-sm font-medium leading-snug text-foreground">
             {product.name}
           </p>
@@ -51,22 +57,41 @@ export function ProductCard({ product, className }: Props) {
             salePrice={product.salePrice}
             className="text-base"
           />
+          {variants.length > 0 ? (
+            <div className="flex flex-row flex-wrap items-center gap-1.5">
+              {variants.map((v) => {
+                const selected = v.id === selectedVariant?.id;
+                const label = v.sku?.trim() || "Option";
+                return (
+                  <button
+                    key={v.id}
+                    type="button"
+                    title={label}
+                    aria-label={`Show ${label}`}
+                    aria-pressed={selected}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setSelectedVariantId(v.id);
+                    }}
+                    className={cn(
+                      "relative size-10 shrink-0 overflow-hidden rounded-md border-2 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                      selected
+                        ? "border-primary ring-2 ring-primary/30"
+                        : "border-border hover:border-muted-foreground/40",
+                    )}
+                  >
+                    <ProductImageWithPlaceholder
+                      src={v.imageUrl}
+                      alt=""
+                      className="size-full object-cover"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </CardContent>
-        <CardFooter className="flex gap-1 border-t-0 p-3 pt-0">
-          {product.variants.slice(0, 5).map((v) => (
-            <span
-              key={v.id}
-              className="size-8 shrink-0 overflow-hidden rounded-md border border-border"
-              title={v.sku ?? "Variant"}
-            >
-              <ProductImageWithPlaceholder
-                src={v.imageUrl}
-                alt=""
-                className="size-full object-cover"
-              />
-            </span>
-          ))}
-        </CardFooter>
       </Card>
     </Link>
   );
