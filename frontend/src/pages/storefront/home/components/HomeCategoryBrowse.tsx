@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
 import { Label } from "@/core/components/ui/label";
 import {
   Select,
@@ -9,6 +10,7 @@ import {
 } from "@/core/components/ui/select";
 import { ProductCard } from "@/modules/product/presentation/ProductCard";
 import type { CategoryId, Product } from "@/shared/model/types";
+import { cn } from "@/core/lib/utils";
 import { ButtonLink } from "./ButtonLink";
 import { CategoryFilterBar } from "./CategoryFilterBar";
 import { CATEGORY_LABEL, sortProducts } from "./homeCategory";
@@ -31,27 +33,50 @@ export function HomeCategoryBrowse({ categoryFilter, allProducts }: Props) {
     [categoryRaw, sort],
   );
 
+  const count = filteredCategory.length;
+  const countLabel =
+    count === 0
+      ? "No pieces in this category yet"
+      : `${count} ${count === 1 ? "piece" : "pieces"}`;
+
   return (
-    <div className="flex w-full min-h-0 flex-1 flex-col space-y-6 px-4 sm:px-6 lg:px-8">
-      <div>
+    <div className="flex w-full min-h-0 flex-1 flex-col gap-8 px-4 pb-10 sm:px-6 lg:px-8">
+      <div className="space-y-5 pt-2">
         <ButtonLink />
-        <CategoryFilterBar activeId={categoryFilter} className="mt-4" />
-        <h1 className="mt-3 text-xl font-semibold text-foreground">
-          {CATEGORY_LABEL[categoryFilter]}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {filteredCategory.length} piece
-          {filteredCategory.length === 1 ? "" : "s"}
-        </p>
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Shop by category
+          </p>
+          <CategoryFilterBar activeId={categoryFilter} />
+        </div>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-        <div className="space-y-1.5">
-          <Label htmlFor="home-sort" className="text-xs text-muted-foreground">
-            Sort
+      <div
+        className={cn(
+          "flex flex-col gap-5 border-b border-border/70 pb-8",
+          "sm:flex-row sm:items-end sm:justify-between",
+        )}
+      >
+        <div className="min-w-0 space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+            {CATEGORY_LABEL[categoryFilter]}
+          </h1>
+          <p className="text-sm text-muted-foreground">{countLabel}</p>
+        </div>
+
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[12rem] sm:items-end">
+          <Label
+            htmlFor="home-sort"
+            className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground"
+          >
+            <SlidersHorizontal className="size-3.5" aria-hidden />
+            Sort by
           </Label>
           <Select value={sort} onValueChange={setSort}>
-            <SelectTrigger id="home-sort" className="w-full sm:w-44">
+            <SelectTrigger
+              id="home-sort"
+              className="h-10 w-full rounded-xl border-border/80 bg-background shadow-sm sm:w-52"
+            >
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent>

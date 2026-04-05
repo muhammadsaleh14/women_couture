@@ -73,15 +73,22 @@ export function HomePage() {
         <HomeHeroCarousel />
       </div>
       <div className="relative z-10 flex min-h-0 flex-1 flex-col space-y-10 px-4 pt-10 sm:px-6 lg:px-8">
-        <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">
-            Shop by category
-          </h2>
+        <section className="space-y-4">
+          <div className="space-y-1.5">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              Browse
+            </p>
+            <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+              Shop by category
+            </h2>
+          </div>
           <CategoryFilterBar activeId={null} />
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Products</h2>
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            Products
+          </h2>
           {isLoading && (
             <p className="text-sm text-muted-foreground">Loading products…</p>
           )}
