@@ -52,6 +52,12 @@ const AdminHomeHeroPage = lazy(() =>
   })),
 );
 
+const AdminHomeHeroSlideFormPage = lazy(() =>
+  import("@/pages/admin/home-hero/AdminHomeHeroSlideFormPage").then((m) => ({
+    default: m.AdminHomeHeroSlideFormPage,
+  })),
+);
+
 const AdminVariantStockMovesPage = lazy(() =>
   import("@/pages/admin/stock/AdminVariantStockMovesPage").then((m) => ({
     default: m.AdminVariantStockMovesPage,
@@ -106,6 +112,11 @@ export const router = createBrowserRouter([
             element: <AdminVariantStockMovesPage />,
           },
           { path: "home-hero", element: <AdminHomeHeroPage /> },
+          { path: "home-hero/new", element: <AdminHomeHeroSlideFormPage /> },
+          {
+            path: "home-hero/:slideId/edit",
+            element: <AdminHomeHeroSlideFormPage />,
+          },
           { path: "products", element: <AdminProductsPage /> },
           { path: "products/new", element: <AdminProductFormPage /> },
           {

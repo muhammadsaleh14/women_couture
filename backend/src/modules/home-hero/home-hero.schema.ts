@@ -33,6 +33,7 @@ export const HomeHeroSlideRecordSchema = openAPIRegistry.register(
     title: z.string().nullable(),
     description: z.string().nullable(),
     productVariantId: z.string().nullable(),
+    productImageId: z.string().nullable(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
   }),
@@ -46,32 +47,30 @@ const slideWriteBase = z.object({
   eyebrow: z.string().optional().nullable(),
   title: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
-  productVariantId: z.string().optional().nullable(),
+  productVariantId: z.string().min(1, "productVariantId is required"),
+  productImageId: z.string().min(1, "productImageId is required"),
 });
 
 export const CreateHomeHeroSlideBodySchema = openAPIRegistry.register(
   "CreateHomeHeroSlideBody",
-  slideWriteBase.superRefine((data, ctx) => {
-    const hasVariant =
-      data.productVariantId !== null &&
-      data.productVariantId !== undefined &&
-      data.productVariantId.trim() !== "";
-    if (!hasVariant) {
-      const t = data.title?.trim() ?? "";
-      if (t.length === 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: "title is required when productVariantId is not set",
-          path: ["title"],
-        });
-      }
-    }
-  }),
+  slideWriteBase,
 );
+
+const slideUpdateBase = z.object({
+  sortOrder: z.number().int().optional(),
+  isActive: z.boolean().optional(),
+  theme: z.enum(["LIGHT", "DARK"]).optional(),
+  usePrimaryHeading: z.boolean().optional(),
+  eyebrow: z.string().optional().nullable(),
+  title: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
+  productVariantId: z.string().optional().nullable(),
+  productImageId: z.string().optional().nullable(),
+});
 
 export const UpdateHomeHeroSlideBodySchema = openAPIRegistry.register(
   "UpdateHomeHeroSlideBody",
-  slideWriteBase.partial(),
+  slideUpdateBase,
 );
 
 export const ReorderHomeHeroSlidesBodySchema = openAPIRegistry.register(

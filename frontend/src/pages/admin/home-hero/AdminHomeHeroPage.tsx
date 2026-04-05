@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/core/components/ui/button";
@@ -11,6 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/core/components/ui/table";
+import { ROUTES } from "@/core/routes";
 import {
   getGetHomeHeroSlidesManageQueryKey,
   getGetHomeHeroSlidesQueryKey,
@@ -19,12 +21,7 @@ import {
   useGetProducts,
   usePatchHomeHeroSlidesReorder,
   usePatchHomeHeroSlidesSlideId,
-  usePostHomeHeroSlides,
-  type CreateHomeHeroSlideBody,
-  type HomeHeroSlideRecord,
 } from "@/core/api/generated/api";
-import { HomeHeroSlideDialog } from "./HomeHeroSlideDialog";
-import type { HomeHeroSlideFormValues } from "./homeHeroSlideFormSchema";
 
 export function AdminHomeHeroPage() {
   const queryClient = useQueryClient();
@@ -32,16 +29,14 @@ export function AdminHomeHeroPage() {
   const { data } = useGetProducts();
   const products = data?.items ?? [];
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<HomeHeroSlideRecord | null>(null);
-
-  const variantOptions = useMemo(() => {
-    return products.flatMap((p) =>
-      (p.variants ?? []).map((v) => ({
-        id: v.id,
-        label: v.sku ? `${p.name} · ${v.sku}` : p.name,
-      })),
-    );
+  const variantLabelById = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const p of products) {
+      for (const v of p.variants ?? []) {
+        m.set(v.id, v.sku ? `${p.name} · ${v.sku}` : p.name);
+      }
+    }
+    return m;
   }, [products]);
 
   const invalidate = () => {
@@ -51,21 +46,8 @@ export function AdminHomeHeroPage() {
     queryClient.invalidateQueries({ queryKey: getGetHomeHeroSlidesQueryKey() });
   };
 
-  const postMutation = usePostHomeHeroSlides({
-    mutation: {
-      onSuccess: () => {
-        invalidate();
-        setDialogOpen(false);
-      },
-    },
-  });
   const patchMutation = usePatchHomeHeroSlidesSlideId({
-    mutation: {
-      onSuccess: () => {
-        invalidate();
-        setDialogOpen(false);
-      },
-    },
+    mutation: { onSuccess: () => invalidate() },
   });
   const deleteMutation = useDeleteHomeHeroSlidesSlideId({
     mutation: { onSuccess: () => invalidate() },
@@ -73,50 +55,6 @@ export function AdminHomeHeroPage() {
   const reorderMutation = usePatchHomeHeroSlidesReorder({
     mutation: { onSuccess: () => invalidate() },
   });
-
-  const openCreate = () => {
-    setEditing(null);
-    setDialogOpen(true);
-  };
-
-  const openEdit = (s: HomeHeroSlideRecord) => {
-    setEditing(s);
-    setDialogOpen(true);
-  };
-
-  const handleSlideSave = (values: HomeHeroSlideFormValues) => {
-    const variantId = values.productVariantId.trim() || null;
-    const titleTrim = values.title.trim();
-
-    if (editing) {
-      patchMutation.mutate({
-        slideId: editing.id,
-        data: {
-          theme: values.theme,
-          usePrimaryHeading: values.usePrimaryHeading,
-          isActive: values.isActive,
-          eyebrow: values.eyebrow.trim() || null,
-          title: titleTrim || null,
-          description: values.description.trim() || null,
-          productVariantId: variantId,
-        },
-      });
-      return;
-    }
-
-    const data: CreateHomeHeroSlideBody = {
-      theme: values.theme,
-      isActive: values.isActive,
-      usePrimaryHeading: values.usePrimaryHeading,
-      eyebrow: values.eyebrow.trim() || null,
-      description: values.description.trim() || null,
-      productVariantId: variantId,
-    };
-    if (titleTrim) data.title = titleTrim;
-    if (!variantId) data.title = titleTrim;
-
-    postMutation.mutate({ data });
-  };
 
   const move = (index: number, dir: -1 | 1) => {
     const next = index + dir;
@@ -137,7 +75,6 @@ export function AdminHomeHeroPage() {
   }
 
   const busy =
-    postMutation.isPending ||
     patchMutation.isPending ||
     deleteMutation.isPending ||
     reorderMutation.isPending;
@@ -148,13 +85,16 @@ export function AdminHomeHeroPage() {
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Home hero</h1>
           <p className="text-sm text-muted-foreground">
-            Carousel on the storefront home page. Optional product variant for
-            image and link.
+            Carousel on the storefront home page. Each slide uses a specific
+            product image; the same variant can appear on multiple slides with
+            different photos.
           </p>
         </div>
-        <Button type="button" onClick={openCreate} className="gap-1.5">
-          <Plus className="size-4" />
-          Add slide
+        <Button asChild className="gap-1.5">
+          <Link to={ROUTES.admin.homeHeroNew}>
+            <Plus className="size-4" />
+            Add slide
+          </Link>
         </Button>
       </div>
 
@@ -233,20 +173,14 @@ export function AdminHomeHeroPage() {
                   </TableCell>
                   <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">
                     {s.productVariantId
-                      ? variantOptions.find((o) => o.id === s.productVariantId)
-                          ?.label ?? s.productVariantId
+                      ? (variantLabelById.get(s.productVariantId) ??
+                        s.productVariantId)
                       : "—"}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEdit(s)}
-                        disabled={busy}
-                      >
-                        Edit
+                      <Button asChild variant="outline" size="sm">
+                        <Link to={ROUTES.admin.homeHeroEdit(s.id)}>Edit</Link>
                       </Button>
                       <Button
                         type="button"
@@ -271,15 +205,6 @@ export function AdminHomeHeroPage() {
           </TableBody>
         </Table>
       </div>
-
-      <HomeHeroSlideDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        editing={editing}
-        variantOptions={variantOptions}
-        isSaving={postMutation.isPending || patchMutation.isPending}
-        onSave={handleSlideSave}
-      />
     </div>
   );
 }

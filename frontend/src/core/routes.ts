@@ -25,5 +25,8 @@ export const ROUTES = {
     variantStockMoves: (variantId: string) =>
       `/admin/variants/${encodeURIComponent(variantId)}/stock-moves` as const,
     homeHero: "/admin/home-hero",
+    homeHeroNew: "/admin/home-hero/new",
+    homeHeroEdit: (slideId: string) =>
+      `/admin/home-hero/${encodeURIComponent(slideId)}/edit` as const,
   },
 } as const;

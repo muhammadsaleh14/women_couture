@@ -79,6 +79,8 @@ export interface HomeHeroSlideRecord {
   description: string | null;
   /** @nullable */
   productVariantId: string | null;
+  /** @nullable */
+  productImageId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -102,8 +104,10 @@ export interface CreateHomeHeroSlideBody {
   title?: string | null;
   /** @nullable */
   description?: string | null;
-  /** @nullable */
-  productVariantId?: string | null;
+  /** @minLength 1 */
+  productVariantId: string;
+  /** @minLength 1 */
+  productImageId: string;
 }
 
 export type UpdateHomeHeroSlideBodyTheme = typeof UpdateHomeHeroSlideBodyTheme[keyof typeof UpdateHomeHeroSlideBodyTheme];
@@ -127,6 +131,8 @@ export interface UpdateHomeHeroSlideBody {
   description?: string | null;
   /** @nullable */
   productVariantId?: string | null;
+  /** @nullable */
+  productImageId?: string | null;
 }
 
 export interface ReorderHomeHeroSlidesBody {

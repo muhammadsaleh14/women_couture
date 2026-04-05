@@ -168,6 +168,9 @@ model HomeHeroSlide {
   description         String?          @db.Text
   productVariantId    String?
   productVariant      ProductVariant?  @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+  /** Which variant image this slide shows (same variant may appear on multiple slides with different images). */
+  productImageId      String?
+  productImage        ProductImage?    @relation(fields: [productImageId], references: [id], onDelete: Restrict)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -175,14 +178,16 @@ model HomeHeroSlide {
 
 // 4. Variant Images
 model ProductImage {
-  id               String         @id @default(cuid())
+  id               String          @id @default(cuid())
   productVariantId String
-  variant          ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
-  
-  url              String         // Local server path, e.g., /uploads/images/abc.jpg
-  order            Int            @default(0) // To control which image is main (order = 0)
-  
-  createdAt        DateTime       @default(now())
+  variant          ProductVariant  @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+
+  url              String // Local server path, e.g., /uploads/images/abc.jpg
+  order            Int    @default(0) // To control which image is main (order = 0)
+
+  heroSlides       HomeHeroSlide[]
+
+  createdAt        DateTime @default(now())
 }
 
 // 5. Stock Moves for History & Accountability

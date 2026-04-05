@@ -8,18 +8,22 @@ const variantInclude = {
   images: { orderBy: { order: "asc" as const } },
 } satisfies Prisma.ProductVariantInclude;
 
-type SlideWithVariant = Prisma.HomeHeroSlideGetPayload<{
+type SlideWithRelations = Prisma.HomeHeroSlideGetPayload<{
   include: {
     productVariant: { include: typeof variantInclude };
+    productImage: true;
   };
 }>;
 
-function resolveSlide(slide: SlideWithVariant) {
+function resolveSlide(slide: SlideWithRelations) {
   const v = slide.productVariant;
   const product = v?.product;
   const images = v?.images ?? [];
-  const firstImg = images[0];
-  const imageUrl = firstImg ? toImageUrl(firstImg.url) : null;
+  const chosenImg =
+    slide.productImage ??
+    (images.length > 0 ? images[0] : undefined) ??
+    null;
+  const imageUrl = chosenImg ? toImageUrl(chosenImg.url) : null;
 
   const title = slide.title?.trim() || product?.name || "Untitled";
   const eyebrow = slide.eyebrow?.trim() || "Featured";
@@ -48,6 +52,7 @@ function toSlideRecord(s: {
   title: string | null;
   description: string | null;
   productVariantId: string | null;
+  productImageId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }) {
@@ -61,6 +66,7 @@ function toSlideRecord(s: {
     title: s.title,
     description: s.description,
     productVariantId: s.productVariantId,
+    productImageId: s.productImageId,
     createdAt: s.createdAt.toISOString(),
     updatedAt: s.updatedAt.toISOString(),
   };
@@ -69,6 +75,15 @@ function toSlideRecord(s: {
 async function assertVariantExists(id: string) {
   const v = await prisma.productVariant.findUnique({ where: { id } });
   if (!v) throw new HttpError(400, "Product variant not found");
+}
+
+async function assertImageBelongsToVariant(imageId: string, variantId: string) {
+  const img = await prisma.productImage.findFirst({
+    where: { id: imageId, productVariantId: variantId },
+  });
+  if (!img) {
+    throw new HttpError(400, "Image does not belong to the selected variant");
+  }
 }
 
 async function clearOtherPrimaryHeadings(exceptId?: string) {
@@ -84,9 +99,12 @@ export async function listResolvedPublic() {
     orderBy: { sortOrder: "asc" },
     include: {
       productVariant: { include: variantInclude },
+      productImage: true,
     },
   });
-  return slides.map(resolveSlide);
+  return slides
+    .map(resolveSlide)
+    .filter((s) => s.imageUrl != null && s.imageUrl.length > 0);
 }
 
 export async function listAllSlideRecords() {
@@ -104,19 +122,16 @@ export async function createSlide(data: {
   eyebrow?: string | null;
   title?: string | null;
   description?: string | null;
-  productVariantId?: string | null;
+  productVariantId: string;
+  productImageId: string;
 }) {
-  const variantId = data.productVariantId?.trim() || null;
-  if (!variantId) {
-    if (!data.title?.trim()) {
-      throw new HttpError(
-        400,
-        "title is required when productVariantId is not set",
-      );
-    }
-  } else {
-    await assertVariantExists(variantId);
+  const variantId = data.productVariantId.trim();
+  const imageId = data.productImageId.trim();
+  if (!variantId || !imageId) {
+    throw new HttpError(400, "productVariantId and productImageId are required");
   }
+  await assertVariantExists(variantId);
+  await assertImageBelongsToVariant(imageId, variantId);
 
   if (data.usePrimaryHeading) {
     await clearOtherPrimaryHeadings();
@@ -137,6 +152,7 @@ export async function createSlide(data: {
       title: data.title?.trim() || null,
       description: data.description?.trim() || null,
       productVariantId: variantId,
+      productImageId: imageId,
     },
   });
 
@@ -154,28 +170,38 @@ export async function updateSlide(
     title: string | null;
     description: string | null;
     productVariantId: string | null;
+    productImageId: string | null;
   }>,
 ) {
   const existing = await prisma.homeHeroSlide.findUnique({ where: { id } });
   if (!existing) throw new HttpError(404, "Slide not found");
 
+  const variantTouched = data.productVariantId !== undefined;
+  const imageTouched = data.productImageId !== undefined;
+
   const nextVariantId =
     data.productVariantId !== undefined
-      ? data.productVariantId?.trim() || null
+      ? data.productVariantId === null
+        ? null
+        : data.productVariantId.trim() || null
       : existing.productVariantId;
 
-  const nextTitle =
-    data.title !== undefined ? data.title?.trim() || null : existing.title;
+  const nextImageId =
+    data.productImageId !== undefined
+      ? data.productImageId === null
+        ? null
+        : data.productImageId.trim() || null
+      : existing.productImageId;
 
-  if (!nextVariantId && !nextTitle) {
-    throw new HttpError(
-      400,
-      "title is required when productVariantId is not set",
-    );
-  }
-
-  if (data.productVariantId !== undefined && data.productVariantId?.trim()) {
-    await assertVariantExists(data.productVariantId.trim());
+  if (variantTouched || imageTouched) {
+    if (!nextVariantId || !nextImageId) {
+      throw new HttpError(
+        400,
+        "productVariantId and productImageId are required when updating variant or image",
+      );
+    }
+    await assertVariantExists(nextVariantId);
+    await assertImageBelongsToVariant(nextImageId, nextVariantId);
   }
 
   if (data.usePrimaryHeading === true) {
@@ -203,6 +229,12 @@ export async function updateSlide(
           data.productVariantId === null
             ? null
             : data.productVariantId.trim() || null,
+      }),
+      ...(data.productImageId !== undefined && {
+        productImageId:
+          data.productImageId === null
+            ? null
+            : data.productImageId.trim() || null,
       }),
     },
   });
