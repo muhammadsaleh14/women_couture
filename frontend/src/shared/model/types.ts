@@ -4,6 +4,7 @@ export interface ProductVariant {
   id: string;
   sku: string | null;
   stock: number;
+  /** Real URL or internal placeholder sentinel (see `productImagePlaceholderUrl`). */
   imageUrl: string;
 }
 

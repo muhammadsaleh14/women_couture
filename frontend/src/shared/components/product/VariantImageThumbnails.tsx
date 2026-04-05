@@ -1,4 +1,5 @@
 import { cn } from "@/core/lib/utils";
+import { ProductImageWithPlaceholder } from "./ProductImageWithPlaceholder";
 
 export type VariantThumbnailItem = {
   id: string;
@@ -42,7 +43,7 @@ export function VariantImageThumbnails({
             aria-label={`Select ${label}`}
             aria-pressed={selected}
           >
-            <img
+            <ProductImageWithPlaceholder
               src={v.imageUrl}
               alt=""
               className="size-full object-cover"

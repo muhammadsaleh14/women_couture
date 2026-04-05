@@ -20,6 +20,7 @@ import {
   type ProductWithVariants,
 } from "@/core/api/generated/api";
 import { ProductDetailPreviewDialog } from "./ProductDetailPreviewDialog";
+import { ProductImageWithPlaceholder } from "@/shared/components/product/ProductImageWithPlaceholder";
 
 const PAGE_SIZE = 20;
 
@@ -104,15 +105,13 @@ export function AdminProductsPage() {
               const totalStock =
                 p.variants?.reduce((s, v) => s + (v.stockQty ?? 0), 0) ?? 0;
               const firstVariant = p.variants?.[0];
-              const thumb =
-                firstVariant?.images?.[0]?.url ||
-                "https://placehold.co/100x100?text=No+Image";
+              const thumb = firstVariant?.images?.[0]?.url ?? "";
               const price = firstVariant?.salePrice ?? 0;
               const subCategoryType = p.type;
               return (
                 <TableRow key={p.id}>
                   <TableCell>
-                    <img
+                    <ProductImageWithPlaceholder
                       src={thumb}
                       alt=""
                       className="size-12 rounded-md object-cover"

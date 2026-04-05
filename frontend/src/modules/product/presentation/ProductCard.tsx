@@ -10,6 +10,7 @@ import { cn } from "@/core/lib/utils";
 import type { Product } from "@/shared/model/types";
 import { ROUTES } from "@/core/routes";
 import { PriceBlock } from "@/shared/components/product/PriceBlock";
+import { ProductImageWithPlaceholder } from "@/shared/components/product/ProductImageWithPlaceholder";
 
 type Props = {
   product: Product;
@@ -25,7 +26,7 @@ export function ProductCard({ product, className }: Props) {
       <Card className="overflow-hidden border-border/80 bg-card text-card-foreground shadow-sm transition hover:shadow-md">
         <CardHeader className="relative p-0">
           <div className="aspect-[4/5] w-full overflow-hidden bg-muted">
-            <img
+            <ProductImageWithPlaceholder
               src={cover}
               alt=""
               className="size-full object-cover"
@@ -58,7 +59,7 @@ export function ProductCard({ product, className }: Props) {
               className="size-8 shrink-0 overflow-hidden rounded-md border border-border"
               title={v.sku ?? "Variant"}
             >
-              <img
+              <ProductImageWithPlaceholder
                 src={v.imageUrl}
                 alt=""
                 className="size-full object-cover"

@@ -16,6 +16,7 @@ import { useCartStore } from "@/modules/cart/application/cart-store";
 import { VariantImageThumbnails } from "@/shared/components/product/VariantImageThumbnails";
 import { PriceBlock } from "@/shared/components/product/PriceBlock";
 import { StockBadge } from "@/shared/components/product/StockBadge";
+import { ProductImageWithPlaceholder } from "@/shared/components/product/ProductImageWithPlaceholder";
 
 export function ProductDetailPage() {
   const { productId = "" } = useParams();
@@ -131,10 +132,14 @@ function ProductDetailContent({
           <div className="w-full shrink-0 lg:max-w-xs xl:max-w-sm">
             <Carousel className="w-full max-w-md mx-auto lg:max-w-xs lg:mx-0 xl:max-w-sm">
               <CarouselContent>
-                {carouselImages.map((src) => (
-                  <CarouselItem key={src}>
+                {carouselImages.map((src, i) => (
+                  <CarouselItem key={`${i}-${src}`}>
                     <div className="aspect-3/4 overflow-hidden rounded-xl bg-muted">
-                      <img src={src} alt="" className="size-full object-cover" />
+                      <ProductImageWithPlaceholder
+                        src={src}
+                        alt=""
+                        className="size-full object-cover"
+                      />
                     </div>
                   </CarouselItem>
                 ))}

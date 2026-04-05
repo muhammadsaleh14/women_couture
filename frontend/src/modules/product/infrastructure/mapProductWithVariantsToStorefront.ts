@@ -4,9 +4,7 @@ import type {
   ProductWithVariants,
 } from "@/core/api/generated/api";
 import type { CategoryId, Product } from "@/shared/model/types";
-
-const PLACEHOLDER_IMG =
-  "https://placehold.co/800x1000/f5f5f4/78716c?text=Women+Couture";
+import { PRODUCT_IMAGE_PLACEHOLDER_URL } from "@/shared/components/product/productImagePlaceholderUrl";
 
 function apiTypeToCategoryId(type: ProductBaseType): CategoryId {
   switch (type) {
@@ -86,7 +84,8 @@ export function mapProductWithVariantsToStorefront(
   const mappedVariants =
     variants.length > 0
       ? variants.map((v) => {
-          const imageUrl = firstVariantImageUrl(v) || PLACEHOLDER_IMG;
+          const imageUrl =
+            firstVariantImageUrl(v) || PRODUCT_IMAGE_PLACEHOLDER_URL;
           return {
             id: v.id,
             sku: v.sku,
@@ -99,11 +98,12 @@ export function mapProductWithVariantsToStorefront(
             id: `${product.id}-placeholder`,
             sku: null,
             stock: 0,
-            imageUrl: PLACEHOLDER_IMG,
+            imageUrl: PRODUCT_IMAGE_PLACEHOLDER_URL,
           },
         ];
 
-  const cover = mappedVariants[0]?.imageUrl ?? PLACEHOLDER_IMG;
+  const cover =
+    mappedVariants[0]?.imageUrl ?? PRODUCT_IMAGE_PLACEHOLDER_URL;
   const images = gallery.length > 0 ? gallery : [cover];
   const { regularPrice, salePrice } = variantPrices(variants);
 

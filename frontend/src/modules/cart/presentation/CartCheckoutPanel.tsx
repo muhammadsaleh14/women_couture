@@ -18,6 +18,7 @@ import { usePostOrders } from "@/core/api/generated/api";
 import { useCartStore } from "@/modules/cart/application/cart-store";
 import type { PaymentMethod } from "@/shared/model/types";
 import { PriceBlock } from "@/shared/components/product/PriceBlock";
+import { ProductImageWithPlaceholder } from "@/shared/components/product/ProductImageWithPlaceholder";
 
 type Props = {
   /** `sheet`: opened from header/drawer; `page`: full /cart route */
@@ -107,7 +108,7 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
               <li key={line.lineId}>
                 <Card>
                   <CardContent className="flex gap-3 p-3">
-                    <img
+                    <ProductImageWithPlaceholder
                       src={line.imageUrl}
                       alt=""
                       className="size-20 rounded-md object-cover"
