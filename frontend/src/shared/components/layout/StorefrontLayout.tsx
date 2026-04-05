@@ -69,7 +69,7 @@ export function StorefrontLayout() {
         </div>
         <Separator />
       </header>
-      <main className="flex min-h-0 w-full flex-1 flex-col py-6">
+      <main className="flex min-h-0 w-full flex-1 flex-col">
         {/*
           Full-width main so page backgrounds (e.g. home mesh) match the shell.
           Individual routes add horizontal padding where needed.
