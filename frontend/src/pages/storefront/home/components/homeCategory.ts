@@ -17,22 +17,23 @@ export function isCategoryId(v: string): v is CategoryId {
   return v === "three-piece" || v === "two-piece" || v === "separates";
 }
 
+function catalogSortPrice(p: Product): number {
+  const nums = p.variants
+    .map((v) => v.salePrice)
+    .filter((n) => n > 0 && Number.isFinite(n));
+  return nums.length > 0 ? Math.min(...nums) : p.regularPrice;
+}
+
 export function sortProducts(list: Product[], sort: string): Product[] {
   const next = [...list];
   if (sort === "new") {
     next.sort((a, b) => Number(b.isNew) - Number(a.isNew));
   }
   if (sort === "price-asc") {
-    next.sort(
-      (a, b) =>
-        (a.salePrice ?? a.regularPrice) - (b.salePrice ?? b.regularPrice),
-    );
+    next.sort((a, b) => catalogSortPrice(a) - catalogSortPrice(b));
   }
   if (sort === "price-desc") {
-    next.sort(
-      (a, b) =>
-        (b.salePrice ?? b.regularPrice) - (a.salePrice ?? a.regularPrice),
-    );
+    next.sort((a, b) => catalogSortPrice(b) - catalogSortPrice(a));
   }
   return next;
 }

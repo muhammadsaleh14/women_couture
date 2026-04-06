@@ -4,6 +4,8 @@ export interface ProductVariant {
   id: string;
   sku: string | null;
   stock: number;
+  /** Customer-facing unit price (from variant `salePrice` in the API). */
+  salePrice: number;
   /** Real URL or internal placeholder sentinel (see `productImagePlaceholderUrl`). */
   imageUrl: string;
 }
@@ -15,8 +17,8 @@ export interface Product {
   mainCategory: "Unstitched";
   subCategory: "3 PC" | "2 PC" | "Separates";
   categoryId: CategoryId;
+  /** Primary display price (first variant after sort); use variant `salePrice` when a variant is selected. */
   regularPrice: number;
-  salePrice?: number;
   isNew: boolean;
   variants: ProductVariant[];
   /** Gallery images (first variant often used as hero) */

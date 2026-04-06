@@ -122,10 +122,7 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
                           SKU: {line.sku}
                         </p>
                       ) : null}
-                      <PriceBlock
-                        regularPrice={line.unitPrice}
-                        className="text-sm"
-                      />
+                      <PriceBlock price={line.unitPrice} className="text-sm" />
                       <div className="flex flex-wrap items-center gap-2 pt-1">
                         <Label
                           htmlFor={`qty-${mode}-${line.lineId}`}

@@ -106,7 +106,8 @@ function ProductDetailContent({
   }
 
   const inStock = variant.stock > 0;
-  const unitPrice = product.salePrice ?? product.regularPrice;
+  const unitPrice =
+    variant.salePrice > 0 ? variant.salePrice : product.regularPrice;
 
   const handleAddToCart = () => {
     addLine({
@@ -154,10 +155,7 @@ function ProductDetailContent({
               <h1 className="text-xl font-semibold leading-snug text-foreground sm:text-2xl">
                 {product.name}
               </h1>
-              <PriceBlock
-                regularPrice={product.regularPrice}
-                salePrice={product.salePrice}
-              />
+              <PriceBlock price={unitPrice} />
               <StockBadge inStock={inStock} />
             </div>
 

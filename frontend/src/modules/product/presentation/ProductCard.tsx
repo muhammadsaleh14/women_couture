@@ -53,8 +53,11 @@ export function ProductCard({ product, className }: Props) {
             {product.name}
           </p>
           <PriceBlock
-            regularPrice={product.regularPrice}
-            salePrice={product.salePrice}
+            price={
+              selectedVariant?.salePrice && selectedVariant.salePrice > 0
+                ? selectedVariant.salePrice
+                : product.regularPrice
+            }
             className="text-base"
           />
           {variants.length > 0 ? (

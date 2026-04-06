@@ -54,18 +54,9 @@ function collectGalleryImages(variants: ApiProductVariant[]): string[] {
   return out;
 }
 
-function variantPrices(variants: ApiProductVariant[]): {
-  regularPrice: number;
-  salePrice?: number;
-} {
-  const nums = variants
-    .map((v) => Number(v.salePrice ?? 0))
-    .filter((n) => n > 0 && Number.isFinite(n));
-  if (nums.length === 0) return { regularPrice: 0 };
-  const low = Math.min(...nums);
-  const high = Math.max(...nums);
-  if (high > low) return { regularPrice: high, salePrice: low };
-  return { regularPrice: low };
+function variantSalePrice(v: ApiProductVariant): number {
+  const n = Number(v.salePrice ?? 0);
+  return Number.isFinite(n) && n > 0 ? n : 0;
 }
 
 function isRecentlyCreated(createdAt: string): boolean {
@@ -90,6 +81,7 @@ export function mapProductWithVariantsToStorefront(
             id: v.id,
             sku: v.sku,
             stock: v.stockQty,
+            salePrice: variantSalePrice(v),
             imageUrl,
           };
         })
@@ -98,6 +90,7 @@ export function mapProductWithVariantsToStorefront(
             id: `${product.id}-placeholder`,
             sku: null,
             stock: 0,
+            salePrice: 0,
             imageUrl: PRODUCT_IMAGE_PLACEHOLDER_URL,
           },
         ];
@@ -105,7 +98,7 @@ export function mapProductWithVariantsToStorefront(
   const cover =
     mappedVariants[0]?.imageUrl ?? PRODUCT_IMAGE_PLACEHOLDER_URL;
   const images = gallery.length > 0 ? gallery : [cover];
-  const { regularPrice, salePrice } = variantPrices(variants);
+  const regularPrice = mappedVariants[0]?.salePrice ?? 0;
 
   return {
     id: product.id,
@@ -115,7 +108,6 @@ export function mapProductWithVariantsToStorefront(
     subCategory: apiTypeToSubCategory(product.type),
     categoryId: apiTypeToCategoryId(product.type),
     regularPrice,
-    salePrice,
     isNew: isRecentlyCreated(product.createdAt),
     variants: mappedVariants,
     images,
