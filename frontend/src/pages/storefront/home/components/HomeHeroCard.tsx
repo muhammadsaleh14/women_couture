@@ -49,7 +49,7 @@ export function HomeHeroCard({
       <div className="relative z-3 flex h-full flex-col justify-end p-6 sm:p-10">
         <p
           className={cn(
-            "text-xs font-medium uppercase tracking-[0.2em]",
+            "text-[0.65rem] font-medium uppercase tracking-[0.28em]",
             hasImage || !isLight
               ? "text-stone-200"
               : "text-muted-foreground",
@@ -59,7 +59,7 @@ export function HomeHeroCard({
         </p>
         <Title
           className={cn(
-            "mt-1 max-w-md text-2xl font-semibold sm:text-3xl",
+            "font-display mt-2 max-w-lg text-3xl font-medium leading-tight sm:text-4xl lg:text-5xl",
             hasImage || !isLight
               ? "text-white"
               : "tracking-tight text-foreground",
@@ -100,7 +100,7 @@ export function HomeHeroCard({
     return (
       <Link
         to={href}
-        className="block rounded-xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="block rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         <Card className={cn(cardClass, "p-0")}>{mediaShell}</Card>
       </Link>

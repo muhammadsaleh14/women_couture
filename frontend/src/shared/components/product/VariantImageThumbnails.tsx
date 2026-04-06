@@ -34,10 +34,10 @@ export function VariantImageThumbnails({
             title={label}
             onClick={() => onSelect(v.id)}
             className={cn(
-              "relative size-14 shrink-0 overflow-hidden rounded-lg border-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+              "relative size-14 shrink-0 overflow-hidden rounded-sm border transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
               selected
-                ? "border-primary ring-2 ring-primary/30"
-                : "border-border",
+                ? "border-primary ring-1 ring-primary/35"
+                : "border-border/70",
               v.disabled && "cursor-not-allowed opacity-40",
             )}
             aria-label={`Select ${label}`}

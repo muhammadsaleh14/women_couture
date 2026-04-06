@@ -70,8 +70,11 @@ export function HomePage() {
 
   if (invalidCategory) {
     return (
-      <div className="flex flex-1 flex-col space-y-4 px-4 text-center sm:px-6 lg:px-8">
-        <p className="text-sm text-muted-foreground">Category not found.</p>
+      <div className="mx-auto flex max-w-lg flex-1 flex-col items-center space-y-6 px-4 py-20 text-center sm:px-6 lg:px-10">
+        <p className="storefront-eyebrow text-destructive">Browse</p>
+        <p className="font-display text-2xl font-medium text-foreground">
+          Category not found
+        </p>
         <ButtonLink />
       </div>
     );
@@ -86,37 +89,37 @@ export function HomePage() {
         </div>
       </div>
 
-      <div className="relative z-10 flex min-h-0 flex-1 flex-col space-y-10 px-4 pb-10 pt-10 sm:px-6 lg:px-8">
-        <section className="space-y-4">
-          <div className="space-y-1.5">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Browse
-            </p>
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-              Shop by category
-            </h2>
+      <div className="relative z-10 mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col space-y-14 px-4 pb-16 pt-12 sm:px-6 lg:px-10">
+        <section className="space-y-6">
+          <div className="space-y-4">
+            <p className="storefront-eyebrow">Browse</p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <h2 className="storefront-section-title max-w-xl">
+                Shop by category
+              </h2>
+              <span className="storefront-divider hidden sm:block" aria-hidden />
+            </div>
           </div>
           <CategoryFilterBar activeId={categoryFilter} />
         </section>
 
-        <section className="space-y-4">
+        <section className="space-y-8">
           <div
-            className="flex flex-col gap-5 border-b border-border/70 pb-8 sm:flex-row sm:items-end sm:justify-between"
+            className="flex flex-col gap-6 border-b border-border/60 pb-10 sm:flex-row sm:items-end sm:justify-between"
           >
-            <div className="min-w-0 space-y-1">
-              <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-                Products
-              </h2>
-              <p className="text-sm text-muted-foreground">
+            <div className="min-w-0 space-y-2">
+              <p className="storefront-eyebrow">Collection</p>
+              <h2 className="storefront-section-title">The edit</h2>
+              <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
                 {categoryFilter
                   ? `${CATEGORY_LABEL[categoryFilter]} · ${countLabel}`
                   : countLabel}
               </p>
             </div>
-            <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-48 sm:items-end">
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-52 sm:items-end">
               <Label
                 htmlFor="home-sort"
-                className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground"
+                className="storefront-eyebrow flex items-center gap-2"
               >
                 <SlidersHorizontal className="size-3.5" aria-hidden />
                 Sort by
@@ -124,7 +127,7 @@ export function HomePage() {
               <Select value={sort} onValueChange={setSort}>
                 <SelectTrigger
                   id="home-sort"
-                  className="h-10 w-full rounded-xl border-border/80 bg-background shadow-sm sm:w-52"
+                  className="h-11 w-full rounded-md border-border bg-card text-sm shadow-[var(--storefront-card-shadow)] sm:w-52"
                 >
                   <SelectValue placeholder="Sort" />
                 </SelectTrigger>
@@ -153,7 +156,7 @@ export function HomePage() {
             </p>
           )}
           {!isLoading && !isError && displayedProducts.length > 0 && (
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <ul className="grid grid-cols-2 gap-4 sm:gap-5 sm:grid-cols-3 lg:grid-cols-4">
               {displayedProducts.map((p) => (
                 <li key={p.id} className="min-w-0">
                   <ProductCard product={p} />

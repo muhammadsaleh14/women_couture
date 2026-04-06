@@ -17,10 +17,12 @@ export function StorefrontCartSheet() {
     <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetContent
         side="right"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-md"
+        className="storefront-surface flex w-full flex-col gap-0 border-l border-border/80 p-0 sm:max-w-md"
       >
-        <SheetHeader className="border-b border-border px-4 py-4 text-left">
-          <SheetTitle>Cart & checkout</SheetTitle>
+        <SheetHeader className="border-b border-border/70 bg-card/30 px-5 py-5 text-left">
+          <SheetTitle className="font-display text-xl font-medium tracking-tight">
+            Cart & checkout
+          </SheetTitle>
           <SheetDescription className="sr-only">
             Review items and shipping. Close to return to the page you were on.
           </SheetDescription>

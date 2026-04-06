@@ -83,19 +83,18 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
         Continue shopping
       </Button>
     ) : (
-      <Link to={ROUTES.home} className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+      <Link
+        to={ROUTES.home}
+        className="text-xs font-medium uppercase tracking-widest text-primary underline-offset-4 hover:underline"
+      >
         Continue shopping
       </Link>
     );
 
   return (
     <div className="space-y-6">
-      {mode === "page" ? (
-        <h1 className="text-xl font-semibold text-foreground">Cart & Checkout</h1>
-      ) : null}
-
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <h2 className="storefront-eyebrow">
           Items
         </h2>
         {lines.length === 0 ? (
@@ -106,15 +105,15 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
           <ul className="space-y-3">
             {lines.map((line) => (
               <li key={line.lineId}>
-                <Card>
-                  <CardContent className="flex gap-3 p-3">
+                <Card className="overflow-hidden rounded-sm border-border/60 shadow-[var(--storefront-card-shadow)]">
+                  <CardContent className="flex gap-3 p-3 sm:p-4">
                     <ProductImageWithPlaceholder
                       src={line.imageUrl}
                       alt=""
-                      className="size-20 rounded-md object-cover"
+                      className="size-20 rounded-sm object-cover"
                     />
                     <div className="min-w-0 flex-1 space-y-1">
-                      <p className="font-medium leading-snug text-foreground">
+                      <p className="font-display text-base font-medium leading-snug text-foreground">
                         {line.title}
                       </p>
                       {line.sku ? (
@@ -166,9 +165,7 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
       <Separator />
 
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Shipping
-        </h2>
+        <h2 className="storefront-eyebrow">Shipping</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor={`ship-name-${mode}`}>Full name</Label>
@@ -215,9 +212,11 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
         </div>
       </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Payment</CardTitle>
+      <Card className="rounded-sm border-border/60 shadow-[var(--storefront-card-shadow)]">
+        <CardHeader className="pb-2">
+          <CardTitle className="font-display text-lg font-medium tracking-tight">
+            Payment
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <RadioGroup
@@ -225,7 +224,7 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
             onValueChange={(v: string) => setPayment(v as PaymentMethod)}
             className="grid gap-2"
           >
-            <div className="flex items-start gap-3 rounded-lg border border-border p-3">
+            <div className="flex items-start gap-3 rounded-sm border border-border/70 p-3">
               <RadioGroupItem value="cod" id={`pay-cod-${mode}`} className="mt-0.5" />
               <div className="space-y-1">
                 <Label htmlFor={`pay-cod-${mode}`} className="font-medium">
@@ -236,7 +235,7 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-3 rounded-lg border border-border p-3">
+            <div className="flex items-start gap-3 rounded-sm border border-border/70 p-3">
               <RadioGroupItem
                 value="online"
                 id={`pay-online-${mode}`}
@@ -255,23 +254,25 @@ export function CartCheckoutPanel({ mode, onDismiss }: Props) {
         </CardContent>
       </Card>
 
-      <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
+      <div className="flex flex-col gap-4 rounded-sm border border-border/60 bg-card/50 p-5 shadow-[var(--storefront-card-shadow)]">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Subtotal</span>
-          <span className="font-semibold tabular-nums text-foreground">
+          <span className="font-medium tabular-nums text-foreground">
             Rs. {subtotal.toLocaleString("en-PK")}
           </span>
         </div>
-        <Separator />
+        <Separator className="bg-border/60" />
         <div className="flex items-center justify-between">
-          <span className="font-medium text-foreground">Total</span>
-          <span className="text-lg font-semibold tabular-nums text-foreground">
+          <span className="font-display text-lg font-medium text-foreground">
+            Total
+          </span>
+          <span className="font-display text-xl font-medium tabular-nums text-foreground">
             Rs. {subtotal.toLocaleString("en-PK")}
           </span>
         </div>
         <Button
           size="lg"
-          className="w-full"
+          className="w-full rounded-sm text-xs font-medium uppercase tracking-[0.2em]"
           onClick={placeOrder}
           disabled={placeOrderMutation.isPending}
         >

@@ -31,28 +31,39 @@ export function ProductCard({ product, className }: Props) {
   const variants = product.variants.slice(0, 5);
 
   return (
-    <Link to={ROUTES.product(product.id)} className={cn("block", className)}>
-      <Card className="overflow-hidden border-border/80 bg-card text-card-foreground shadow-sm transition hover:shadow-md">
+    <Link to={ROUTES.product(product.id)} className={cn("group block", className)}>
+      <Card className="overflow-hidden border border-border/50 bg-card text-card-foreground shadow-[var(--storefront-card-shadow)] transition-[box-shadow,transform] duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[var(--storefront-card-shadow-hover)]">
         <CardHeader className="relative p-0">
-          <div className="aspect-[4/5] w-full overflow-hidden bg-muted">
+          <div className="aspect-4/5 w-full overflow-hidden bg-muted">
             <ProductImageWithPlaceholder
               src={cover}
               alt=""
-              className="size-full object-cover"
+              className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
               loading="lazy"
             />
           </div>
-          <div className="absolute left-2 top-2 flex flex-wrap gap-1">
+          <div className="absolute inset-x-0 bottom-0 z-[1] h-20 bg-linear-to-t from-background/90 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" aria-hidden />
+          <div className="absolute left-2.5 top-2.5 flex flex-wrap gap-1.5">
             {product.isNew && (
-              <Badge className="bg-primary text-primary-foreground">
-                New Arrival
+              <Badge
+                variant="secondary"
+                className="border border-primary/20 bg-background/85 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.2em] text-primary shadow-sm backdrop-blur-sm"
+              >
+                New
               </Badge>
             )}
-            {!anyStock && <Badge variant="destructive">Out of Stock</Badge>}
+            {!anyStock && (
+              <Badge
+                variant="secondary"
+                className="border border-border bg-background/90 text-[10px] font-medium uppercase tracking-wider text-muted-foreground backdrop-blur-sm"
+              >
+                Sold out
+              </Badge>
+            )}
           </div>
         </CardHeader>
-        <CardContent className="flex flex-col gap-2 p-3 pt-3">
-          <p className="line-clamp-2 text-sm font-medium leading-snug text-foreground">
+        <CardContent className="flex flex-col gap-2.5 px-4 pb-4 pt-4">
+          <p className="line-clamp-2 font-display text-lg font-medium leading-snug tracking-tight text-foreground sm:text-xl">
             {product.name}
           </p>
           <PriceBlock
@@ -62,6 +73,7 @@ export function ProductCard({ product, className }: Props) {
                 : product.regularPrice
             }
             className="text-base"
+            variant="boutique"
           />
           {variants.length > 0 ? (
             <div className="flex flex-row flex-wrap items-center gap-1.5">
@@ -81,10 +93,10 @@ export function ProductCard({ product, className }: Props) {
                       setSelectedVariantId(v.id);
                     }}
                     className={cn(
-                      "relative size-10 shrink-0 overflow-hidden rounded-md border-2 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                      "relative size-10 shrink-0 overflow-hidden rounded-sm border transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                       selected
-                        ? "border-primary ring-2 ring-primary/30"
-                        : "border-border hover:border-muted-foreground/40",
+                        ? "border-primary ring-1 ring-primary/40"
+                        : "border-border/80 hover:border-primary/35",
                     )}
                   >
                     <ProductImageWithPlaceholder

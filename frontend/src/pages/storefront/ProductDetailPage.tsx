@@ -94,16 +94,16 @@ function ProductDetailContent({
 
   if (isLoading) {
     return (
-      <p className="px-4 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
-        Loading product…
+      <p className="mx-auto max-w-3xl px-4 py-20 text-center text-sm tracking-wide text-muted-foreground sm:px-6 lg:px-10">
+        Loading…
       </p>
     );
   }
 
   if (isError || !product || !variant) {
     return (
-      <p className="px-4 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
-        Product not found.
+      <p className="mx-auto max-w-3xl px-4 py-20 text-center text-sm tracking-wide text-muted-foreground sm:px-6 lg:px-10">
+        This piece could not be found.
       </p>
     );
   }
@@ -130,15 +130,15 @@ function ProductDetailContent({
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:gap-10 xl:gap-12">
-          <div className="w-full shrink-0 lg:max-w-xs xl:max-w-sm">
-            <Carousel className="w-full max-w-md mx-auto lg:max-w-xs lg:mx-0 xl:max-w-sm">
+    <div className="px-4 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="flex flex-col gap-10 pb-16 pt-6 lg:flex-row lg:items-start lg:gap-14 xl:gap-20">
+          <div className="w-full shrink-0 lg:max-w-sm xl:max-w-md">
+            <Carousel className="mx-auto w-full max-w-md lg:mx-0 lg:max-w-sm xl:max-w-md">
               <CarouselContent>
                 {carouselImages.map((src, i) => (
                   <CarouselItem key={`${i}-${src}`}>
-                    <div className="aspect-3/4 overflow-hidden rounded-xl bg-muted">
+                    <div className="aspect-3/4 overflow-hidden rounded-sm border border-border/40 bg-muted shadow-[var(--storefront-card-shadow)]">
                       <ProductImageWithPlaceholder
                         src={src}
                         alt=""
@@ -153,25 +153,24 @@ function ProductDetailContent({
             </Carousel>
           </div>
 
-          <div className="min-w-0 flex-1 space-y-6">
-            <div className="space-y-3">
-              <h1 className="text-xl font-semibold leading-snug text-foreground sm:text-2xl">
+          <div className="min-w-0 flex-1 space-y-8 lg:pt-4">
+            <div className="space-y-4">
+              <p className="storefront-eyebrow">{product.subCategory}</p>
+              <h1 className="font-display text-3xl font-medium leading-[1.15] tracking-tight text-foreground sm:text-4xl lg:text-[2.75rem]">
                 {product.name}
               </h1>
-              <PriceBlock price={unitPrice} />
+              <PriceBlock price={unitPrice} variant="boutique" />
               <StockBadge inStock={inStock} />
             </div>
 
-            <Separator />
+            <Separator className="bg-border/70" />
 
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {product.description || "No description yet."}
+            <p className="max-w-xl text-sm leading-[1.75] text-muted-foreground">
+              {product.description || "A timeless addition to your wardrobe."}
             </p>
 
-            <div className="space-y-2">
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Options
-              </p>
+            <div className="space-y-3">
+              <p className="storefront-eyebrow">Options</p>
               <VariantImageThumbnails
                 variants={product.variants.map((v) => ({
                   id: v.id,
@@ -189,29 +188,33 @@ function ProductDetailContent({
               ) : null}
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:max-w-md lg:max-w-none">
+            <div className="flex flex-col gap-3 sm:flex-row sm:max-w-lg lg:max-w-none">
               <Button
                 size="lg"
-                className="flex-1"
+                className="flex-1 rounded-sm text-xs font-medium uppercase tracking-[0.2em]"
                 disabled={!inStock}
                 onClick={handleAddToCart}
               >
-                Add to Cart
+                Add to bag
               </Button>
               <Button
                 size="lg"
                 variant="secondary"
-                className="flex-1"
+                className="flex-1 rounded-sm border border-border bg-transparent text-xs font-medium uppercase tracking-[0.2em] hover:bg-muted/80"
                 disabled={!inStock}
                 onClick={handleBuyNow}
               >
-                Buy Now
+                Buy now
               </Button>
             </div>
 
-            <Button variant="link" className="h-auto px-0 text-muted-foreground" asChild>
+            <Button
+              variant="link"
+              className="h-auto px-0 text-xs uppercase tracking-widest text-muted-foreground"
+              asChild
+            >
               <Link to={ROUTES.shop(product.categoryId)}>
-                Back to category
+                ← Back to collection
               </Link>
             </Button>
           </div>

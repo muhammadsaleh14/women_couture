@@ -15,27 +15,27 @@ export function StorefrontLayout() {
   const openCartSheet = useCartStore((s) => s.openSheet);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
-      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
-        <div className="flex h-14 w-full items-center justify-between gap-2 px-4 sm:px-6 lg:px-8">
+    <div className="storefront-surface flex min-h-dvh flex-col bg-background antialiased">
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur-md supports-backdrop-filter:bg-background/75">
+        <div className="mx-auto flex h-16 w-full max-w-[1600px] items-center justify-between gap-3 px-4 sm:h-[4.25rem] sm:px-6 lg:px-10">
           <Link
             to={ROUTES.home}
-            className="text-sm font-semibold tracking-wide text-foreground"
+            className="font-display text-xl font-medium tracking-[0.22em] text-foreground sm:text-2xl"
           >
-            Women Couture
+            WOMEN COUTURE
           </Link>
           <nav
-            className="flex flex-wrap items-center justify-end gap-1 sm:gap-2"
+            className="flex flex-wrap items-center justify-end gap-0.5 sm:gap-1"
             aria-label="Main navigation"
           >
             <ThemeToggle />
             {user ? (
               <>
-                <span className="hidden max-w-32 truncate text-xs text-muted-foreground sm:inline">
+                <span className="hidden max-w-32 truncate text-[11px] uppercase tracking-wider text-muted-foreground sm:inline">
                   {user.username}
                 </span>
                 {user.role === "ADMIN" && (
-                  <Button variant="ghost" size="sm" asChild>
+                  <Button variant="ghost" size="sm" className="text-xs uppercase tracking-wider" asChild>
                     <Link to={ROUTES.admin.products}>Admin</Link>
                   </Button>
                 )}
@@ -43,13 +43,14 @@ export function StorefrontLayout() {
                   type="button"
                   variant="ghost"
                   size="sm"
+                  className="text-xs uppercase tracking-wider"
                   onClick={() => logout()}
                 >
                   Log out
                 </Button>
               </>
             ) : (
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="ghost" size="sm" className="text-xs uppercase tracking-wider" asChild>
                 <Link to={ROUTES.login}>Sign in</Link>
               </Button>
             )}
@@ -57,7 +58,7 @@ export function StorefrontLayout() {
               type="button"
               variant="ghost"
               size="sm"
-              className="gap-1.5"
+              className="gap-1.5 text-xs uppercase tracking-wider"
               onClick={() => openCartSheet()}
             >
               <ShoppingBag className="size-4" aria-hidden />

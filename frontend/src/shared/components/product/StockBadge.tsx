@@ -11,10 +11,10 @@ export function StockBadge({ inStock, className }: Props) {
     <Badge
       variant="secondary"
       className={cn(
-        "font-medium",
+        "border font-medium uppercase tracking-wider",
         inStock
-          ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-          : "border-rose-200 bg-rose-50 text-rose-800",
+          ? "border-emerald-900/15 bg-emerald-950/[0.06] text-emerald-900 dark:border-emerald-100/20 dark:bg-emerald-400/10 dark:text-emerald-100"
+          : "border-border bg-muted/80 text-muted-foreground",
         className,
       )}
     >

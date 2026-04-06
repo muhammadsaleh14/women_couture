@@ -16,7 +16,7 @@ export function CategoryFilterBar({
   return (
     <nav
       className={cn(
-        "rounded-2xl border border-border/70 bg-muted/35 p-2 shadow-sm dark:border-border/60 dark:bg-muted/25",
+        "rounded-sm border border-border/60 bg-card/40 p-2 shadow-[var(--storefront-card-shadow)] backdrop-blur-sm dark:border-border/50 dark:bg-card/20",
         className,
       )}
       aria-label="Product categories"
@@ -29,7 +29,9 @@ export function CategoryFilterBar({
               aria-hidden
             />
             <span className="flex min-w-0 flex-col gap-0.5 text-left leading-tight">
-              <span className="font-semibold tracking-tight">All</span>
+              <span className="font-display text-base font-medium tracking-tight">
+                All
+              </span>
               <span className="text-[11px] font-normal opacity-80">
                 Full catalog
               </span>
@@ -43,7 +45,9 @@ export function CategoryFilterBar({
             selected={activeId === id}
           >
             <span className="flex min-w-0 flex-col gap-0.5 text-left leading-tight">
-              <span className="font-semibold tracking-tight">{title}</span>
+              <span className="font-display text-base font-medium tracking-tight">
+                {title}
+              </span>
               <span className="text-[11px] font-normal opacity-80">
                 {subtitle}
               </span>
@@ -69,11 +73,11 @@ function CategoryPill({
       to={to}
       preventScrollReset
       className={cn(
-        "min-h-13 min-w-27 flex-1 basis-[calc(50%-0.25rem)] rounded-xl px-3 py-2.5 text-sm transition-all duration-200 sm:basis-auto sm:flex-initial",
+        "min-h-13 min-w-27 flex-1 basis-[calc(50%-0.25rem)] rounded-sm px-3 py-2.5 text-sm transition-all duration-300 sm:basis-auto sm:flex-initial",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         selected
-          ? "border border-primary/20 bg-primary text-primary-foreground shadow-md ring-1 ring-primary/30"
-          : "border border-transparent bg-background/90 text-foreground hover:border-border hover:bg-background hover:shadow-sm dark:bg-card/60 dark:hover:bg-card",
+          ? "border border-primary/25 bg-primary text-primary-foreground shadow-[var(--storefront-card-shadow)]"
+          : "border border-border/40 bg-background/80 text-foreground hover:border-primary/20 hover:bg-background hover:shadow-sm dark:bg-card/50 dark:hover:bg-card/80",
       )}
     >
       {children}
