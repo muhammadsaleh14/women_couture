@@ -85,6 +85,7 @@ export async function getProducts(req: Request, res: Response, next: NextFunctio
       skip: query.skip,
       take: query.take,
       isActive,
+      category: query.category,
     });
 
     res.json(result);

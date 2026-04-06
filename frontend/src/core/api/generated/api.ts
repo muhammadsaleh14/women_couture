@@ -567,7 +567,20 @@ take?: number | null;
  * Filter by active state
  */
 isActive?: GetProductsIsActive;
+/**
+ * Storefront category slug (server filters product types)
+ */
+category?: GetProductsCategory;
 };
+
+export type GetProductsCategory =
+  (typeof GetProductsCategory)[keyof typeof GetProductsCategory];
+
+export const GetProductsCategory = {
+  "three-piece": "three-piece",
+  "two-piece": "two-piece",
+  separates: "separates",
+} as const;
 
 export type GetProductsIsActive = typeof GetProductsIsActive[keyof typeof GetProductsIsActive];
 

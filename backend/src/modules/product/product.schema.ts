@@ -171,5 +171,7 @@ export const ProductQuerySchema = openAPIRegistry.register(
     skip: z.coerce.number().int().min(0).optional().default(0),
     take: z.coerce.number().int().min(1).max(100).optional().default(20),
     isActive: z.enum(["true", "false"]).optional(),
+    /** Storefront category slug; filters `type` to match that browse tab (incl. UNSTITCHED in 3 PC). */
+    category: z.enum(["three-piece", "two-piece", "separates"]).optional(),
   }),
 );

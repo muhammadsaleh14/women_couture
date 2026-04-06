@@ -1,6 +1,22 @@
 import * as fs from "fs/promises";
 import path from "path";
 import { ClothingType, Prisma, StockMoveType } from "@prisma/client";
+
+export type StorefrontCategorySlug = "three-piece" | "two-piece" | "separates";
+
+function whereForStorefrontCategory(
+  category: StorefrontCategorySlug,
+): Prisma.ProductWhereInput {
+  if (category === "three-piece") {
+    return {
+      type: { in: [ClothingType.UNSTITCHED, ClothingType.THREE_PC] },
+    };
+  }
+  if (category === "two-piece") {
+    return { type: ClothingType.TWO_PC };
+  }
+  return { type: ClothingType.SEPARATE };
+}
 import { prisma } from "../../core/database/prisma";
 import { toImageUrl } from "../../core/utils/image-url";
 import type { SaveProductBody } from "./product.schema";
@@ -83,8 +99,14 @@ export async function getAllProducts(query: {
   skip: number;
   take: number;
   isActive?: boolean;
+  category?: StorefrontCategorySlug;
 }) {
-  const where = query.isActive !== undefined ? { isActive: query.isActive } : {};
+  const base: Prisma.ProductWhereInput =
+    query.isActive !== undefined ? { isActive: query.isActive } : {};
+  const typeWhere = query.category
+    ? whereForStorefrontCategory(query.category)
+    : {};
+  const where: Prisma.ProductWhereInput = { ...base, ...typeWhere };
 
   const [total, products] = await prisma.$transaction([
     prisma.product.count({ where }),

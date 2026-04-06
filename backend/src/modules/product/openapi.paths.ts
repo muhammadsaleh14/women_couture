@@ -23,6 +23,13 @@ openAPIRegistry.registerPath({
         .enum(["true", "false"])
         .optional()
         .openapi({ description: "Filter by active state" }),
+      category: z
+        .enum(["three-piece", "two-piece", "separates"])
+        .optional()
+        .openapi({
+          description:
+            "Storefront category: 3 PC (incl. unstitched), 2 PC, or separates",
+        }),
     }),
   },
   responses: {

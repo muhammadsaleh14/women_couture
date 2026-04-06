@@ -67,6 +67,7 @@ function CategoryPill({
   return (
     <Link
       to={to}
+      preventScrollReset
       className={cn(
         "min-h-13 min-w-27 flex-1 basis-[calc(50%-0.25rem)] rounded-xl px-3 py-2.5 text-sm transition-all duration-200 sm:basis-auto sm:flex-initial",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
