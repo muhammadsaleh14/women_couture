@@ -15,7 +15,10 @@ type Props = {
 
 export function ProductCard({ product, className }: Props) {
   const [selectedVariantId, setSelectedVariantId] = useState(
-    () => product.variants[0]?.id ?? "",
+    () =>
+      product.variants.find((v) => v.isDefault)?.id ??
+      product.variants[0]?.id ??
+      "",
   );
 
   const selectedVariant = useMemo(() => {

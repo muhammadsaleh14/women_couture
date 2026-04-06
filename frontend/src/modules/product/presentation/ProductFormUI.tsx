@@ -126,11 +126,18 @@ export function ProductFormUI({
             />
           ))}
         </div>
-        {form.formState.errors.variants?.root && (
-          <p className="text-sm text-destructive">
-            {form.formState.errors.variants.root.message}
-          </p>
-        )}
+        {(() => {
+          const ve = form.formState.errors.variants;
+          const msg =
+            ve && typeof ve === "object" && "message" in ve && ve.message
+              ? String(ve.message)
+              : ve && typeof ve === "object" && "root" in ve && ve.root?.message
+                ? String(ve.root.message)
+                : null;
+          return msg ? (
+            <p className="text-sm text-destructive">{msg}</p>
+          ) : null;
+        })()}
       </section>
 
       <div className="flex gap-2">

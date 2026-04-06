@@ -104,9 +104,10 @@ export function AdminProductsPage() {
             {rows.map((p) => {
               const totalStock =
                 p.variants?.reduce((s, v) => s + (v.stockQty ?? 0), 0) ?? 0;
-              const firstVariant = p.variants?.[0];
-              const thumb = firstVariant?.images?.[0]?.url ?? "";
-              const price = firstVariant?.salePrice ?? 0;
+              const displayVariant =
+                p.variants?.find((v) => v.isDefault) ?? p.variants?.[0];
+              const thumb = displayVariant?.images?.[0]?.url ?? "";
+              const price = displayVariant?.salePrice ?? 0;
               const subCategoryType = p.type;
               return (
                 <TableRow key={p.id}>

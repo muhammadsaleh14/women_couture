@@ -38,6 +38,8 @@ export function VariantCard({
   const {
     register,
     watch,
+    setValue,
+    getValues,
     formState: { errors },
   } = form;
 
@@ -45,6 +47,7 @@ export function VariantCard({
   const sku = watch(`variants.${index}.sku`);
   const variantId = watch(`variants.${index}.id`);
   const isNewVariant = watch(`variants.${index}.isNew`);
+  const isDefaultVariant = watch(`variants.${index}.isDefault`);
   const onHand =
     variantStockById && !isNewVariant
       ? (variantStockById[variantId] ?? 0)
@@ -73,6 +76,24 @@ export function VariantCard({
           <p className="truncate text-xs text-muted-foreground">
             {sku?.trim() ? `SKU · ${sku.trim()}` : "No SKU yet"}
           </p>
+          <label className="mt-2 flex cursor-pointer items-center gap-2 text-xs text-foreground">
+            <input
+              type="radio"
+              name="storefront-default-variant"
+              className="size-3.5 accent-primary"
+              checked={isDefaultVariant}
+              onChange={() => {
+                const n = getValues("variants").length;
+                for (let j = 0; j < n; j++) {
+                  setValue(`variants.${j}.isDefault`, j === index, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  });
+                }
+              }}
+            />
+            <span>Storefront default (shown first on shop)</span>
+          </label>
         </div>
         <div className="flex shrink-0 items-center gap-0.5">
           {showReorder ? (

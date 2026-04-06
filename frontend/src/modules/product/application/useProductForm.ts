@@ -104,6 +104,17 @@ export function useProductForm(options: UseProductFormOptions) {
     }
 
     remove(index);
+    queueMicrotask(() => {
+      const vars = form.getValues("variants");
+      if (vars.length === 0) return;
+      if (!vars.some((v) => v.isDefault)) {
+        vars.forEach((_, i) => {
+          form.setValue(`variants.${i}.isDefault`, i === 0, {
+            shouldValidate: true,
+          });
+        });
+      }
+    });
   };
 
   return {

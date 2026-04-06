@@ -64,6 +64,7 @@ export async function createProduct(req: Request, res: Response, next: NextFunct
           sku: v.sku ?? undefined,
           salePrice: v.salePrice,
           purchasePrice: v.purchasePrice ?? undefined,
+          isDefault: v.isDefault,
         })),
       },
       variantImages,

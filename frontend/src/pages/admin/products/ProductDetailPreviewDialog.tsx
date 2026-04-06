@@ -91,6 +91,7 @@ export function ProductDetailPreviewDialog({ product, onClose }: Props) {
                   {[...(product.variants ?? [])]
                     .sort(
                       (a, b) =>
+                        Number(b.isDefault) - Number(a.isDefault) ||
                         (a.sortOrder ?? 0) - (b.sortOrder ?? 0) ||
                         new Date(a.createdAt).getTime() -
                           new Date(b.createdAt).getTime(),
@@ -107,6 +108,12 @@ export function ProductDetailPreviewDialog({ product, onClose }: Props) {
                         <div className="sm:col-span-2">
                           <dt className="text-muted-foreground">Variant ID</dt>
                           <dd className="font-mono text-xs">{v.id}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted-foreground">
+                            Storefront default
+                          </dt>
+                          <dd>{v.isDefault ? "Yes" : "No"}</dd>
                         </div>
                         <div>
                           <dt className="text-muted-foreground">SKU</dt>

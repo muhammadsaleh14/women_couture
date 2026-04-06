@@ -22,13 +22,23 @@ import { toImageUrl } from "../../core/utils/image-url";
 import type { SaveProductBody } from "./product.schema";
 
 const variantsBySortOrder = {
-  orderBy: [{ sortOrder: "asc" as const }, { createdAt: "asc" as const }],
+  orderBy: [
+    { isDefault: "desc" as const },
+    { sortOrder: "asc" as const },
+    { createdAt: "asc" as const },
+  ],
   include: {
     images: {
       orderBy: { order: "asc" as const },
     },
   },
 } satisfies NonNullable<Prisma.ProductInclude["variants"]>;
+
+/** Single default: first variant with `isDefault: true`, else index 0. */
+function indexOfDefaultVariant<T extends { isDefault?: boolean }>(variants: T[]): number {
+  const idx = variants.findIndex((v) => v.isDefault === true);
+  return idx >= 0 ? idx : 0;
+}
 
 function withImageUrls<
   T extends {
@@ -58,10 +68,16 @@ export async function createProduct(
       sku?: string;
       salePrice: number;
       purchasePrice?: number;
+      isDefault?: boolean;
     }>;
   },
   variantImages?: Map<number, string[]>,
 ) {
+  const defaultIdx =
+    data.variants && data.variants.length > 0
+      ? indexOfDefaultVariant(data.variants)
+      : 0;
+
   const product = await prisma.product.create({
     data: {
       name: data.name,
@@ -76,6 +92,7 @@ export async function createProduct(
               purchasePrice: v.purchasePrice,
               stockQty: 0,
               sortOrder: i,
+              isDefault: i === defaultIdx,
               images: variantImages?.has(i)
                 ? {
                     create: variantImages.get(i)!.map((url, order) => ({
@@ -216,6 +233,8 @@ export async function replaceProductFull(
     throw new Error("Record to update not found");
   }
 
+  const defaultIdx = indexOfDefaultVariant(body.variants);
+
   await prisma.$transaction(async (tx) => {
     await tx.product.update({
       where: { id: productId },
@@ -244,6 +263,11 @@ export async function replaceProductFull(
       }
     }
 
+    await tx.productVariant.updateMany({
+      where: { productId },
+      data: { isDefault: false },
+    });
+
     for (let i = 0; i < body.variants.length; i++) {
       const v = body.variants[i];
       const newUrls = variantFiles.get(i) ?? [];
@@ -256,6 +280,7 @@ export async function replaceProductFull(
             salePrice: v.salePrice,
             purchasePrice: v.purchasePrice ?? null,
             sortOrder: i,
+            isDefault: i === defaultIdx,
           },
         });
 
@@ -289,6 +314,7 @@ export async function replaceProductFull(
             purchasePrice: v.purchasePrice ?? null,
             stockQty: 0,
             sortOrder: i,
+            isDefault: i === defaultIdx,
             images:
               newUrls.length > 0
                 ? {

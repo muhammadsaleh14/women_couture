@@ -38,6 +38,7 @@ export const ProductVariantSchema = openAPIRegistry.register(
     purchasePrice: z.coerce.number().nullable(),
     stockQty: z.number().int(),
     sortOrder: z.number().int(),
+    isDefault: z.boolean(),
     images: z.array(ProductImageSchema).optional(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
@@ -71,6 +72,7 @@ export const CreateProductBodySchema = openAPIRegistry.register(
           sku: z.string().optional(),
           salePrice: z.number().positive("Sale price must be positive"),
           purchasePrice: z.number().positive().optional(),
+          isDefault: z.boolean().optional(),
         }),
       )
       .optional(),
@@ -135,6 +137,8 @@ export const SaveProductVariantInputSchema = z.object({
   sku: z.string().optional(),
   salePrice: z.number().nonnegative(),
   purchasePrice: z.number().nonnegative().optional().nullable(),
+  /** If omitted or multiple true, first variant becomes default. */
+  isDefault: z.boolean().optional(),
   /** Image row ids to keep for an existing variant; others are removed. */
   existingImageIds: z.array(z.string()).optional(),
 });

@@ -4,6 +4,8 @@ export interface ProductVariant {
   id: string;
   sku: string | null;
   stock: number;
+  /** Shown first on cards and PDP when no variant is selected in the URL. */
+  isDefault: boolean;
   /** Customer-facing unit price (from variant `salePrice` in the API). */
   salePrice: number;
   /** Real URL or internal placeholder sentinel (see `productImagePlaceholderUrl`). */
@@ -17,7 +19,7 @@ export interface Product {
   mainCategory: "Unstitched";
   subCategory: "3 PC" | "2 PC" | "Separates";
   categoryId: CategoryId;
-  /** Primary display price (first variant after sort); use variant `salePrice` when a variant is selected. */
+  /** Primary display price (default variant, else first after sort); use variant `salePrice` when a variant is selected. */
   regularPrice: number;
   isNew: boolean;
   variants: ProductVariant[];

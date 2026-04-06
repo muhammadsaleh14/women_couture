@@ -10,6 +10,7 @@ export async function createVariant(
     throw new Error("Product not found");
   }
 
+  const count = await prisma.productVariant.count({ where: { productId } });
   const agg = await prisma.productVariant.aggregate({
     where: { productId },
     _max: { sortOrder: true },
@@ -24,6 +25,7 @@ export async function createVariant(
       purchasePrice: data.purchasePrice,
       stockQty: 0,
       sortOrder: nextOrder,
+      isDefault: count === 0,
     },
     include: {
       images: { orderBy: { order: "asc" } },
@@ -86,7 +88,23 @@ export async function deleteVariant(variantId: string) {
     throw new Error("Variant not found");
   }
 
+  const wasDefault = variant.isDefault;
+  const productId = variant.productId;
+
   await prisma.productVariant.delete({ where: { id: variantId } });
+
+  if (wasDefault) {
+    const next = await prisma.productVariant.findFirst({
+      where: { productId },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    });
+    if (next) {
+      await prisma.productVariant.update({
+        where: { id: next.id },
+        data: { isDefault: true },
+      });
+    }
+  }
 
   const fs = await import("fs/promises");
   for (const img of variant.images) {

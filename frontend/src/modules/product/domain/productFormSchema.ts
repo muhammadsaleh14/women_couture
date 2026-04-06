@@ -30,6 +30,7 @@ const ImageItemSchema = z.object({
 export const productVariantSchema = z.object({
   id: z.string(),
   isNew: z.boolean(),
+  isDefault: z.boolean(),
   sku: z.string().optional(),
   salePrice: nonNegativeMoneyString,
   purchasePrice: optionalNonNegativeMoneyString.optional(),
@@ -42,7 +43,19 @@ export const productFormSchema = z.object({
   type: z.enum(["UNSTITCHED", "THREE_PC", "TWO_PC", "SEPARATE"]),
   variants: z
     .array(productVariantSchema)
-    .min(1, "At least one variant is required"),
+    .min(1, "At least one variant is required")
+    .superRefine((rows, ctx) => {
+      const n = rows.filter((v) => v.isDefault).length;
+      if (n !== 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            n === 0
+              ? "Select exactly one storefront default variant"
+              : "Only one variant can be the storefront default",
+        });
+      }
+    }),
 });
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;

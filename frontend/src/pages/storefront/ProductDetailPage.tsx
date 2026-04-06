@@ -62,7 +62,10 @@ function ProductDetailContent({
     ) {
       return variantFromUrl;
     }
-    return product.variants[0].id;
+    return (
+      product.variants.find((v) => v.isDefault)?.id ??
+      product.variants[0].id
+    );
   }, [product, variantFromUrl]);
 
   const [manualVariantId, setManualVariantId] = useState<string | null>(null);

@@ -188,6 +188,7 @@ export interface ProductVariant {
   purchasePrice: number | null;
   stockQty: number;
   sortOrder: number;
+  isDefault: boolean;
   images?: ProductImage[];
   createdAt: string;
   updatedAt: string;
@@ -219,6 +220,7 @@ export type CreateProductBodyVariantsItem = {
   salePrice: number;
   /** @exclusiveMinimum 0 */
   purchasePrice?: number;
+  isDefault?: boolean;
 };
 
 export interface CreateProductBody {
@@ -320,6 +322,7 @@ export type SaveProductBodyVariantsItem = {
    * @nullable
    */
   purchasePrice?: number | null;
+  isDefault?: boolean;
   existingImageIds?: string[];
 };
 
@@ -348,6 +351,15 @@ export const ProductQueryIsActive = {
   false: 'false',
 } as const;
 
+export type ProductQueryCategory = typeof ProductQueryCategory[keyof typeof ProductQueryCategory];
+
+
+export const ProductQueryCategory = {
+  'three-piece': 'three-piece',
+  'two-piece': 'two-piece',
+  separates: 'separates',
+} as const;
+
 export interface ProductQuery {
   /**
    * @minimum 0
@@ -360,6 +372,7 @@ export interface ProductQuery {
    */
   take?: number;
   isActive?: ProductQueryIsActive;
+  category?: ProductQueryCategory;
 }
 
 export interface UpdateVariantBody {
@@ -568,19 +581,10 @@ take?: number | null;
  */
 isActive?: GetProductsIsActive;
 /**
- * Storefront category slug (server filters product types)
+ * Storefront category: 3 PC (incl. unstitched), 2 PC, or separates
  */
 category?: GetProductsCategory;
 };
-
-export type GetProductsCategory =
-  (typeof GetProductsCategory)[keyof typeof GetProductsCategory];
-
-export const GetProductsCategory = {
-  "three-piece": "three-piece",
-  "two-piece": "two-piece",
-  separates: "separates",
-} as const;
 
 export type GetProductsIsActive = typeof GetProductsIsActive[keyof typeof GetProductsIsActive];
 
@@ -588,6 +592,15 @@ export type GetProductsIsActive = typeof GetProductsIsActive[keyof typeof GetPro
 export const GetProductsIsActive = {
   true: 'true',
   false: 'false',
+} as const;
+
+export type GetProductsCategory = typeof GetProductsCategory[keyof typeof GetProductsCategory];
+
+
+export const GetProductsCategory = {
+  'three-piece': 'three-piece',
+  'two-piece': 'two-piece',
+  separates: 'separates',
 } as const;
 
 export type PostVariantsVariantIdStockBodyType = typeof PostVariantsVariantIdStockBodyType[keyof typeof PostVariantsVariantIdStockBodyType];

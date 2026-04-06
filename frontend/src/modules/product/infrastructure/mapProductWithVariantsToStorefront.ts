@@ -68,9 +68,12 @@ export function mapProductWithVariantsToStorefront(
 ): Product {
   const variants = [...(product.variants ?? [])].sort(
     (a, b) =>
+      Number(b.isDefault) - Number(a.isDefault) ||
       (a.sortOrder ?? 0) - (b.sortOrder ?? 0) ||
       new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
   );
+  const canonicalDefaultId =
+    variants.find((v) => v.isDefault === true)?.id ?? variants[0]?.id;
   const gallery = collectGalleryImages(variants);
   const mappedVariants =
     variants.length > 0
@@ -81,6 +84,7 @@ export function mapProductWithVariantsToStorefront(
             id: v.id,
             sku: v.sku,
             stock: v.stockQty,
+            isDefault: v.id === canonicalDefaultId,
             salePrice: variantSalePrice(v),
             imageUrl,
           };
@@ -90,6 +94,7 @@ export function mapProductWithVariantsToStorefront(
             id: `${product.id}-placeholder`,
             sku: null,
             stock: 0,
+            isDefault: true,
             salePrice: 0,
             imageUrl: PRODUCT_IMAGE_PLACEHOLDER_URL,
           },

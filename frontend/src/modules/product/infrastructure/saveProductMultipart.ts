@@ -26,6 +26,7 @@ export async function saveProductMultipart(
         v.purchasePrice?.trim() !== ""
           ? parseMoney(String(v.purchasePrice))
           : undefined,
+      isDefault: v.isDefault,
       existingImageIds: v.images.filter((img) => !img.file).map((img) => img.uid),
     })),
   };

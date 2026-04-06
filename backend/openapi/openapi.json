@@ -337,6 +337,9 @@
           "sortOrder": {
             "type": "integer"
           },
+          "isDefault": {
+            "type": "boolean"
+          },
           "images": {
             "type": "array",
             "items": {
@@ -360,6 +363,7 @@
           "purchasePrice",
           "stockQty",
           "sortOrder",
+          "isDefault",
           "createdAt",
           "updatedAt"
         ]
@@ -440,6 +444,9 @@
                   "type": "number",
                   "minimum": 0,
                   "exclusiveMinimum": true
+                },
+                "isDefault": {
+                  "type": "boolean"
                 }
               },
               "required": [
@@ -635,6 +642,9 @@
                   "nullable": true,
                   "minimum": 0
                 },
+                "isDefault": {
+                  "type": "boolean"
+                },
                 "existingImageIds": {
                   "type": "array",
                   "items": {
@@ -697,6 +707,14 @@
             "enum": [
               "true",
               "false"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "three-piece",
+              "two-piece",
+              "separates"
             ]
           }
         }
@@ -1400,6 +1418,21 @@
             "required": false,
             "description": "Filter by active state",
             "name": "isActive",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "three-piece",
+                "two-piece",
+                "separates"
+              ],
+              "description": "Storefront category: 3 PC (incl. unstitched), 2 PC, or separates"
+            },
+            "required": false,
+            "description": "Storefront category: 3 PC (incl. unstitched), 2 PC, or separates",
+            "name": "category",
             "in": "query"
           }
         ],

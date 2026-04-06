@@ -1,10 +1,11 @@
 import { generateUuid } from "@/core/lib/randomUuid";
 import type { ImageItem, ProductFormValues } from "./productFormSchema";
 
-export function emptyVariant() {
+export function emptyVariant(): ProductFormValues["variants"][number] {
   return {
     id: generateUuid(),
     isNew: true,
+    isDefault: false,
     sku: "",
     salePrice: "",
     purchasePrice: "",
@@ -17,6 +18,6 @@ export function defaultProductFormValues(): ProductFormValues {
     name: "",
     description: "",
     type: "UNSTITCHED",
-    variants: [emptyVariant()],
+    variants: [{ ...emptyVariant(), isDefault: true }],
   };
 }

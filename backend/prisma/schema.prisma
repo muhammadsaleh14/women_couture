@@ -64,6 +64,8 @@ model ProductVariant {
   stockQty      Int            @default(0)
   /** Display order within the product (0 = first). */
   sortOrder     Int            @default(0)
+  /** Exactly one variant per product must be true (enforced in DB + app). Shown first on storefront. */
+  isDefault     Boolean        @default(false)
 
   images        ProductImage[]
   stockMoves    StockMove[]
