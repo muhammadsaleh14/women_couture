@@ -51,7 +51,7 @@ export function HomeHeroCard({
           className={cn(
             "text-[0.65rem] font-medium uppercase tracking-[0.28em]",
             hasImage || !isLight
-              ? "text-stone-200"
+              ? "text-stone-300"
               : "text-muted-foreground",
           )}
         >
@@ -61,7 +61,7 @@ export function HomeHeroCard({
           className={cn(
             "font-display mt-2 max-w-lg text-3xl font-medium leading-tight sm:text-4xl lg:text-5xl",
             hasImage || !isLight
-              ? "text-white"
+              ? "text-stone-200"
               : "tracking-tight text-foreground",
           )}
         >
@@ -72,7 +72,7 @@ export function HomeHeroCard({
             className={cn(
               "mt-2 max-w-sm text-sm",
               hasImage || !isLight
-                ? "text-stone-200"
+                ? "text-stone-300"
                 : "text-muted-foreground",
             )}
           >
@@ -86,7 +86,9 @@ export function HomeHeroCard({
   const cardClass = cn(
     "overflow-hidden border-0 shadow-none",
     !hasImage && isLight ? "bg-muted/50" : "",
-    !hasImage && !isLight ? "bg-stone-900 text-stone-50 dark:bg-stone-950" : "",
+    !hasImage && !isLight
+      ? "bg-stone-900 text-stone-200 dark:bg-stone-950 dark:text-stone-300"
+      : "",
     href && "transition hover:opacity-[0.98]",
   );
 
