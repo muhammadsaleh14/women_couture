@@ -1,7 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { SlidersHorizontal } from "lucide-react";
-import { useGetProducts } from "@/core/api/generated/api";
+import {
+  getGetProductsQueryOptions,
+  useGetProducts,
+} from "@/core/api/generated/api";
+import type { GetProductsParams } from "@/core/api/generated/api";
 import { mapProductWithVariantsToStorefront } from "@/modules/product/infrastructure/mapProductWithVariantsToStorefront";
 import { ProductCard } from "@/modules/product/presentation/ProductCard";
 import { Label } from "@/core/components/ui/label";
@@ -18,11 +23,24 @@ import { HomeHeroCarousel } from "./components/HomeHeroCarousel";
 import { HomePageMathBackdrop } from "./components/HomePageMathBackdrop";
 import {
   CATEGORY_LABEL,
+  CATEGORY_NAV,
   isCategoryId,
   sortProducts,
 } from "./components/homeCategory";
 
+const HOME_PRODUCTS_BASE = {
+  isActive: "true" as const,
+  take: 100,
+};
+
+function homeProductsParams(category: string | null): GetProductsParams {
+  return category
+    ? { ...HOME_PRODUCTS_BASE, category }
+    : HOME_PRODUCTS_BASE;
+}
+
 export function HomePage() {
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
   const categoryFilter =
@@ -39,14 +57,22 @@ export function HomePage() {
   };
 
   const productQueryParams = useMemo(
-    () =>
-      ({
-        isActive: "true" as const,
-        take: 100,
-        ...(categoryFilter ? { category: categoryFilter } : {}),
-      }) satisfies Parameters<typeof useGetProducts>[0],
+    () => homeProductsParams(categoryFilter),
     [categoryFilter],
   );
+
+  useEffect(() => {
+    const toPrefetch: GetProductsParams[] = [
+      HOME_PRODUCTS_BASE,
+      ...CATEGORY_NAV.map((c) => ({
+        ...HOME_PRODUCTS_BASE,
+        category: c.id,
+      })),
+    ];
+    for (const params of toPrefetch) {
+      void queryClient.prefetchQuery(getGetProductsQueryOptions(params));
+    }
+  }, [queryClient]);
 
   const { data, isLoading, isError } = useGetProducts(productQueryParams);
 

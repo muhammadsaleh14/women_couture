@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Check } from "lucide-react";
+import { toast } from "sonner";
 import {
   Carousel,
   CarouselContent,
@@ -11,6 +13,7 @@ import { Button } from "@/core/components/ui/button";
 import { Separator } from "@/core/components/ui/separator";
 import { useGetProductsProductId } from "@/core/api/generated/api";
 import { ROUTES } from "@/core/routes";
+import { cn } from "@/core/lib/utils";
 import { mapProductWithVariantsToStorefront } from "@/modules/product/infrastructure/mapProductWithVariantsToStorefront";
 import { useCartStore } from "@/modules/cart/application/cart-store";
 import { VariantImageThumbnails } from "@/shared/components/product/VariantImageThumbnails";
@@ -40,6 +43,8 @@ function ProductDetailContent({
 }) {
   const addLine = useCartStore((s) => s.addLine);
   const openCartSheet = useCartStore((s) => s.openSheet);
+  const [bagJustAdded, setBagJustAdded] = useState(false);
+  const bagConfirmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data: apiProduct, isLoading, isError } = useGetProductsProductId(
     productId,
@@ -92,6 +97,14 @@ function ProductDetailContent({
     return [primary, ...rest];
   }, [product, variant]);
 
+  useEffect(() => {
+    return () => {
+      if (bagConfirmTimer.current) {
+        clearTimeout(bagConfirmTimer.current);
+      }
+    };
+  }, []);
+
   if (isLoading) {
     return (
       <p className="mx-auto max-w-3xl px-4 py-20 text-center text-sm tracking-wide text-muted-foreground sm:px-6 lg:px-10">
@@ -112,7 +125,11 @@ function ProductDetailContent({
   const unitPrice =
     variant.salePrice > 0 ? variant.salePrice : product.regularPrice;
 
-  const handleAddToCart = () => {
+  const pushToBag = () => {
+    const lineId = `${product.id}:${variant.id}`;
+    const hadLine = useCartStore
+      .getState()
+      .lines.some((l) => l.lineId === lineId);
     addLine({
       productId: product.id,
       variantId: variant.id,
@@ -122,11 +139,38 @@ function ProductDetailContent({
       qty: 1,
       imageUrl: variant.imageUrl,
     });
+    return hadLine;
+  };
+
+  const handleAddToCart = () => {
+    const hadLine = pushToBag();
+
+    if (bagConfirmTimer.current) {
+      clearTimeout(bagConfirmTimer.current);
+    }
+    setBagJustAdded(true);
+    bagConfirmTimer.current = setTimeout(() => {
+      setBagJustAdded(false);
+      bagConfirmTimer.current = null;
+    }, 2200);
+
+    toast.success(hadLine ? "Quantity updated" : "Added to your bag", {
+      description: product.name,
+      duration: 4500,
+      action: {
+        label: "View bag",
+        onClick: () => openCartSheet(),
+      },
+    });
   };
 
   const handleBuyNow = () => {
-    handleAddToCart();
+    const hadLine = pushToBag();
     openCartSheet();
+    toast.success(hadLine ? "Quantity updated" : "Added to your bag", {
+      description: product.name,
+      duration: 3500,
+    });
   };
 
   return (
@@ -191,11 +235,22 @@ function ProductDetailContent({
             <div className="flex flex-col gap-3 sm:flex-row sm:max-w-lg lg:max-w-none">
               <Button
                 size="lg"
-                className="flex-1 rounded-sm text-xs font-medium uppercase tracking-[0.2em]"
+                className={cn(
+                  "flex-1 rounded-sm text-xs font-medium uppercase tracking-[0.2em] transition-colors duration-300",
+                  bagJustAdded &&
+                    "bg-emerald-950 text-emerald-50 hover:bg-emerald-950 dark:bg-emerald-800 dark:text-emerald-50 dark:hover:bg-emerald-800",
+                )}
                 disabled={!inStock}
                 onClick={handleAddToCart}
               >
-                Add to bag
+                {bagJustAdded ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Check className="size-4 shrink-0" strokeWidth={2.5} aria-hidden />
+                    Added
+                  </span>
+                ) : (
+                  "Add to bag"
+                )}
               </Button>
               <Button
                 size="lg"
