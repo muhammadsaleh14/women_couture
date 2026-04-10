@@ -177,7 +177,11 @@ function CarouselPrevious({
   size = "icon-sm",
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { orientation, scrollPrev, canScrollPrev } = useCarousel();
+  const { api, orientation, scrollPrev, canScrollPrev } = useCarousel();
+
+  if (api && !canScrollPrev) {
+    return null;
+  }
 
   return (
     <Button
@@ -207,7 +211,11 @@ function CarouselNext({
   size = "icon-sm",
   ...props
 }: React.ComponentProps<typeof Button>) {
-  const { orientation, scrollNext, canScrollNext } = useCarousel();
+  const { api, orientation, scrollNext, canScrollNext } = useCarousel();
+
+  if (api && !canScrollNext) {
+    return null;
+  }
 
   return (
     <Button
