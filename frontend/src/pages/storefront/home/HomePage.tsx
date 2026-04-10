@@ -21,6 +21,7 @@ import { ButtonLink } from "./components/ButtonLink";
 import { CategoryFilterBar } from "./components/CategoryFilterBar";
 import { HomeHeroCarousel } from "./components/HomeHeroCarousel";
 import { HomePageMathBackdrop } from "./components/HomePageMathBackdrop";
+import type { CategoryId } from "@/shared/model/types";
 import {
   CATEGORY_LABEL,
   CATEGORY_NAV,
@@ -33,7 +34,7 @@ const HOME_PRODUCTS_BASE = {
   take: 100,
 };
 
-function homeProductsParams(category: string | null): GetProductsParams {
+function homeProductsParams(category: CategoryId | null): GetProductsParams {
   return category
     ? { ...HOME_PRODUCTS_BASE, category }
     : HOME_PRODUCTS_BASE;
